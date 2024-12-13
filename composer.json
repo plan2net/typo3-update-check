@@ -1,0 +1,20 @@
+{
+    "name": "plan2net/typo3-update-check",
+    "type": "composer-plugin",
+    "require": {
+        "php": ">=8.2",
+        "composer-plugin-api": "^2.0",
+        "guzzlehttp/guzzle": "^7.0"
+    },
+    "require-dev": {
+        "composer/composer": "^2.0"
+    },
+    "autoload":{
+        "psr-4":{
+            "Plan2net\\Typo3UpdateCheck\\":"src/"
+        }
+    },
+    "extra": {
+        "class": "Plan2net\\Typo3UpdateCheck\\Plugin"
+    }
+}
