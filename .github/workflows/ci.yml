@@ -6,7 +6,7 @@ on:
 
 jobs:
     phpunit:
-        name: PHPUnit (PHP ${{ matrix.php }} - Composer ${{ matrix.composer }} - ${{ matrix.operating-system }})
+        name: PHPUnit (PHP ${{ matrix.php }} - ${{ matrix.operating-system }})
         runs-on: ${{ matrix.operating-system }}
 
         strategy:
@@ -14,7 +14,6 @@ jobs:
             matrix:
                 operating-system: [ ubuntu-latest, windows-latest ]
                 php: ['8.1', '8.2', '8.3', '8.4']
-                composer: ['^2.0']
 
         steps:
             - uses: actions/checkout@v4
@@ -25,6 +24,119 @@ jobs:
                   coverage: none
             - uses: ramsey/composer-install@v3
             - run: vendor/bin/phpunit tests
+
+    integration-test:
+        name: Integration Test (PHP ${{ matrix.php }})
+        runs-on: ubuntu-latest
+        
+        strategy:
+            fail-fast: false
+            matrix:
+                php: ['8.1', '8.2', '8.3', '8.4']
+        
+        steps:
+            - uses: actions/checkout@v4
+            - uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php }}
+                  tools: composer:v2
+                  coverage: none
+            
+            - name: Install plugin dependencies
+              run: composer install --no-dev
+            
+            - name: Create test project
+              run: |
+                mkdir -p /tmp/typo3-test
+                cd /tmp/typo3-test
+                cat > composer.json << 'EOF'
+                {
+                    "name": "test/typo3-project",
+                    "require": {
+                        "typo3/cms-core": "12.0.0"
+                    },
+                    "repositories": [
+                        {
+                            "type": "path",
+                            "url": "${{ github.workspace }}"
+                        }
+                    ],
+                    "config": {
+                        "allow-plugins": {
+                            "plan2net/typo3-update-check": true,
+                            "typo3/cms-composer-installers": true,
+                            "typo3/class-alias-loader": true
+                        }
+                    }
+                }
+                EOF
+            
+            - name: Install TYPO3 12.0.0
+              run: |
+                cd /tmp/typo3-test
+                composer install --no-interaction
+            
+            - name: Install plugin
+              run: |
+                cd /tmp/typo3-test
+                composer require plan2net/typo3-update-check:"@dev" --no-interaction
+            
+            - name: Test plugin during update
+              run: |
+                cd /tmp/typo3-test
+                set +e
+                OUTPUT=$(composer require typo3/cms-core:"12.4.20" --no-interaction --dry-run -W -v 2>&1)
+                set -e
+                
+                echo "Plugin Output:"
+                echo "$OUTPUT" | grep -E "(pre-pool-create|TYPO3 core will be updated|Fetching version information|Breaking changes|Security updates|Changes in version)" || echo "No plugin output found"
+                
+                if echo "$OUTPUT" | grep -q "pre-pool-create: Plan2net.*Plugin"; then
+                    echo "✓ Plugin triggered"
+                else
+                    echo "✗ Plugin not triggered"
+                    exit 1
+                fi
+                
+                if echo "$OUTPUT" | grep -q "TYPO3 core will be updated from"; then
+                    echo "✓ Plugin detected update"
+                    if echo "$OUTPUT" | grep -q "Fetching version information"; then
+                        echo "✓ Plugin fetched version data"
+                    else
+                        echo "✗ Plugin did not fetch version data"
+                        exit 1
+                    fi
+                else
+                    echo "ℹ️ Plugin triggered but no update detected"
+                fi
+            
+            - name: Test version range update
+              run: |
+                cd /tmp/typo3-test
+                set +e
+                OUTPUT=$(composer require typo3/cms-core:"^12.4.0" --no-interaction --dry-run -W -v 2>&1)
+                set -e
+                
+                if echo "$OUTPUT" | grep -q "pre-pool-create: Plan2net.*Plugin"; then
+                    echo "✓ Plugin triggered for version range"
+                else
+                    echo "✗ Plugin not triggered for version range"
+                    exit 1
+                fi
+            
+            - name: Test no update scenario
+              run: |
+                cd /tmp/typo3-test
+                set +e
+                OUTPUT=$(composer install --dry-run -v 2>&1)
+                set -e
+                
+                if echo "$OUTPUT" | grep -q "TYPO3 core will be updated from"; then
+                    echo "✗ Plugin incorrectly detected update"
+                    exit 1
+                else
+                    echo "✓ Plugin correctly ignored no-update scenario"
+                fi
 
     php-cs-fixer:
         name: PHP CS Fixer
