@@ -7,6 +7,7 @@ namespace Plan2net\Typo3UpdateCheck;
 use Composer\Composer;
 use Composer\EventDispatcher\EventSubscriberInterface;
 use Composer\IO\IOInterface;
+use Composer\Package\PackageInterface;
 use Composer\Plugin\PluginEvents;
 use Composer\Plugin\PluginInterface;
 use Composer\Plugin\PrePoolCreateEvent;
@@ -47,6 +48,9 @@ final class Plugin implements PluginInterface, EventSubscriberInterface
         ];
     }
 
+    /**
+     * @throws \Exception
+     */
     public function checkForBreakingChanges(PrePoolCreateEvent $event): void
     {
         if ($this->hasChecked) {
@@ -67,8 +71,8 @@ final class Plugin implements PluginInterface, EventSubscriberInterface
             return;
         }
 
-        $hasBreakingChanges = $this->processVersions($versions);
-        $this->handleUserConfirmation($hasBreakingChanges);
+        $hasImportantChanges = $this->processVersions($versions);
+        $this->handleUserConfirmation($hasImportantChanges);
 
         $this->hasChecked = true;
     }
@@ -107,7 +111,7 @@ final class Plugin implements PluginInterface, EventSubscriberInterface
     }
 
     /**
-     * @param \Composer\Package\PackageInterface[] $packages
+     * @param PackageInterface[] $packages
      */
     private function findTargetVersion(array $packages): ?string
     {
@@ -126,6 +130,8 @@ final class Plugin implements PluginInterface, EventSubscriberInterface
 
     /**
      * @return string[]|null
+     *
+     * @throws \Exception
      */
     private function fetchVersionList(string $currentVersion, string $targetVersion): ?array
     {
@@ -152,7 +158,7 @@ final class Plugin implements PluginInterface, EventSubscriberInterface
      */
     private function processVersions(array $versions): bool
     {
-        $hasBreakingChanges = false;
+        $hasImportantChanges = false;
         $successfullyProcessed = 0;
         $failedVersions = [];
         $versionsWithImportantChanges = [];
@@ -163,7 +169,7 @@ final class Plugin implements PluginInterface, EventSubscriberInterface
                 $successfullyProcessed++;
 
                 if ($releaseContent->getBreakingChanges() || $releaseContent->getSecurityUpdates()) {
-                    $hasBreakingChanges = true;
+                    $hasImportantChanges = true;
                     $versionsWithImportantChanges[] = $releaseContent;
                 }
             } catch (\RuntimeException $e) {
@@ -182,7 +188,7 @@ final class Plugin implements PluginInterface, EventSubscriberInterface
         if ($successfullyProcessed === 0) {
             $this->io->write('<error>Failed to fetch release information for all versions.</error>');
             $this->io->write('<comment>The TYPO3 API might be temporarily unavailable. Proceeding with update.</comment>');
-        } elseif (!$hasBreakingChanges) {
+        } elseif (!$hasImportantChanges) {
             $this->io->write('✓ No breaking changes or security updates found.');
         }
 
@@ -193,18 +199,20 @@ final class Plugin implements PluginInterface, EventSubscriberInterface
             ));
         }
 
-        return $hasBreakingChanges;
+        return $hasImportantChanges;
     }
 
-    private function handleUserConfirmation(bool $hasBreakingChanges): void
+    private function handleUserConfirmation(bool $hasImportantChanges): void
     {
         if (!$this->io->isInteractive()) {
             return;
         }
 
-        $question = $hasBreakingChanges
-            ? '⚠️ Breaking changes were found. Do you want to continue with the update? [y/N] '
-            : '✓ Do you want to continue with the update? [y/N] ';
+        if (!$hasImportantChanges) {
+            return;
+        }
+
+        $question = '⚠️ Breaking changes or security updates were found. Do you want to continue with the update? [y/N] ';
 
         if (!$this->io->askConfirmation($question, false)) {
             $this->io->write('<info>Update cancelled by user.</info>');
@@ -214,6 +222,8 @@ final class Plugin implements PluginInterface, EventSubscriberInterface
 
     /**
      * @return string[]
+     *
+     * @throws \Exception
      */
     private function getVersionsBetween(string $fromVersion, string $toVersion): array
     {
