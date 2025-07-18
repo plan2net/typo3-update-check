@@ -1,5 +1,11 @@
 # TYPO3 Update Check
 
+[![CI](https://github.com/plan2net/typo3-update-check/actions/workflows/ci.yml/badge.svg)](https://github.com/plan2net/typo3-update-check/actions/workflows/ci.yml)
+[![Latest Version](https://img.shields.io/github/v/release/plan2net/typo3-update-check?include_prereleases&label=latest)](https://github.com/plan2net/typo3-update-check/releases)
+[![PHP Version](https://img.shields.io/packagist/php-v/plan2net/typo3-update-check)](https://packagist.org/packages/plan2net/typo3-update-check)
+[![License](https://img.shields.io/github/license/plan2net/typo3-update-check)](https://github.com/plan2net/typo3-update-check/blob/main/LICENSE)
+[![Downloads](https://img.shields.io/packagist/dt/plan2net/typo3-update-check)](https://packagist.org/packages/plan2net/typo3-update-check)
+
 A Composer plugin that intercepts TYPO3 core updates and displays breaking changes and security updates before proceeding.
 
 ## Purpose
