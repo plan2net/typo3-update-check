@@ -8,9 +8,11 @@
 
 A Composer plugin that intercepts TYPO3 core updates and displays breaking changes and security updates before proceeding.
 
-## Purpose
+## Purpose and motivation
 
-This Composer plugin helps prevent oversight of important changes in (often) minor updates by highlighting breaking changes (⚠️) and security updates (⚡) before proceeding with TYPO3 core updates.
+When updating TYPO3, it's easy to overlook critical changes buried in release notes and announcements. Even minor version updates can introduce breaking changes or important security fixes that require immediate attention. Traditionally, developers need to manually check release announcements, security advisories, and changelogs—a time-consuming process that's often skipped under deadline pressure.
+
+This Composer plugin solves this problem by bringing important information directly to your terminal, exactly when and where you need it. During the update process, it automatically highlights breaking changes (⚠️) and security updates (⚡), ensuring you never miss critical changes that could impact your application's functionality or security.
 
 ## Installation
 
@@ -37,6 +39,11 @@ The plugin automatically activates during `composer update` and:
 TYPO3 core will be updated from 12.4.10 to 12.4.15
 Fetching version information...
 
+Changes in version 12.4.11:
+Breaking changes found:
+  ⚠️ [BREAKING] Introduce type declarations in AbstractDatabaseRecordList
+  ⚠️ [BREAKING] Introduce type declarations in QueryView
+
 Changes in version 12.4.15:
 Security updates found:
   ⚡ [SECURITY] Protect frame GET parameter in tx_cms_showpic eID
@@ -50,12 +57,16 @@ Security advisories:
 
 Release announcement: https://typo3.org/article/typo3-12415-security-release
 
-Do you want to continue with the update? [y/N]
+⚠️ Breaking changes or security updates were found. Do you want to continue with the update? [y/N]
 ```
 
 ## Non-interactive mode
 
 In non-interactive environments (CI/CD), the plugin will display information but automatically proceed with the update.
+
+## API availability
+
+If the TYPO3 API is temporarily unavailable, the plugin will display an error message but allow the update to proceed. This ensures that temporary API issues don't block your development workflow.
 
 ## Caching
 
