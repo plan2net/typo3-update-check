@@ -57,6 +57,19 @@ Do you want to continue with the update? [y/N]
 
 In non-interactive environments (CI/CD), the plugin will display information but automatically proceed with the update.
 
+## Caching
+
+The plugin caches API responses to improve performance and reduce load on the TYPO3 API servers:
+
+- **Cache location**: Uses Composer's global cache directory (`~/.cache/composer` on Linux/macOS, `%LOCALAPPDATA%\Composer` on Windows)
+- **Cache duration**: 
+  - Release lists: 1 hour (automatically refreshed)
+  - Release content: Permanent (version content never changes)
+- **Shared cache**: Works across all TYPO3 projects on the same machine
+- **Automatic cleanup**: Expired cache entries are automatically removed
+
+The caching system ensures fast subsequent runs while keeping release information up-to-date.
+
 ## Development
 
 ### Setup

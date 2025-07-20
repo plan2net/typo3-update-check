@@ -7,6 +7,7 @@ namespace Plan2net\Typo3UpdateCheck\Tests;
 use GuzzleHttp\ClientInterface;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use Plan2net\Typo3UpdateCheck\Cache\CacheInterface;
 use Plan2net\Typo3UpdateCheck\Release\Release;
 use Plan2net\Typo3UpdateCheck\Release\ReleaseProvider;
 use Psr\Http\Message\ResponseInterface;
@@ -77,5 +78,118 @@ final class ReleaseProviderTest extends TestCase
         $this->assertSame('12.4.31', $releases[1]->version);
         $this->assertSame('security', $releases[1]->type);
         $this->assertSame('2025-05-20T09:30:27+02:00', $releases[1]->date->format(\DateTimeInterface::ATOM));
+    }
+
+    #[Test]
+    public function usesReleaseCacheWhenAvailable(): void
+    {
+        $httpClient = $this->createMock(ClientInterface::class);
+        $cache = $this->createMock(CacheInterface::class);
+
+        $cachedData = [
+            [
+                'version' => '12.4.34',
+                'date' => '2025-07-08T09:21:19+02:00',
+                'type' => 'regular',
+                'elts' => false,
+                'tar_package' => ['md5sum' => '9aade6e978903acaff8c3beff2a61ec0'],
+                'zip_package' => ['md5sum' => '6e5cd4fc0ff06b22e7d706efb05daffa'],
+            ],
+        ];
+
+        $cache->expects($this->once())
+            ->method('get')
+            ->with('releases-v12')
+            ->willReturn($cachedData);
+
+        $cache->expects($this->never())
+            ->method('set');
+
+        $httpClient->expects($this->never())
+            ->method('request');
+
+        $parser = new \Plan2net\Typo3UpdateCheck\Change\ChangeParser(new \Plan2net\Typo3UpdateCheck\Change\ChangeFactory());
+        $provider = new ReleaseProvider($httpClient, $parser, $cache);
+        $releases = $provider->getReleasesForMajorVersion(12);
+
+        $this->assertCount(1, $releases);
+        $this->assertSame('12.4.34', $releases[0]->version);
+    }
+
+    #[Test]
+    public function fetchesAndCachesReleasesWhenCacheMisses(): void
+    {
+        $httpClient = $this->createMock(ClientInterface::class);
+        $response = $this->createMock(ResponseInterface::class);
+        $stream = $this->createMock(StreamInterface::class);
+        $cache = $this->createMock(CacheInterface::class);
+
+        $apiData = [
+            [
+                'version' => '12.4.34',
+                'date' => '2025-07-08T09:21:19+02:00',
+                'type' => 'regular',
+                'elts' => false,
+                'tar_package' => ['md5sum' => '9aade6e978903acaff8c3beff2a61ec0'],
+                'zip_package' => ['md5sum' => '6e5cd4fc0ff06b22e7d706efb05daffa'],
+            ],
+        ];
+
+        $stream->method('__toString')->willReturn(json_encode($apiData));
+        $response->method('getBody')->willReturn($stream);
+
+        $cache->expects($this->once())
+            ->method('get')
+            ->with('releases-v12')
+            ->willReturn(null);
+
+        $cache->expects($this->once())
+            ->method('set')
+            ->with('releases-v12', $apiData);
+
+        $httpClient->expects($this->once())
+            ->method('request')
+            ->with('GET', 'https://get.typo3.org/api/v1/major/12/release/')
+            ->willReturn($response);
+
+        $parser = new \Plan2net\Typo3UpdateCheck\Change\ChangeParser(new \Plan2net\Typo3UpdateCheck\Change\ChangeFactory());
+        $provider = new ReleaseProvider($httpClient, $parser, $cache);
+        $releases = $provider->getReleasesForMajorVersion(12);
+
+        $this->assertCount(1, $releases);
+        $this->assertSame('12.4.34', $releases[0]->version);
+    }
+
+    #[Test]
+    public function worksWithoutCacheManager(): void
+    {
+        $httpClient = $this->createMock(ClientInterface::class);
+        $response = $this->createMock(ResponseInterface::class);
+        $stream = $this->createMock(StreamInterface::class);
+
+        $stream->method('__toString')->willReturn(json_encode([
+            [
+                'version' => '12.4.34',
+                'date' => '2025-07-08T09:21:19+02:00',
+                'type' => 'regular',
+                'elts' => false,
+                'tar_package' => ['md5sum' => '9aade6e978903acaff8c3beff2a61ec0'],
+                'zip_package' => ['md5sum' => '6e5cd4fc0ff06b22e7d706efb05daffa'],
+            ],
+        ]));
+
+        $response->method('getBody')->willReturn($stream);
+
+        $httpClient->expects($this->once())
+            ->method('request')
+            ->with('GET', 'https://get.typo3.org/api/v1/major/12/release/')
+            ->willReturn($response);
+
+        $parser = new \Plan2net\Typo3UpdateCheck\Change\ChangeParser(new \Plan2net\Typo3UpdateCheck\Change\ChangeFactory());
+        $provider = new ReleaseProvider($httpClient, $parser, null);
+        $releases = $provider->getReleasesForMajorVersion(12);
+
+        $this->assertCount(1, $releases);
+        $this->assertSame('12.4.34', $releases[0]->version);
     }
 }

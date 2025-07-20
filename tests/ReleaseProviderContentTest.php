@@ -7,6 +7,7 @@ namespace Plan2net\Typo3UpdateCheck\Tests;
 use GuzzleHttp\ClientInterface;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use Plan2net\Typo3UpdateCheck\Cache\CacheInterface;
 use Plan2net\Typo3UpdateCheck\Change\ChangeFactory;
 use Plan2net\Typo3UpdateCheck\Change\ChangeParser;
 use Plan2net\Typo3UpdateCheck\Release\ReleaseContent;
@@ -48,5 +49,83 @@ final class ReleaseProviderContentTest extends TestCase
         $this->assertSame('12.0.0', $content->version);
         $this->assertCount(12, $content->changes);
         $this->assertCount(3, $content->getBreakingChanges());
+    }
+
+    #[Test]
+    public function usesReleaseContentCacheWhenAvailable(): void
+    {
+        $httpClient = $this->createMock(ClientInterface::class);
+        $cache = $this->createMock(CacheInterface::class);
+
+        $cachedData = [
+            'release_notes' => [
+                'version' => '12.4.20',
+                'news_link' => 'https://typo3.org/article/typo3-v1242-release',
+                'news' => 'TYPO3 v12.4.20 is here!',
+                'upgrading_instructions' => 'Follow the upgrade guide',
+                'changes' => "Here is a list of what was fixed since 12.4.19:\n\n * 2024-09-10 812e327a748 [RELEASE] Release of TYPO3 12.4.20",
+            ],
+        ];
+
+        $cache->expects($this->once())
+            ->method('get')
+            ->with('content-12.4.20')
+            ->willReturn($cachedData);
+
+        $cache->expects($this->never())
+            ->method('set');
+
+        $httpClient->expects($this->never())
+            ->method('request');
+
+        $parser = new ChangeParser(new ChangeFactory());
+        $provider = new ReleaseProvider($httpClient, $parser, $cache);
+        $content = $provider->getReleaseContent('12.4.20');
+
+        $this->assertInstanceOf(ReleaseContent::class, $content);
+        $this->assertSame('12.4.20', $content->version);
+    }
+
+    #[Test]
+    public function fetchesAndCachesReleaseContentWhenCacheMisses(): void
+    {
+        $httpClient = $this->createMock(ClientInterface::class);
+        $response = $this->createMock(ResponseInterface::class);
+        $stream = $this->createMock(StreamInterface::class);
+        $cache = $this->createMock(CacheInterface::class);
+
+        $apiData = [
+            'release_notes' => [
+                'version' => '12.4.20',
+                'news_link' => 'https://typo3.org/article/typo3-v1242-release',
+                'news' => 'TYPO3 v12.4.20 is here!',
+                'upgrading_instructions' => 'Follow the upgrade guide',
+                'changes' => "Here is a list of what was fixed since 12.4.19:\n\n * 2024-09-10 812e327a748 [RELEASE] Release of TYPO3 12.4.20",
+            ],
+        ];
+
+        $stream->method('__toString')->willReturn(json_encode($apiData));
+        $response->method('getBody')->willReturn($stream);
+
+        $cache->expects($this->once())
+            ->method('get')
+            ->with('content-12.4.20')
+            ->willReturn(null);
+
+        $cache->expects($this->once())
+            ->method('set')
+            ->with('content-12.4.20', $apiData);
+
+        $httpClient->expects($this->once())
+            ->method('request')
+            ->with('GET', 'https://get.typo3.org/api/v1/release/12.4.20/content')
+            ->willReturn($response);
+
+        $parser = new ChangeParser(new ChangeFactory());
+        $provider = new ReleaseProvider($httpClient, $parser, $cache);
+        $content = $provider->getReleaseContent('12.4.20');
+
+        $this->assertInstanceOf(ReleaseContent::class, $content);
+        $this->assertSame('12.4.20', $content->version);
     }
 }

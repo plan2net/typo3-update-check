@@ -13,6 +13,8 @@ use Composer\Plugin\PluginInterface;
 use Composer\Plugin\PrePoolCreateEvent;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
+use Plan2net\Typo3UpdateCheck\Cache\CacheInterface;
+use Plan2net\Typo3UpdateCheck\Cache\CacheManager;
 use Plan2net\Typo3UpdateCheck\Change\ChangeFactory;
 use Plan2net\Typo3UpdateCheck\Change\ChangeParser;
 use Plan2net\Typo3UpdateCheck\Release\ReleaseProvider;
@@ -26,6 +28,7 @@ final class Plugin implements PluginInterface, EventSubscriberInterface
     private ?ReleaseProvider $releaseProvider = null;
     private ConsoleFormatter $consoleFormatter;
     private ClientInterface $httpClient;
+    private ?CacheInterface $cacheManager = null;
     private bool $hasChecked = false;
 
     public function activate(Composer $composer, IOInterface $io): void
@@ -39,6 +42,11 @@ final class Plugin implements PluginInterface, EventSubscriberInterface
             'timeout' => 10,
             'headers' => ['Accept' => 'application/json'],
         ]);
+
+        $cacheDir = $composer->getConfig()->get('cache-dir');
+        if (is_string($cacheDir)) {
+            $this->cacheManager = new CacheManager($cacheDir);
+        }
     }
 
     public static function getSubscribedEvents(): array
@@ -248,7 +256,7 @@ final class Plugin implements PluginInterface, EventSubscriberInterface
             $changeFactory = new ChangeFactory();
             $changeParser = new ChangeParser($changeFactory);
 
-            $this->releaseProvider = new ReleaseProvider($this->httpClient, $changeParser);
+            $this->releaseProvider = new ReleaseProvider($this->httpClient, $changeParser, $this->cacheManager);
         }
 
         return $this->releaseProvider;
