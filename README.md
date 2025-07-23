@@ -28,8 +28,9 @@ The plugin automatically activates during `composer update` and:
 
 1. **Detects TYPO3 core updates** - Monitors when `typo3/cms-core` is being updated
 2. **Fetches release information** - Retrieves data from the TYPO3 API for all versions between current and target
-3. **Displays important changes** - Shows only versions with breaking changes or security updates
-4. **Requests confirmation** - Prompts before proceeding with updates that contain breaking changes
+3. **Analyzes security bulletins** - Fetches severity levels (Critical, High, Medium, Low) from security advisories
+4. **Displays important changes** - Shows only versions with breaking changes or security updates, including severity summary
+5. **Requests confirmation** - Prompts before proceeding with updates that contain breaking changes
 
 ## Example output
 
@@ -45,7 +46,7 @@ Breaking changes found:
   ⚠️ [BREAKING] Introduce type declarations in QueryView
 
 Changes in version 12.4.15:
-Security updates found:
+Security updates found (1 High, 2 Medium):
   ⚡ [SECURITY] Protect frame GET parameter in tx_cms_showpic eID
   ⚡ [SECURITY] Encode all file properties in tx_cms_showpic output
   ⚡ [SECURITY] Prevent XSS in FormManager backend module
@@ -64,6 +65,14 @@ Release announcement: https://typo3.org/article/typo3-12415-security-release
 
 In non-interactive environments (CI/CD), the plugin will display information but automatically proceed with the update.
 
+## Security severity information
+
+When security updates are detected, the plugin automatically fetches severity information from TYPO3 security bulletins and displays a summary:
+
+- **Severity levels**: Critical, High, Medium, Low
+
+This helps developers quickly assess the urgency of security updates without manually checking each bulletin.
+
 ## API availability
 
 If the TYPO3 API is temporarily unavailable, the plugin will display an error message but allow the update to proceed. This ensures that temporary API issues don't block your development workflow.
@@ -76,6 +85,7 @@ The plugin caches API responses to improve performance and reduce load on the TY
 - **Cache duration**: 
   - Release lists: 1 hour (automatically refreshed)
   - Release content: Permanent (version content never changes)
+  - Security bulletins: Permanent (bulletin content never changes)
 - **Shared cache**: Works across all TYPO3 projects on the same machine
 - **Automatic cleanup**: Expired cache entries are automatically removed
 

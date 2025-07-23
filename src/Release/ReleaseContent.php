@@ -12,12 +12,14 @@ final class ReleaseContent
 {
     /**
      * @param Change[] $changes
+     * @param array<string, int> $securitySeverities
      */
     public function __construct(
         public readonly string $version,
         public readonly array $changes,
         public readonly ?string $newsLink,
         public readonly ?string $news,
+        public readonly array $securitySeverities = [],
     ) {
     }
 

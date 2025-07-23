@@ -254,7 +254,8 @@ final class Plugin implements PluginInterface, EventSubscriberInterface
     {
         if ($this->releaseProvider === null) {
             $changeFactory = new ChangeFactory();
-            $changeParser = new ChangeParser($changeFactory);
+            $bulletinFetcher = new Security\SecurityBulletinFetcher($this->httpClient, $this->cacheManager);
+            $changeParser = new ChangeParser($changeFactory, $bulletinFetcher);
 
             $this->releaseProvider = new ReleaseProvider($this->httpClient, $changeParser, $this->cacheManager);
         }

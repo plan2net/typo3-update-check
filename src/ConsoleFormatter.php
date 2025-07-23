@@ -23,7 +23,8 @@ final class ConsoleFormatter
         }
 
         if ($security) {
-            $output .= "<comment>Security updates found:</comment>\n";
+            $severitySummary = $this->formatSeveritySummary($content->securitySeverities);
+            $output .= "<comment>Security updates found{$severitySummary}:</comment>\n";
             foreach ($security as $update) {
                 $output .= '  <comment>⚡</comment> ' . $this->escape($update->title) . "\n";
             }
@@ -50,5 +51,26 @@ final class ConsoleFormatter
         $text = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', '', $text) ?? $text;
 
         return $text;
+    }
+
+    /**
+     * @param array<string, int> $severities
+     */
+    private function formatSeveritySummary(array $severities): string
+    {
+        if (empty($severities)) {
+            return '';
+        }
+
+        $order = ['Critical', 'High', 'Medium', 'Low'];
+        $parts = [];
+
+        foreach ($order as $level) {
+            if (isset($severities[$level]) && $severities[$level] > 0) {
+                $parts[] = $severities[$level] . ' ' . $level;
+            }
+        }
+
+        return ' (' . implode(', ', $parts) . ')';
     }
 }

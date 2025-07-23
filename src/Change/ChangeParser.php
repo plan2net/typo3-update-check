@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Plan2net\Typo3UpdateCheck\Change;
 
 use Plan2net\Typo3UpdateCheck\Release\ReleaseContent;
+use Plan2net\Typo3UpdateCheck\Security\SecurityBulletinFetcherInterface;
 
 final class ChangeParser
 {
     public function __construct(
         private readonly ChangeFactory $changeFactory,
+        private readonly ?SecurityBulletinFetcherInterface $bulletinFetcher = null,
     ) {
     }
 
@@ -21,12 +23,22 @@ final class ChangeParser
         $releaseNotes = $apiResponse['release_notes'] ?? [];
         $version = $apiResponse['version'] ?? $releaseNotes['version'] ?? 'unknown';
         $changes = $this->extractChangesFromText($releaseNotes['changes'] ?? '');
+        $news = $releaseNotes['news'] ?? null;
+
+        $securitySeverities = [];
+        if ($this->bulletinFetcher !== null && $news !== null) {
+            $bulletinUrls = $this->extractBulletinUrls($news);
+            if (!empty($bulletinUrls)) {
+                $securitySeverities = $this->bulletinFetcher->fetchSeverities($bulletinUrls);
+            }
+        }
 
         return new ReleaseContent(
             version: $version,
             changes: $changes,
             newsLink: $releaseNotes['news_link'] ?? null,
-            news: $releaseNotes['news'] ?? null,
+            news: $news,
+            securitySeverities: $securitySeverities,
         );
     }
 
@@ -62,5 +74,19 @@ final class ChangeParser
             : "[$type] $rawTitle";
 
         return $this->changeFactory->createFrom($type, $title);
+    }
+
+    /**
+     * @return string[]
+     */
+    private function extractBulletinUrls(string $text): array
+    {
+        preg_match_all(
+            '#https://typo3\.org/security/advisory/\S+#',
+            $text,
+            $matches
+        );
+
+        return $matches[0];
     }
 }

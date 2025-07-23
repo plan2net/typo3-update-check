@@ -143,4 +143,29 @@ https://typo3.org/security/advisory/typo3-core-sa-2025-012',
         $this->assertStringContainsString('[!!!][TASK] Title with  null  and  characters', $output);
         $this->assertStringContainsString('[SECURITY] Fix with  backspace  form feed', $output);
     }
+
+    #[Test]
+    public function displaysSeveritySummaryForSecurityUpdates(): void
+    {
+        $changes = [
+            new SecurityUpdate('[SECURITY] Fix XSS vulnerability'),
+            new SecurityUpdate('[SECURITY] Fix information disclosure'),
+            new SecurityUpdate('[SECURITY] Fix authentication bypass'),
+        ];
+
+        $content = new ReleaseContent(
+            version: '12.4.31',
+            changes: $changes,
+            newsLink: null,
+            news: null,
+            securitySeverities: ['High' => 2, 'Medium' => 1, 'Low' => 3],
+        );
+
+        $output = $this->formatter->format($content);
+
+        $this->assertStringContainsString('Security updates found (2 High, 1 Medium, 3 Low):', $output);
+        $this->assertStringContainsString('[SECURITY] Fix XSS vulnerability', $output);
+        $this->assertStringContainsString('[SECURITY] Fix information disclosure', $output);
+        $this->assertStringContainsString('[SECURITY] Fix authentication bypass', $output);
+    }
 }
