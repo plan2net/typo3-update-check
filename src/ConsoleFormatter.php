@@ -18,14 +18,14 @@ final class ConsoleFormatter
         if ($breaking) {
             $output .= "<error>Breaking changes found:</error>\n";
             foreach ($breaking as $change) {
-                $output .= "  <error>⚠️</error> {$change->title}\n";
+                $output .= '  <error>⚠️</error> ' . $this->escape($change->title) . "\n";
             }
         }
 
         if ($security) {
             $output .= "<comment>Security updates found:</comment>\n";
             foreach ($security as $update) {
-                $output .= "  <comment>⚡</comment> {$update->title}\n";
+                $output .= '  <comment>⚡</comment> ' . $this->escape($update->title) . "\n";
             }
         }
 
@@ -33,14 +33,22 @@ final class ConsoleFormatter
         if ($advisories) {
             $output .= "\n<info>Security advisories:</info>\n";
             foreach ($advisories as $advisory) {
-                $output .= "  - $advisory\n";
+                $output .= '  - ' . $this->escape($advisory) . "\n";
             }
         }
 
         if ($content->newsLink) {
-            $output .= "\n<info>Release announcement:</info> {$content->newsLink}\n";
+            $output .= "\n<info>Release announcement:</info> " . $this->escape($content->newsLink) . "\n";
         }
 
         return $output;
+    }
+
+    private function escape(string $text): string
+    {
+        $text = str_replace(['<', '>'], ['&lt;', '&gt;'], $text);
+        $text = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', '', $text) ?? $text;
+
+        return $text;
     }
 }
