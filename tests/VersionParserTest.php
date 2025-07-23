@@ -42,12 +42,12 @@ final class VersionParserTest extends TestCase
         return [
             // Basic versions
             ['12.4.1', '12.4.1'],
-            ['12.4.0', '12.4'],
-            ['12.0.0', '12'],
+            ['12.4.0', '12.4.0'],
+            ['12.0.0', '12.0.0'],
 
             // With v prefix
             ['v12.4.1', '12.4.1'],
-            ['v12.4.0', '12.4'],
+            ['v12.4.0', '12.4.0'],
 
             // With suffixes
             ['12.4.1-dev', '12.4.1'],
@@ -58,16 +58,23 @@ final class VersionParserTest extends TestCase
 
             // With 4 parts
             ['12.4.1.2', '12.4.1'],
-            ['12.4.0.0', '12.4'],
+            ['12.4.0.0', '12.4.0'],
 
             // Complex cases
-            ['v12.4.0-dev', '12.4'],
-            ['v12.0.0-beta', '12'],
+            ['v12.4.0-dev', '12.4.0'],
+            ['v12.0.0-beta', '12.0.0'],
 
             // Edge cases with trailing zeros
-            ['1.0.0', '1'],
-            ['1.2.0', '1.2'],
-            ['10.0.0', '10'],
+            ['1.0.0', '1.0.0'],
+            ['1.2.0', '1.2.0'],
+            ['10.0.0', '10.0.0'],
+
+            // 1-part and 2-part versions (padded with zeros)
+            ['12', '12.0.0'],
+            ['12.4', '12.4.0'],
+            ['1', '1.0.0'],
+            ['v12', '12.0.0'],
+            ['v12.4', '12.4.0'],
         ];
     }
 
@@ -78,8 +85,6 @@ final class VersionParserTest extends TestCase
     {
         return [
             // Invalid formats
-            ['12.4'],
-            ['12'],
             ['12.4.1.2.3'],
             ['not-a-version'],
             [''],
@@ -94,8 +99,11 @@ final class VersionParserTest extends TestCase
             ['12.b.1'],
             ['a.b.c'],
 
-            // Missing parts after cleanup
+            // Zero versions
+            ['0'],
+            ['0.0'],
             ['0.0.0'],
+            ['0.0.0.0'],
         ];
     }
 }
