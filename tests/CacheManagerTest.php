@@ -78,6 +78,22 @@ final class CacheManagerTest extends TestCase
     }
 
     #[Test]
+    public function securityBulletinsNeverExpire(): void
+    {
+        $key = 'security-bulletin-typo3-core-sa-2025-001';
+        $data = ['severity' => 'High'];
+
+        $this->cacheManager->set($key, $data);
+
+        $prefix = 'x_';
+        $filePath = $this->testCacheDir . '/plan2net/typo3-update-check/' . $prefix . md5($key) . '.json';
+        touch($filePath, time() - 86400);
+
+        $result = $this->cacheManager->get($key);
+        $this->assertEquals($data, $result);
+    }
+
+    #[Test]
     public function sanitizesKeysForSafeFilenames(): void
     {
         $unsafeKey = '../../../etc/passwd';

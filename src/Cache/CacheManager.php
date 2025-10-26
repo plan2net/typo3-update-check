@@ -82,8 +82,8 @@ final class CacheManager implements CacheInterface
 
     private function getTtlForKey(string $key): int
     {
-        // Release content is immutable - cache forever
-        if (str_starts_with($key, 'content-')) {
+        // Release content and security advisories never change - cache forever
+        if (str_starts_with($key, 'content-') || str_starts_with($key, 'security-bulletin-')) {
             return 0;
         }
 
