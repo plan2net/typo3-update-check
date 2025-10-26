@@ -3,12 +3,23 @@
     "description": "A Composer plugin that checks for TYPO3 updates and provides detailed information about breaking changes and security updates",
     "type": "composer-plugin",
     "license": "GPL-2.0+",
+    "homepage": "https://github.com/plan2net/typo3-update-check",
+    "keywords": [
+        "typo3",
+        "composer-plugin",
+        "security",
+        "updates"
+    ],
     "authors": [
         {
             "name": "Wolfgang Klinger",
             "email": "wk@plan2.net"
         }
     ],
+    "support": {
+        "issues": "https://github.com/plan2net/typo3-update-check/issues",
+        "source": "https://github.com/plan2net/typo3-update-check"
+    },
     "require": {
         "php": ">=8.1",
         "composer-plugin-api": "^2.0",
