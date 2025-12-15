@@ -166,45 +166,34 @@ final class Plugin implements PluginInterface, EventSubscriberInterface
      */
     private function processVersions(array $versions): bool
     {
-        $hasImportantChanges = false;
-        $successfullyProcessed = 0;
-        $failedVersions = [];
-        $versionsWithImportantChanges = [];
+        $releaseContents = $this->getReleaseProvider()->getReleaseContents($versions);
 
-        foreach ($versions as $version) {
-            try {
-                $releaseContent = $this->getReleaseProvider()->getReleaseContent($version);
-                $successfullyProcessed++;
-
-                if ($releaseContent->getBreakingChanges() || $releaseContent->getSecurityUpdates()) {
-                    $hasImportantChanges = true;
-                    $versionsWithImportantChanges[] = $releaseContent;
-                }
-            } catch (\RuntimeException $e) {
-                $this->io->write(sprintf('<error>%s</error>', $e->getMessage()));
-                $failedVersions[] = $version;
-            } catch (\Throwable $e) {
-                $this->io->write(sprintf('<error>Failed to fetch release content for %s: %s</error>', $version, $e->getMessage()));
-                $failedVersions[] = $version;
-            }
-        }
-
-        foreach ($versionsWithImportantChanges as $releaseContent) {
-            $this->io->write($this->consoleFormatter->format($releaseContent));
-        }
-
-        if ($successfullyProcessed === 0) {
-            $this->io->write('<error>Failed to fetch release information for all versions.</error>');
+        if (empty($releaseContents)) {
+            $this->io->write('<error>Failed to fetch release information.</error>');
             $this->io->write('<comment>The TYPO3 API might be temporarily unavailable. Proceeding with update.</comment>');
-        } elseif (!$hasImportantChanges) {
-            $this->io->write('✓ No breaking changes or security updates found.');
+
+            return false;
         }
 
-        if (!empty($failedVersions) && $successfullyProcessed > 0) {
+        $failedVersions = array_diff($versions, array_keys($releaseContents));
+        if ($failedVersions) {
             $this->io->write(sprintf(
                 '<comment>Note: Could not fetch information for versions: %s</comment>',
                 implode(', ', $failedVersions)
             ));
+        }
+
+        $hasImportantChanges = false;
+
+        foreach ($releaseContents as $content) {
+            if ($content->getBreakingChanges() || $content->getSecurityUpdates()) {
+                $hasImportantChanges = true;
+                $this->io->write($this->consoleFormatter->format($content));
+            }
+        }
+
+        if (!$hasImportantChanges) {
+            $this->io->write('✓ No breaking changes or security updates found.');
         }
 
         return $hasImportantChanges;

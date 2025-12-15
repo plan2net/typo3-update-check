@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Plan2net\Typo3UpdateCheck\Release;
 
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Pool;
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Response;
 use Plan2net\Typo3UpdateCheck\Cache\CacheInterface;
 use Plan2net\Typo3UpdateCheck\Change\ChangeParser;
 
@@ -50,32 +53,51 @@ final class ReleaseProvider
     }
 
     /**
-     * @throws \Exception
+     * @param string[] $versions
+     *
+     * @return array<string, ReleaseContent>
      */
-    public function getReleaseContent(string $version): ReleaseContent
+    public function getReleaseContents(array $versions): array
     {
-        $cacheKey = "content-{$version}";
+        $results = [];
+        $uncached = [];
 
-        if ($this->cache !== null) {
-            $cachedData = $this->cache->get($cacheKey);
-            if ($cachedData !== null) {
-                return $this->changeParser->parse($cachedData);
+        foreach ($versions as $version) {
+            $cacheKey = "content-{$version}";
+            $cached = $this->cache?->get($cacheKey);
+            if ($cached !== null) {
+                $results[$version] = $this->changeParser->parse($cached);
+            } else {
+                $uncached[] = $version;
             }
         }
 
-        $url = sprintf('%s/release/%s/content', self::API_BASE_URL, $version);
-        try {
-            $response = $this->httpClient->request('GET', $url);
-            $body = (string) $response->getBody();
-
-            $data = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
-        } catch (\Throwable) {
-            throw new \RuntimeException('Failed to parse API response for version ' . $version . '. The TYPO3 API might be temporarily unavailable.');
+        if (empty($uncached)) {
+            return $results;
         }
 
-        $this->cache?->set($cacheKey, $data);
+        $requests = function () use ($uncached) {
+            foreach ($uncached as $version) {
+                yield $version => new Request('GET', self::API_BASE_URL . '/release/' . $version . '/content');
+            }
+        };
 
-        return $this->changeParser->parse($data);
+        $pool = new Pool($this->httpClient, $requests(), [
+            'concurrency' => 5,
+            'fulfilled' => function (Response $response, string $version) use (&$results) {
+                try {
+                    $data = json_decode((string) $response->getBody(), true, 512, JSON_THROW_ON_ERROR);
+                    $this->cache?->set("content-{$version}", $data);
+                    $results[$version] = $this->changeParser->parse($data);
+                } catch (\JsonException) {
+                    // Skip malformed responses
+                }
+            },
+        ]);
+
+        $pool->promise()->wait();
+
+        return $results;
     }
 
     /**
