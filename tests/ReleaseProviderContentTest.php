@@ -124,4 +124,22 @@ final class ReleaseProviderContentTest extends TestCase
         $this->assertArrayHasKey('12.4.2', $results);
         $this->assertArrayHasKey('12.4.3', $results);
     }
+
+    #[Test]
+    public function returnsSortedResultsByVersion(): void
+    {
+        $mock = new MockHandler([
+            new Response(200, [], json_encode(['release_notes' => ['version' => '12.4.15', 'changes' => '']])),
+            new Response(200, [], json_encode(['release_notes' => ['version' => '12.4.21', 'changes' => '']])),
+            new Response(200, [], json_encode(['release_notes' => ['version' => '12.4.18', 'changes' => '']])),
+        ]);
+        $client = new Client(['handler' => HandlerStack::create($mock)]);
+
+        $parser = new ChangeParser(new ChangeFactory());
+        $provider = new ReleaseProvider($client, $parser);
+        $results = $provider->getReleaseContents(['12.4.15', '12.4.21', '12.4.18']);
+
+        $versions = array_keys($results);
+        $this->assertSame(['12.4.15', '12.4.18', '12.4.21'], $versions);
+    }
 }

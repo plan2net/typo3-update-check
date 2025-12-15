@@ -73,6 +73,8 @@ final class ReleaseProvider
         }
 
         if (empty($uncached)) {
+            uksort($results, static fn (string $a, string $b) => version_compare($a, $b));
+
             return $results;
         }
 
@@ -96,6 +98,8 @@ final class ReleaseProvider
         ]);
 
         $pool->promise()->wait();
+
+        uksort($results, static fn (string $a, string $b) => version_compare($a, $b));
 
         return $results;
     }
