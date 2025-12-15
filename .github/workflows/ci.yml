@@ -133,12 +133,34 @@ jobs:
                 set +e
                 OUTPUT=$(composer install --dry-run -v 2>&1)
                 set -e
-                
+
                 if echo "$OUTPUT" | grep -q "TYPO3 core will be updated from"; then
                     echo "✗ Plugin incorrectly detected update"
                     exit 1
                 else
                     echo "✓ Plugin correctly ignored no-update scenario"
+                fi
+
+            - name: Test manual check command
+              run: |
+                cd /tmp/typo3-test
+                OUTPUT=$(composer typo3:check-updates 12.4.14 12.4.15 2>&1)
+
+                echo "Command Output:"
+                echo "$OUTPUT"
+
+                if echo "$OUTPUT" | grep -q "Changes in version 12.4.15"; then
+                    echo "✓ Command showed version changes"
+                else
+                    echo "✗ Command did not show version changes"
+                    exit 1
+                fi
+
+                if echo "$OUTPUT" | grep -q "Security updates found"; then
+                    echo "✓ Command showed security updates"
+                else
+                    echo "✗ Command did not show security updates"
+                    exit 1
                 fi
 
     php-cs-fixer:

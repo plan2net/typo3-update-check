@@ -65,6 +65,16 @@ Release announcement: https://typo3.org/article/typo3-12415-security-release
 
 In non-interactive environments (CI/CD), the plugin will display information but automatically proceed with the update.
 
+## Manual check
+
+Once installed, you can manually check for breaking changes and security updates between any two versions:
+
+```bash
+composer typo3:check-updates 12.4.10 12.4.20
+```
+
+This is useful for planning upgrades or reviewing changes without actually performing an update.
+
 ## Security severity information
 
 When security updates are detected, the plugin automatically fetches severity information from TYPO3 security bulletins and displays a summary:
