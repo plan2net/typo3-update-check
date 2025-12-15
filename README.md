@@ -75,6 +75,8 @@ composer typo3:check-updates 12.4.10 12.4.20
 
 This is useful for planning upgrades or reviewing changes without actually performing an update.
 
+![Demo](documentation/command.png)
+
 ## Security severity information
 
 When security updates are detected, the plugin automatically fetches severity information from TYPO3 security bulletins and displays a summary:
