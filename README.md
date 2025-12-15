@@ -36,30 +36,7 @@ The plugin automatically activates during `composer update` and:
 
 ![Demo](documentation/render.gif)
 
-```
-TYPO3 core will be updated from 12.4.10 to 12.4.15
-Fetching version information...
-
-Changes in version 12.4.11:
-Breaking changes found:
-  ⚠️ [BREAKING] Introduce type declarations in AbstractDatabaseRecordList
-  ⚠️ [BREAKING] Introduce type declarations in QueryView
-
-Changes in version 12.4.15:
-Security updates found (1 High, 2 Medium):
-  ⚡ [SECURITY] Protect frame GET parameter in tx_cms_showpic eID
-  ⚡ [SECURITY] Encode all file properties in tx_cms_showpic output
-  ⚡ [SECURITY] Prevent XSS in FormManager backend module
-
-Security advisories:
-  - https://typo3.org/security/advisory/typo3-core-sa-2024-008
-  - https://typo3.org/security/advisory/typo3-core-sa-2024-009
-  - https://typo3.org/security/advisory/typo3-core-sa-2024-010
-
-Release announcement: https://typo3.org/article/typo3-12415-security-release
-
-⚠️ Breaking changes or security updates were found. Do you want to continue with the update? [y/N]
-```
+![Demo](documentation/plugin.png)
 
 ## Non-interactive mode
 
