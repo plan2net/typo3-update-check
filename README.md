@@ -34,9 +34,7 @@ The plugin automatically activates during `composer update` and:
 
 ## Example output
 
-![Demo](documentation/render.gif)
-
-![Demo](documentation/plugin.png)
+![Demo](documentation/demo.gif)
 
 ## Non-interactive mode
 
@@ -52,7 +50,7 @@ composer typo3:check-updates 12.4.10 12.4.20
 
 This is useful for planning upgrades or reviewing changes without actually performing an update.
 
-![Demo](documentation/command.png)
+![Demo](documentation/check-updates.gif)
 
 ## Security severity information
 
