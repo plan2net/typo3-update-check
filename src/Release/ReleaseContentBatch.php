@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Plan2net\Typo3UpdateCheck\Release;
 
-final readonly class ReleaseContentBatch
+final class ReleaseContentBatch
 {
     /**
      * @param array<string, ReleaseContent> $results
      * @param array<string, ApiFailure>     $failures
      */
     public function __construct(
-        public array $results,
-        public array $failures,
+        public readonly array $results,
+        public readonly array $failures,
     ) {
     }
 

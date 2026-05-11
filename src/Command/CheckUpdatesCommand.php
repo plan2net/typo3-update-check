@@ -6,6 +6,9 @@ namespace Plan2net\Typo3UpdateCheck\Command;
 
 use Composer\Command\BaseCommand;
 use Plan2net\Typo3UpdateCheck\ConsoleFormatter;
+use Plan2net\Typo3UpdateCheck\Release\ApiFailureException;
+use Plan2net\Typo3UpdateCheck\Release\FailureMessageFormatter;
+use Plan2net\Typo3UpdateCheck\Release\ReleaseProvider;
 use Plan2net\Typo3UpdateCheck\ReleaseProviderFactory;
 use Plan2net\Typo3UpdateCheck\UpdateChecker;
 use Plan2net\Typo3UpdateCheck\VersionParser;
@@ -13,7 +16,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-final class CheckUpdatesCommand extends BaseCommand
+class CheckUpdatesCommand extends BaseCommand
 {
     protected function configure(): void
     {
@@ -44,12 +47,18 @@ final class CheckUpdatesCommand extends BaseCommand
             return 1;
         }
 
-        $cacheDir = $this->requireComposer()->getConfig()->get('cache-dir');
-        $releaseProvider = ReleaseProviderFactory::create(is_string($cacheDir) ? $cacheDir : null);
+        $provider = $this->createReleaseProvider();
         $updateChecker = new UpdateChecker($versionParser);
 
         $majorVersion = (int) explode('.', $fromNormalized)[0];
-        $releases = $releaseProvider->getReleasesForMajorVersion($majorVersion);
+
+        try {
+            $releases = $provider->getReleasesForMajorVersion($majorVersion);
+        } catch (ApiFailureException $exception) {
+            $output->writeln(sprintf('<error>%s</error>', $exception->getMessage()));
+
+            return 1;
+        }
 
         $allVersions = array_filter(array_map(
             fn ($release) => $versionParser->normalize($release->version),
@@ -64,28 +73,49 @@ final class CheckUpdatesCommand extends BaseCommand
             return 0;
         }
 
-        $releaseContents = $releaseProvider->getReleaseContents($versions);
-
-        if (empty($releaseContents)) {
-            $output->writeln('<error>Failed to fetch release information</error>');
-
-            return 1;
-        }
-
-        $hasImportantChanges = false;
+        $batch = $provider->getReleaseContents($versions);
         $formatter = new ConsoleFormatter();
+        $failureFormatter = new FailureMessageFormatter();
+        $hasImportantChanges = false;
 
-        foreach ($releaseContents as $content) {
+        foreach ($batch->results as $content) {
             if ($content->getBreakingChanges() || $content->getSecurityUpdates()) {
                 $hasImportantChanges = true;
                 $output->writeln($formatter->format($content));
             }
         }
 
-        if (!$hasImportantChanges) {
+        if ($batch->hasFailures()) {
+            foreach ($batch->failures as $version => $failure) {
+                $output->writeln('<comment>' . $failureFormatter->describe($version, $failure) . '</comment>');
+            }
+            $output->writeln(sprintf(
+                '<comment>Retry later with: composer typo3:check-updates %s %s</comment>',
+                $fromNormalized,
+                $toNormalized,
+            ));
+        }
+
+        if (!$batch->hasResults() && $batch->hasFailures()) {
+            $output->writeln(sprintf(
+                '<comment>Proceeding with update (dominant failure: %s).</comment>',
+                $batch->dominantFailureCategory()?->value ?? 'unknown',
+            ));
+
+            return 2;
+        }
+
+        if (!$hasImportantChanges && !$batch->hasFailures()) {
             $output->writeln('✓ No breaking changes or security updates found.');
         }
 
         return 0;
+    }
+
+    protected function createReleaseProvider(): ReleaseProvider
+    {
+        $cacheDir = $this->requireComposer()->getConfig()->get('cache-dir');
+
+        return ReleaseProviderFactory::create(is_string($cacheDir) ? $cacheDir : null);
     }
 }
