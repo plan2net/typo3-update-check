@@ -18,9 +18,14 @@ This Composer plugin solves this problem by bringing important information direc
 
 ```bash
 composer require --dev plan2net/typo3-update-check
+composer config allow-plugins.plan2net/typo3-update-check true
 ```
 
-**Note:** This plugin should only be installed as a development dependency since it's only useful during development when running `composer update`. Production deployments typically use `composer install` with locked versions. If you choose to install it in production environments, you do so at your own risk.
+> [!NOTE]
+> Composer 2.2+ requires plugins to be explicitly trusted. The second command adds the necessary entry to your `composer.json`. When running `composer require` interactively, Composer will prompt you to allow the plugin — answering yes has the same effect.
+
+> [!WARNING]
+> This plugin should only be installed as a development dependency since it's only useful during development when running `composer update`. Production deployments typically use `composer install` with locked versions. If you choose to install it in production environments, you do so at your own risk.
 
 ## How it works
 
