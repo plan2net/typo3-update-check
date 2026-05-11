@@ -51,6 +51,27 @@ composer typo3:check-updates 12.4.10 12.4.20
 
 ![Demo](documentation/check-updates.gif)
 
+## API availability
+
+The plugin tolerates transient TYPO3 API issues automatically:
+
+- **Bounded retry:** each request is retried up to two times (three
+  attempts total) on connection errors, timeouts, HTTP 5xx, and HTTP
+  429 responses. Backoff is exponential (1 s, 2 s) and honors the
+  server's `Retry-After` header when present, capped at 5 s so a
+  `composer update` is never delayed for long.
+- **No retry on deterministic errors:** HTTP 4xx responses other than
+  429 are treated as final and reported immediately.
+- **Per-version reporting:** when only some versions fail to fetch,
+  the others are still shown. Each failure is categorized — network
+  error, server error, not found, or malformed response — and the
+  plugin suggests retrying with `composer typo3:check-updates` for the
+  skipped versions.
+- **Fail-soft:** if every request fails after retries, the plugin
+  reports the dominant failure category and lets the update proceed
+  so your development workflow is never blocked.
+
+
 ## Caching
 
 API responses are cached to improve performance and reduce load on TYPO3 servers:
