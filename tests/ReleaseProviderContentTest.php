@@ -13,7 +13,9 @@ use PHPUnit\Framework\TestCase;
 use Plan2net\Typo3UpdateCheck\Cache\CacheInterface;
 use Plan2net\Typo3UpdateCheck\Change\ChangeFactory;
 use Plan2net\Typo3UpdateCheck\Change\ChangeParser;
+use Plan2net\Typo3UpdateCheck\Release\ApiFailureCategory;
 use Plan2net\Typo3UpdateCheck\Release\ReleaseContent;
+use Plan2net\Typo3UpdateCheck\Release\ReleaseContentBatch;
 use Plan2net\Typo3UpdateCheck\Release\ReleaseProvider;
 
 final class ReleaseProviderContentTest extends TestCase
@@ -36,10 +38,12 @@ final class ReleaseProviderContentTest extends TestCase
 
         $parser = new ChangeParser(new ChangeFactory());
         $provider = new ReleaseProvider($client, $parser);
-        $results = $provider->getReleaseContents(['12.0.0']);
+        $batch = $provider->getReleaseContents(['12.0.0']);
 
-        $this->assertArrayHasKey('12.0.0', $results);
-        $content = $results['12.0.0'];
+        $this->assertInstanceOf(ReleaseContentBatch::class, $batch);
+        $this->assertSame([], $batch->failures);
+        $this->assertArrayHasKey('12.0.0', $batch->results);
+        $content = $batch->results['12.0.0'];
 
         $this->assertInstanceOf(ReleaseContent::class, $content);
         $this->assertSame('12.0.0', $content->version);
@@ -71,11 +75,13 @@ final class ReleaseProviderContentTest extends TestCase
 
         $parser = new ChangeParser(new ChangeFactory());
         $provider = new ReleaseProvider($client, $parser, $cache);
-        $results = $provider->getReleaseContents(['12.4.20']);
+        $batch = $provider->getReleaseContents(['12.4.20']);
 
-        $this->assertArrayHasKey('12.4.20', $results);
-        $this->assertInstanceOf(ReleaseContent::class, $results['12.4.20']);
-        $this->assertSame('12.4.20', $results['12.4.20']->version);
+        $this->assertInstanceOf(ReleaseContentBatch::class, $batch);
+        $this->assertSame([], $batch->failures);
+        $this->assertArrayHasKey('12.4.20', $batch->results);
+        $this->assertInstanceOf(ReleaseContent::class, $batch->results['12.4.20']);
+        $this->assertSame('12.4.20', $batch->results['12.4.20']->version);
     }
 
     #[Test]
@@ -99,10 +105,12 @@ final class ReleaseProviderContentTest extends TestCase
 
         $parser = new ChangeParser(new ChangeFactory());
         $provider = new ReleaseProvider($client, $parser, $cache);
-        $results = $provider->getReleaseContents(['12.4.20']);
+        $batch = $provider->getReleaseContents(['12.4.20']);
 
-        $this->assertArrayHasKey('12.4.20', $results);
-        $this->assertInstanceOf(ReleaseContent::class, $results['12.4.20']);
+        $this->assertInstanceOf(ReleaseContentBatch::class, $batch);
+        $this->assertSame([], $batch->failures);
+        $this->assertArrayHasKey('12.4.20', $batch->results);
+        $this->assertInstanceOf(ReleaseContent::class, $batch->results['12.4.20']);
     }
 
     #[Test]
@@ -117,12 +125,14 @@ final class ReleaseProviderContentTest extends TestCase
 
         $parser = new ChangeParser(new ChangeFactory());
         $provider = new ReleaseProvider($client, $parser);
-        $results = $provider->getReleaseContents(['12.4.1', '12.4.2', '12.4.3']);
+        $batch = $provider->getReleaseContents(['12.4.1', '12.4.2', '12.4.3']);
 
-        $this->assertCount(3, $results);
-        $this->assertArrayHasKey('12.4.1', $results);
-        $this->assertArrayHasKey('12.4.2', $results);
-        $this->assertArrayHasKey('12.4.3', $results);
+        $this->assertInstanceOf(ReleaseContentBatch::class, $batch);
+        $this->assertSame([], $batch->failures);
+        $this->assertCount(3, $batch->results);
+        $this->assertArrayHasKey('12.4.1', $batch->results);
+        $this->assertArrayHasKey('12.4.2', $batch->results);
+        $this->assertArrayHasKey('12.4.3', $batch->results);
     }
 
     #[Test]
@@ -137,9 +147,72 @@ final class ReleaseProviderContentTest extends TestCase
 
         $parser = new ChangeParser(new ChangeFactory());
         $provider = new ReleaseProvider($client, $parser);
-        $results = $provider->getReleaseContents(['12.4.15', '12.4.21', '12.4.18']);
+        $batch = $provider->getReleaseContents(['12.4.15', '12.4.21', '12.4.18']);
 
-        $versions = array_keys($results);
+        $this->assertInstanceOf(ReleaseContentBatch::class, $batch);
+        $versions = array_keys($batch->results);
         $this->assertSame(['12.4.15', '12.4.18', '12.4.21'], $versions);
+    }
+
+    #[Test]
+    public function recordsJsonExceptionAsMalformedResponseFailure(): void
+    {
+        $mock = new MockHandler([new Response(200, [], '<html>oops</html>')]);
+        $client = new Client(['handler' => HandlerStack::create($mock)]);
+
+        $parser = new ChangeParser(new ChangeFactory());
+        $provider = new ReleaseProvider($client, $parser);
+        $batch = $provider->getReleaseContents(['14.3.0']);
+
+        $this->assertArrayHasKey('14.3.0', $batch->failures);
+        $this->assertSame(
+            ApiFailureCategory::MalformedResponse,
+            $batch->failures['14.3.0']->category,
+        );
+        $this->assertSame([], $batch->results);
+    }
+
+    #[Test]
+    public function recordsRejectedResponseAsServerErrorFailure(): void
+    {
+        $mock = new MockHandler([new Response(503)]);
+        $client = new Client(['handler' => HandlerStack::create($mock)]);
+
+        $parser = new ChangeParser(new ChangeFactory());
+        $provider = new ReleaseProvider($client, $parser);
+        $batch = $provider->getReleaseContents(['14.3.0']);
+
+        $this->assertArrayHasKey('14.3.0', $batch->failures);
+        $this->assertSame(
+            ApiFailureCategory::ServerError,
+            $batch->failures['14.3.0']->category,
+        );
+        $this->assertSame(503, $batch->failures['14.3.0']->statusCode);
+    }
+
+    #[Test]
+    public function partialBatchKeepsSuccessfulVersions(): void
+    {
+        $apiData = json_encode([
+            'version' => '14.2.0',
+            'release_notes' => ['version' => '14.2.0', 'changes' => ''],
+        ]);
+
+        $mock = new MockHandler([
+            new Response(200, [], $apiData),
+            new Response(503),
+        ]);
+        $client = new Client(['handler' => HandlerStack::create($mock)]);
+
+        $parser = new ChangeParser(new ChangeFactory());
+        $provider = new ReleaseProvider($client, $parser);
+        $batch = $provider->getReleaseContents(['14.2.0', '14.3.0']);
+
+        $this->assertArrayHasKey('14.2.0', $batch->results);
+        $this->assertArrayHasKey('14.3.0', $batch->failures);
+        $this->assertSame(
+            ApiFailureCategory::ServerError,
+            $batch->failures['14.3.0']->category,
+        );
     }
 }

@@ -15,17 +15,21 @@ final class ReleaseProvider
 {
     private const API_BASE_URL = 'https://get.typo3.org/api/v1';
 
+    private ApiFailureClassifier $classifier;
+
     public function __construct(
         private readonly ClientInterface $httpClient,
         private readonly ChangeParser $changeParser,
         private readonly ?CacheInterface $cache = null,
+        ?ApiFailureClassifier $classifier = null,
     ) {
+        $this->classifier = $classifier ?? new ApiFailureClassifier();
     }
 
     /**
      * @return Release[]
      *
-     * @throws \Exception
+     * @throws ApiFailureException
      */
     public function getReleasesForMajorVersion(int $majorVersion): array
     {
@@ -43,8 +47,8 @@ final class ReleaseProvider
             $response = $this->httpClient->request('GET', $url);
             $body = (string) $response->getBody();
             $data = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
-        } catch (\Throwable) {
-            throw new \RuntimeException('Failed to parse API response. The TYPO3 API might be temporarily unavailable.');
+        } catch (\Throwable $exception) {
+            throw new ApiFailureException($this->classifier->fromThrowable($exception));
         }
 
         $this->cache?->set($cacheKey, $data);
@@ -54,12 +58,11 @@ final class ReleaseProvider
 
     /**
      * @param string[] $versions
-     *
-     * @return array<string, ReleaseContent>
      */
-    public function getReleaseContents(array $versions): array
+    public function getReleaseContents(array $versions): ReleaseContentBatch
     {
         $results = [];
+        $failures = [];
         $uncached = [];
 
         foreach ($versions as $version) {
@@ -72,10 +75,10 @@ final class ReleaseProvider
             }
         }
 
-        if (empty($uncached)) {
+        if ($uncached === []) {
             uksort($results, static fn (string $a, string $b) => version_compare($a, $b));
 
-            return $results;
+            return new ReleaseContentBatch(results: $results, failures: []);
         }
 
         $requests = function () use ($uncached) {
@@ -86,22 +89,26 @@ final class ReleaseProvider
 
         $pool = new Pool($this->httpClient, $requests(), [
             'concurrency' => 5,
-            'fulfilled' => function (Response $response, string $version) use (&$results) {
+            'fulfilled' => function (Response $response, string $version) use (&$results, &$failures) {
                 try {
                     $data = json_decode((string) $response->getBody(), true, 512, JSON_THROW_ON_ERROR);
                     $this->cache?->set("content-{$version}", $data);
                     $results[$version] = $this->changeParser->parse($data);
-                } catch (\JsonException) {
-                    // Skip malformed responses
+                } catch (\JsonException $exception) {
+                    $failures[$version] = $this->classifier->fromThrowable($exception);
                 }
+            },
+            'rejected' => function (\Throwable $reason, string $version) use (&$failures) {
+                $failures[$version] = $this->classifier->fromThrowable($reason);
             },
         ]);
 
         $pool->promise()->wait();
 
         uksort($results, static fn (string $a, string $b) => version_compare($a, $b));
+        uksort($failures, static fn (string $a, string $b) => version_compare($a, $b));
 
-        return $results;
+        return new ReleaseContentBatch(results: $results, failures: $failures);
     }
 
     /**
