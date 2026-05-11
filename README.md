@@ -8,11 +8,9 @@
 
 A Composer plugin that intercepts TYPO3 core updates and displays breaking changes and security updates before proceeding.
 
-## Purpose and motivation
+## Purpose
 
-When updating TYPO3, it's easy to overlook critical changes buried in release notes and announcements. Even minor version updates can introduce breaking changes or important security fixes that require immediate attention. Traditionally, developers need to manually check release announcements, security advisories, and changelogs—a time-consuming process that's often skipped under deadline pressure.
-
-This Composer plugin solves this problem by bringing important information directly to your terminal, exactly when and where you need it. During the update process, it automatically highlights breaking changes (⚠️) and security updates (⚡), ensuring you never miss critical changes that could impact your application's functionality or security.
+Breaking changes and security fixes are easy to overlook when updating TYPO3. This plugin brings that information directly to your terminal the moment you run `composer update`, highlighting breaking changes (⚠️) and security updates (⚡) so you can make an informed decision before proceeding.
 
 ## Installation
 
@@ -25,81 +23,43 @@ composer config allow-plugins.plan2net/typo3-update-check true
 > Composer 2.2+ requires plugins to be explicitly trusted. The second command adds the necessary entry to your `composer.json`. When running `composer require` interactively, Composer will prompt you to allow the plugin — answering yes has the same effect.
 
 > [!WARNING]
-> This plugin should only be installed as a development dependency since it's only useful during development when running `composer update`. Production deployments typically use `composer install` with locked versions. If you choose to install it in production environments, you do so at your own risk.
+> Install this plugin as a development dependency only. It is only useful during development when running `composer update`; production deployments typically use `composer install` with locked versions. If you choose to install it in production environments, you do so at your own risk.
 
 ## How it works
 
 The plugin automatically activates during `composer update` and:
 
-1. **Detects TYPO3 core updates** - Monitors when `typo3/cms-core` is being updated
-2. **Fetches release information** - Retrieves data from the TYPO3 API for all versions between current and target
-3. **Analyzes security bulletins** - Fetches severity levels (Critical, High, Medium, Low) from security advisories
-4. **Displays important changes** - Shows only versions with breaking changes or security updates, including severity summary
-5. **Requests confirmation** - Prompts before proceeding with updates that contain breaking changes
+1. **Detects TYPO3 core updates** — Monitors when `typo3/cms-core` is being updated
+2. **Fetches release information** — Retrieves data from the TYPO3 API for all versions between current and target
+3. **Analyzes security bulletins** — Fetches severity levels (Critical, High, Medium, Low) from TYPO3 security advisories
+4. **Displays important changes** — Shows only versions with breaking changes or security updates
+5. **Requests confirmation** — Prompts before proceeding when breaking changes are found
+
+In non-interactive environments (CI/CD), the plugin displays information but proceeds automatically. If the TYPO3 API is temporarily unavailable, the update continues without interruption.
 
 ## Example output
 
 ![Demo](documentation/demo.gif)
 
-## Non-interactive mode
-
-In non-interactive environments (CI/CD), the plugin will display information but automatically proceed with the update.
-
 ## Manual check
 
-Once installed, you can manually check for breaking changes and security updates between any two versions:
+You can check for breaking changes and security updates between any two versions without running an actual update:
 
 ```bash
 composer typo3:check-updates 12.4.10 12.4.20
 ```
 
-This is useful for planning upgrades or reviewing changes without actually performing an update.
-
 ![Demo](documentation/check-updates.gif)
-
-## Security severity information
-
-When security updates are detected, the plugin automatically fetches severity information from TYPO3 security bulletins and displays a summary:
-
-- **Severity levels**: Critical, High, Medium, Low
-
-This helps developers quickly assess the urgency of security updates without manually checking each bulletin.
-
-## API availability
-
-If the TYPO3 API is temporarily unavailable, the plugin will display an error message but allow the update to proceed. This ensures that temporary API issues don't block your development workflow.
 
 ## Caching
 
-The plugin caches API responses to improve performance and reduce load on the TYPO3 API servers:
+API responses are cached to improve performance and reduce load on TYPO3 servers:
 
-- **Cache location**: Uses Composer's global cache directory (`~/.cache/composer` on Linux/macOS, `%LOCALAPPDATA%\Composer` on Windows)
-- **Cache duration**: 
-  - Release lists: 1 hour (automatically refreshed)
-  - Release content: Permanent (version content never changes)
-  - Security bulletins: Permanent (bulletin content never changes)
-- **Shared cache**: Works across all TYPO3 projects on the same machine
-- **Automatic cleanup**: Expired cache entries are automatically removed
+- **Location** — Composer's global cache directory (`~/.cache/composer` on Linux/macOS, `%LOCALAPPDATA%\Composer` on Windows)
+- **Release lists** — 1 hour
+- **Release content and security bulletins** — Permanent (content never changes)
 
-The caching system ensures fast subsequent runs while keeping release information up-to-date.
-
-## Development
-
-### Setup
-```bash
-composer install
-```
-
-### Testing
-```bash
-composer test
-```
-
-### Code quality
-```bash
-composer analyse
-composer cs-fix
-```
+The cache is shared across all TYPO3 projects on the same machine.
 
 ## Requirements
 
