@@ -14,6 +14,10 @@ use Composer\Plugin\PluginEvents;
 use Composer\Plugin\PluginInterface;
 use Composer\Plugin\PrePoolCreateEvent;
 use Plan2net\Typo3UpdateCheck\Command\CommandProvider;
+use Plan2net\Typo3UpdateCheck\Release\ApiFailure;
+use Plan2net\Typo3UpdateCheck\Release\ApiFailureCategory;
+use Plan2net\Typo3UpdateCheck\Release\ApiFailureException;
+use Plan2net\Typo3UpdateCheck\Release\FailureMessageFormatter;
 use Plan2net\Typo3UpdateCheck\Release\ReleaseProvider;
 
 final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
@@ -24,6 +28,7 @@ final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
     private UpdateChecker $updateChecker;
     private ?ReleaseProvider $releaseProvider = null;
     private ConsoleFormatter $consoleFormatter;
+    private FailureMessageFormatter $failureFormatter;
     private bool $hasChecked = false;
 
     public function activate(Composer $composer, IOInterface $io): void
@@ -33,6 +38,7 @@ final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
         $this->versionParser = new VersionParser();
         $this->updateChecker = new UpdateChecker($this->versionParser);
         $this->consoleFormatter = new ConsoleFormatter();
+        $this->failureFormatter = new FailureMessageFormatter();
     }
 
     public static function getSubscribedEvents(): array
@@ -47,6 +53,12 @@ final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
         return [
             CommandProviderCapability::class => CommandProvider::class,
         ];
+    }
+
+    /** @internal Test seam — production code obtains the provider via the factory. */
+    public function setReleaseProvider(ReleaseProvider $provider): void
+    {
+        $this->releaseProvider = $provider;
     }
 
     /**
@@ -72,7 +84,7 @@ final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
             return;
         }
 
-        $hasImportantChanges = $this->processVersions($versions);
+        $hasImportantChanges = $this->processVersions($versions, $currentVersion, $targetVersion);
         $this->handleUserConfirmation($hasImportantChanges);
 
         $this->hasChecked = true;
@@ -138,8 +150,11 @@ final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
     {
         try {
             $versions = $this->getVersionsBetween($currentVersion, $targetVersion);
-        } catch (\RuntimeException $e) {
-            $this->io->write(sprintf('<error>%s</error>', $e->getMessage()));
+        } catch (ApiFailureException $exception) {
+            $this->io->write(sprintf(
+                '<error>%s — proceeding with update without breaking-change preview.</error>',
+                $this->humanizeFailure($exception->failure),
+            ));
 
             return null;
         }
@@ -156,35 +171,50 @@ final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
     /**
      * @param string[] $versions
      */
-    private function processVersions(array $versions): bool
+    private function processVersions(array $versions, string $currentVersion, string $targetVersion): bool
     {
-        $releaseContents = $this->getReleaseProvider()->getReleaseContents($versions);
+        $batch = $this->getReleaseProvider()->getReleaseContents($versions);
 
-        if (empty($releaseContents)) {
+        if (!$batch->hasResults() && !$batch->hasFailures()) {
             $this->io->write('<error>Failed to fetch release information.</error>');
             $this->io->write('<comment>The TYPO3 API might be temporarily unavailable. Proceeding with update.</comment>');
 
             return false;
         }
 
-        $failedVersions = array_diff($versions, array_keys($releaseContents));
-        if ($failedVersions) {
-            $this->io->write(sprintf(
-                '<comment>Note: Could not fetch information for versions: %s</comment>',
-                implode(', ', $failedVersions)
-            ));
-        }
-
         $hasImportantChanges = false;
-
-        foreach ($releaseContents as $content) {
+        foreach ($batch->results as $content) {
             if ($content->getBreakingChanges() || $content->getSecurityUpdates()) {
                 $hasImportantChanges = true;
                 $this->io->write($this->consoleFormatter->format($content));
             }
         }
 
-        if (!$hasImportantChanges) {
+        if ($batch->hasFailures()) {
+            foreach ($batch->failures as $version => $failure) {
+                $this->io->write(sprintf(
+                    '<comment>%s</comment>',
+                    $this->failureFormatter->describe($version, $failure),
+                ));
+            }
+            $this->io->write(sprintf(
+                '<comment>Retry later with: composer typo3:check-updates %s %s</comment>',
+                $currentVersion,
+                $targetVersion,
+            ));
+
+            if (!$batch->hasResults()) {
+                $dominant = $batch->dominantFailureCategory();
+                $this->io->write(sprintf(
+                    '<comment>Proceeding with update (dominant failure: %s).</comment>',
+                    $dominant?->value ?? 'unknown',
+                ));
+
+                return false;
+            }
+        }
+
+        if (!$hasImportantChanges && !$batch->hasFailures()) {
             $this->io->write('✓ No breaking changes or security updates found.');
         }
 
@@ -229,6 +259,20 @@ final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
         }
 
         return $this->updateChecker->filterVersionsBetween($allVersions, $fromVersion, $toVersion);
+    }
+
+    private function humanizeFailure(ApiFailure $failure): string
+    {
+        return match ($failure->category) {
+            ApiFailureCategory::ConnectionError => 'Could not reach the TYPO3 API (network error or timeout)',
+            ApiFailureCategory::ServerError => sprintf(
+                'TYPO3 API returned %d after retries',
+                $failure->statusCode ?? 0,
+            ),
+            ApiFailureCategory::NotFound => 'TYPO3 API has no information for this version',
+            ApiFailureCategory::MalformedResponse => 'TYPO3 API returned an unexpected response',
+            ApiFailureCategory::Unknown => sprintf('Unexpected API failure: %s', $failure->detail),
+        };
     }
 
     private function getReleaseProvider(): ReleaseProvider

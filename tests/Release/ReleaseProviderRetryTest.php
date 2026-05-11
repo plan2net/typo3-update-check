@@ -29,6 +29,7 @@ final class ReleaseProviderRetryTest extends TestCase
         $defaultDelay = RetryPolicy::defaultDelay();
         $recordingDelay = function (int $retries, ?\Psr\Http\Message\ResponseInterface $response = null) use ($defaultDelay): int {
             $this->recordedDelaysMs[] = $defaultDelay($retries, $response);
+
             return 0;
         };
 
