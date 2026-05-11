@@ -22,6 +22,7 @@ final class ReleaseProvider
         private readonly ChangeParser $changeParser,
         private readonly ?CacheInterface $cache = null,
         ?ApiFailureClassifier $classifier = null,
+        private readonly string $apiBaseUrl = self::API_BASE_URL,
     ) {
         $this->classifier = $classifier ?? new ApiFailureClassifier();
     }
@@ -42,7 +43,7 @@ final class ReleaseProvider
             }
         }
 
-        $url = sprintf('%s/major/%d/release/', self::API_BASE_URL, $majorVersion);
+        $url = sprintf('%s/major/%d/release/', $this->apiBaseUrl, $majorVersion);
         try {
             $response = $this->httpClient->request('GET', $url);
             $body = (string) $response->getBody();
@@ -83,7 +84,7 @@ final class ReleaseProvider
 
         $requests = function () use ($uncached) {
             foreach ($uncached as $version) {
-                yield $version => new Request('GET', self::API_BASE_URL . '/release/' . $version . '/content');
+                yield $version => new Request('GET', $this->apiBaseUrl . '/release/' . $version . '/content');
             }
         };
 
