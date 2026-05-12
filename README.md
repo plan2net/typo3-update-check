@@ -46,7 +46,7 @@ In non-interactive environments (CI/CD), the plugin displays information but pro
 You can check for breaking changes and security updates between any two versions without running an actual update:
 
 ```bash
-composer typo3:check-updates 12.4.10 12.4.20
+composer typo3:check-updates 13.0.0 13.0.1
 ```
 
 ![Demo](documentation/check-updates.gif)

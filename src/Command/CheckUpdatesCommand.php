@@ -28,6 +28,15 @@ class CheckUpdatesCommand extends BaseCommand
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $this->writeHeader($output);
+        $exitCode = $this->doExecute($input, $output);
+        $this->writeFooter($output);
+
+        return $exitCode;
+    }
+
+    private function doExecute(InputInterface $input, OutputInterface $output): int
+    {
         $from = $input->getArgument('from');
         $to = $input->getArgument('to');
 
@@ -110,6 +119,19 @@ class CheckUpdatesCommand extends BaseCommand
         }
 
         return 0;
+    }
+
+    private function writeHeader(OutputInterface $output): void
+    {
+        $output->writeln('');
+        $output->writeln('<bg=yellow;fg=black;options=bold> TYPO3 Update Check </>');
+        $output->writeln('');
+    }
+
+    private function writeFooter(OutputInterface $output): void
+    {
+        $output->writeln('<fg=blue>────────────────────────────────────────────────────────────</>');
+        $output->writeln('');
     }
 
     protected function createReleaseProvider(): ReleaseProvider

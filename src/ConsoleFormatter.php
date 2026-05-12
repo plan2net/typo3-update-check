@@ -10,7 +10,7 @@ final class ConsoleFormatter
 {
     public function format(ReleaseContent $content): string
     {
-        $output = "\n<info>Changes in version {$content->version}:</info>\n";
+        $output = "<info>Changes in version {$content->version}:</info>\n";
 
         $breaking = $content->getBreakingChanges();
         $security = $content->getSecurityUpdates();

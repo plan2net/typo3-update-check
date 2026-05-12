@@ -81,10 +81,13 @@ final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
 
         $versions = $this->fetchVersionList($currentVersion, $targetVersion);
         if (!$versions) {
+            $this->writeFooter();
+
             return;
         }
 
         $hasImportantChanges = $this->processVersions($versions, $currentVersion, $targetVersion);
+        $this->writeFooter();
         $this->handleUserConfirmation($hasImportantChanges);
 
         $this->hasChecked = true;
@@ -133,6 +136,7 @@ final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
 
     private function announceUpdate(string $currentVersion, string $targetVersion): void
     {
+        $this->writeHeader();
         $this->io->write(sprintf(
             '<info>TYPO3 core will be updated from %s to %s</info>',
             $currentVersion,
@@ -273,6 +277,19 @@ final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
             ApiFailureCategory::MalformedResponse => 'TYPO3 API returned an unexpected response',
             ApiFailureCategory::Unknown => sprintf('Unexpected API failure: %s', $failure->detail),
         };
+    }
+
+    private function writeHeader(): void
+    {
+        $this->io->write('');
+        $this->io->write('<bg=yellow;fg=black;options=bold> TYPO3 Update Check </>');
+        $this->io->write('');
+    }
+
+    private function writeFooter(): void
+    {
+        $this->io->write('<fg=blue>────────────────────────────────────────────────────────────</>');
+        $this->io->write('');
     }
 
     private function getReleaseProvider(): ReleaseProvider
