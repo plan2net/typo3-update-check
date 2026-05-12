@@ -18,7 +18,7 @@ final class ConsoleFormatter
         if ($breaking) {
             $output .= "<error>Breaking changes found:</error>\n";
             foreach ($breaking as $change) {
-                $output .= '  <error>⚠️</error> ' . $this->escape($change->title) . "\n";
+                $output .= '  ⚠️  ' . $this->escape($change->title) . "\n";
             }
         }
 
@@ -26,7 +26,7 @@ final class ConsoleFormatter
             $severitySummary = $this->formatSeveritySummary($content->securitySeverities);
             $output .= "<comment>Security updates found{$severitySummary}:</comment>\n";
             foreach ($security as $update) {
-                $output .= '  <comment>⚡</comment> ' . $this->escape($update->title) . "\n";
+                $output .= '  ⚡ ' . $this->escape($update->title) . "\n";
             }
         }
 
