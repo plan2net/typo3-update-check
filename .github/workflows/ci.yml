@@ -18,13 +18,13 @@ jobs:
                 php: ['8.1', '8.2', '8.3', '8.4']
 
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v6
             - uses: shivammathur/setup-php@v2
               with:
                   php-version: ${{ matrix.php }}
                   tools: composer:v2
                   coverage: none
-            - uses: ramsey/composer-install@v3
+            - uses: ramsey/composer-install@v4
             - run: vendor/bin/phpunit tests
 
     e2e-test:
@@ -37,13 +37,13 @@ jobs:
                 php: ['8.1', '8.2', '8.3', '8.4']
 
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v6
             - uses: shivammathur/setup-php@v2
               with:
                   php-version: ${{ matrix.php }}
                   tools: composer:v2
                   coverage: none
-            - uses: ramsey/composer-install@v3
+            - uses: ramsey/composer-install@v4
             - run: vendor/bin/phpunit tests/E2E
 
     integration-test:
@@ -56,7 +56,7 @@ jobs:
                 php: ['8.1', '8.2', '8.3', '8.4']
 
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v6
             - uses: shivammathur/setup-php@v2
               with:
                   php-version: ${{ matrix.php }}
@@ -188,24 +188,24 @@ jobs:
         name: PHP CS Fixer
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v6
             - uses: shivammathur/setup-php@v2
               with:
                   php-version: latest
                   tools: composer:v2
                   coverage: none
-            - uses: ramsey/composer-install@v3
+            - uses: ramsey/composer-install@v4
             - run: vendor/bin/php-cs-fixer fix --dry-run --diff
 
     phpstan:
         name: PHPStan
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v6
             - uses: shivammathur/setup-php@v2
               with:
                   php-version: latest
                   tools: composer:v2
                   coverage: none
-            - uses: ramsey/composer-install@v3
+            - uses: ramsey/composer-install@v4
             - run: vendor/bin/phpstan analyse
