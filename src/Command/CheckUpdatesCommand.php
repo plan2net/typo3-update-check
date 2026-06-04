@@ -12,9 +12,11 @@ use Plan2net\Typo3UpdateCheck\ReleaseProviderFactory;
 use Plan2net\Typo3UpdateCheck\UpdateChecker;
 use Plan2net\Typo3UpdateCheck\VersionParser;
 use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 #[AsCommand(
     name: 'typo3:check-updates',
@@ -49,13 +51,13 @@ class CheckUpdatesCommand extends BaseCommand
         if ($fromNormalized === null || $toNormalized === null) {
             $output->writeln('<error>Invalid version format</error>');
 
-            return 1;
+            return self::FAILURE;
         }
 
         if (version_compare($toNormalized, $fromNormalized, '<=')) {
             $output->writeln('<error>Target version must be greater than current version</error>');
 
-            return 1;
+            return self::FAILURE;
         }
 
         $provider = $this->createReleaseProvider();
@@ -68,20 +70,71 @@ class CheckUpdatesCommand extends BaseCommand
         } catch (ApiFailureException $exception) {
             $output->writeln(sprintf('<error>%s</error>', $exception->getMessage()));
 
-            return 1;
+            return self::FAILURE;
         }
 
-        $allVersions = array_filter(array_map(
-            fn ($release) => $versionParser->normalize($release->version),
-            $releases
-        ));
+        $knownVersions = [];
+        foreach ($releases as $release) {
+            $normalized = $versionParser->normalize($release->version);
+            if ($normalized !== null) {
+                $knownVersions[$normalized] = $release->version;
+            }
+        }
 
-        $versions = $updateChecker->filterVersionsBetween($allVersions, $fromNormalized, $toNormalized);
+        $latest = $this->latestVersion($knownVersions);
 
-        if (empty($versions)) {
-            $output->writeln('No versions found between ' . $fromNormalized . ' and ' . $toNormalized);
+        if (!isset($knownVersions[$fromNormalized])) {
+            $output->writeln(sprintf(
+                '<error>%s is not a released TYPO3 version in the %d.x line (latest is %s).</error>',
+                (string) $from,
+                $majorVersion,
+                $latest,
+            ));
 
-            return 0;
+            return self::FAILURE;
+        }
+
+        if (!isset($knownVersions[$toNormalized])) {
+            $output->writeln(sprintf(
+                '<error>%s is not a released TYPO3 version in the %d.x line (latest is %s).</error>',
+                (string) $to,
+                $majorVersion,
+                $latest,
+            ));
+
+            if (!$input->isInteractive()) {
+                return self::FAILURE;
+            }
+
+            $helper = $this->getHelper('question');
+            \assert($helper instanceof QuestionHelper);
+            $useLatest = $helper->ask(
+                $input,
+                $output,
+                new ConfirmationQuestion(sprintf('Use the latest (%s) instead? [Y/n] ', $latest), true),
+            );
+            if ($useLatest !== true) {
+                return self::FAILURE;
+            }
+
+            $normalizedLatest = $versionParser->normalize($latest);
+            if ($normalizedLatest === null) {
+                return self::FAILURE;
+            }
+            $toNormalized = $normalizedLatest;
+            $to = $latest;
+        }
+
+        $versions = $updateChecker->filterVersionsBetween(array_keys($knownVersions), $fromNormalized, $toNormalized);
+
+        if ($versions === []) {
+            $output->writeln(sprintf(
+                '<comment>%s is already the latest release in the %d.x line.</comment>',
+                (string) $to,
+                $majorVersion,
+            ));
+
+            return self::SUCCESS;
         }
 
         $batch = $provider->getReleaseContents($versions);
@@ -98,10 +151,25 @@ class CheckUpdatesCommand extends BaseCommand
         }
 
         if (!$batch->hasResults() && $batch->hasFailures()) {
-            return 2;
+            return self::INVALID;
         }
 
-        return 0;
+        return self::SUCCESS;
+    }
+
+    /**
+     * @param array<string, string> $knownVersions normalized => pretty
+     */
+    private function latestVersion(array $knownVersions): string
+    {
+        if ($knownVersions === []) {
+            return 'unknown';
+        }
+
+        $normalized = array_keys($knownVersions);
+        usort($normalized, static fn (string $a, string $b): int => version_compare($b, $a));
+
+        return $knownVersions[$normalized[0]];
     }
 
     private function writeHeader(OutputInterface $output): void

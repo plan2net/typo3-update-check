@@ -57,6 +57,65 @@ final class CheckUpdatesCommandTest extends TestCase
         $this->assertStringContainsString('dominant failure: server_error', $tester->getDisplay());
     }
 
+    #[Test]
+    public function rejectsUnknownTargetVersionWhenNonInteractive(): void
+    {
+        $command = $this->commandWithMockResponses([
+            new Response(200, [], $this->majorList()),
+        ]);
+        $tester = new CommandTester($command);
+
+        $exit = $tester->execute(['from' => '14.2.0', 'to' => '14.9.9'], ['interactive' => false]);
+
+        $this->assertSame(1, $exit);
+        $this->assertStringContainsString('14.9.9 is not a released TYPO3 version', $tester->getDisplay());
+    }
+
+    #[Test]
+    public function offersLatestForUnknownTargetAndProceedsWhenConfirmed(): void
+    {
+        $command = $this->commandWithMockResponses([
+            new Response(200, [], $this->majorList()),
+            new Response(200, [], $this->releaseContent('14.2.1')),
+            new Response(200, [], $this->releaseContent('14.3.0')),
+        ]);
+        $tester = new CommandTester($command);
+        $tester->setInputs(['yes']);
+
+        $exit = $tester->execute(['from' => '14.2.0', 'to' => '14.9.9']);
+
+        $this->assertSame(0, $exit);
+        $this->assertStringContainsString('Use the latest (14.3.0)', $tester->getDisplay());
+    }
+
+    #[Test]
+    public function returnsErrorWhenLatestOfferIsDeclined(): void
+    {
+        $command = $this->commandWithMockResponses([
+            new Response(200, [], $this->majorList()),
+        ]);
+        $tester = new CommandTester($command);
+        $tester->setInputs(['no']);
+
+        $exit = $tester->execute(['from' => '14.2.0', 'to' => '14.9.9']);
+
+        $this->assertSame(1, $exit);
+    }
+
+    #[Test]
+    public function rejectsCurrentVersionThatDoesNotExist(): void
+    {
+        $command = $this->commandWithMockResponses([
+            new Response(200, [], $this->majorList()),
+        ]);
+        $tester = new CommandTester($command);
+
+        $exit = $tester->execute(['from' => '14.2.5', 'to' => '14.3.0']);
+
+        $this->assertSame(1, $exit);
+        $this->assertStringContainsString('14.2.5 is not a released TYPO3 version', $tester->getDisplay());
+    }
+
     private function commandWithMockResponses(array $responses): CheckUpdatesCommand
     {
         $mock = new MockHandler($responses);
