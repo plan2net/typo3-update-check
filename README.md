@@ -59,7 +59,7 @@ composer typo3:check-updates 13.4.10     # 13.4.10 → latest release
 
 When a version is auto-detected or defaulted, the command asks for confirmation before checking. If you pass a target that doesn't exist, it offers the latest instead; an unknown current version (or missing versions in a non-interactive shell) is rejected with a hint.
 
-![Demo](documentation/check-updates-a09d6b14.gif)
+![Demo](documentation/check-updates-a6c8a669.gif)
 
 ## API availability
 

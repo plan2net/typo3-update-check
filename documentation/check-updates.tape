@@ -1,9 +1,9 @@
-Output documentation/check-updates-a09d6b14.gif
+Output documentation/check-updates-a6c8a669.gif
 
 Set Theme { "background": "#0d1117", "foreground": "#c9d1d9", "black": "#484f58", "red": "#ff7b72", "green": "#7ee787", "yellow": "#e3b341", "blue": "#79c0ff", "magenta": "#d2a8ff", "cyan": "#a5d6ff", "white": "#c9d1d9", "brightBlack": "#6e7681", "brightRed": "#ffa198", "brightGreen": "#56d364", "brightYellow": "#e3b341", "brightBlue": "#79c0ff", "brightMagenta": "#d2a8ff", "brightCyan": "#a5d6ff", "brightWhite": "#f0f6fc" }
 Set FontSize 22
 Set Width 1430
-Set Height 1000
+Set Height 1200
 Set Padding 22
 Set TypingSpeed 5ms
 Set Framerate 30
@@ -13,7 +13,7 @@ Hide
 Type `export PS1='$ ' && export TERM=xterm-256color && export COLORTERM=truecolor && clear`
 Enter
 Sleep 300ms
-Type `ddev exec 'cd /tmp/typo3-demo && composer typo3:check-updates 12.4.10 12.4.11'`
+Type `ddev exec 'cd /tmp/typo3-demo && composer typo3:check-updates 12.4.15 12.4.25'`
 Sleep 300ms
 Show
 Enter
