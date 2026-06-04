@@ -17,6 +17,7 @@ use Plan2net\Typo3UpdateCheck\Change\ChangeParser;
 use Plan2net\Typo3UpdateCheck\Command\CheckUpdatesCommand;
 use Plan2net\Typo3UpdateCheck\Release\ReleaseProvider;
 use Plan2net\Typo3UpdateCheck\Release\RetryPolicy;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Tester\CommandTester;
 
 final class CheckUpdatesCommandTest extends TestCase
@@ -64,7 +65,7 @@ final class CheckUpdatesCommandTest extends TestCase
         $client = new Client(['handler' => $stack]);
         $provider = new ReleaseProvider($client, new ChangeParser(new ChangeFactory()));
 
-        $command = new class ($provider) extends CheckUpdatesCommand {
+        $command = new #[AsCommand(name: 'typo3:check-updates')] class ($provider) extends CheckUpdatesCommand {
             public function __construct(private readonly ReleaseProvider $injected)
             {
                 parent::__construct();

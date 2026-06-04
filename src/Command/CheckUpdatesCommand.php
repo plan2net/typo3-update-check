@@ -12,17 +12,20 @@ use Plan2net\Typo3UpdateCheck\Release\ReleaseProvider;
 use Plan2net\Typo3UpdateCheck\ReleaseProviderFactory;
 use Plan2net\Typo3UpdateCheck\UpdateChecker;
 use Plan2net\Typo3UpdateCheck\VersionParser;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand(
+    name: 'typo3:check-updates',
+    description: 'Check TYPO3 core updates for breaking changes and security updates'
+)]
 class CheckUpdatesCommand extends BaseCommand
 {
     protected function configure(): void
     {
-        $this->setName('typo3:check-updates')
-            ->setDescription('Check TYPO3 core updates for breaking changes and security updates')
-            ->addArgument('from', InputArgument::REQUIRED, 'Current version (e.g., 12.4.1)')
+        $this->addArgument('from', InputArgument::REQUIRED, 'Current version (e.g., 12.4.1)')
             ->addArgument('to', InputArgument::REQUIRED, 'Target version (e.g., 12.4.10)');
     }
 
