@@ -10,7 +10,10 @@ use Plan2net\Typo3UpdateCheck\Change\BreakingChange;
 use Plan2net\Typo3UpdateCheck\Change\RegularChange;
 use Plan2net\Typo3UpdateCheck\Change\SecurityUpdate;
 use Plan2net\Typo3UpdateCheck\ConsoleFormatter;
+use Plan2net\Typo3UpdateCheck\Release\ApiFailure;
+use Plan2net\Typo3UpdateCheck\Release\ApiFailureCategory;
 use Plan2net\Typo3UpdateCheck\Release\ReleaseContent;
+use Plan2net\Typo3UpdateCheck\Release\ReleaseContentBatch;
 
 final class ConsoleFormatterTest extends TestCase
 {
@@ -167,5 +170,62 @@ https://typo3.org/security/advisory/typo3-core-sa-2025-012',
         $this->assertStringContainsString('[SECURITY] Fix XSS vulnerability', $output);
         $this->assertStringContainsString('[SECURITY] Fix information disclosure', $output);
         $this->assertStringContainsString('[SECURITY] Fix authentication bypass', $output);
+    }
+
+    #[Test]
+    public function batchReportRendersImportantResultAndOmitsQuietOnes(): void
+    {
+        $important = new ReleaseContent(
+            version: '12.4.21',
+            changes: [new BreakingChange('[!!!][TASK] Remove API')],
+            newsLink: null,
+            news: null,
+        );
+        $quiet = new ReleaseContent(version: '12.4.20', changes: [], newsLink: null, news: null);
+        $batch = new ReleaseContentBatch(
+            results: ['12.4.20' => $quiet, '12.4.21' => $important],
+            failures: [],
+        );
+
+        $report = implode("\n", $this->formatter->formatBatchReport($batch, '12.4.19', '12.4.21'));
+
+        $this->assertStringContainsString('Changes in version 12.4.21:', $report);
+        $this->assertStringContainsString('Breaking changes found:', $report);
+        $this->assertStringNotContainsString('Changes in version 12.4.20:', $report);
+    }
+
+    #[Test]
+    public function batchReportStatesQuietWhenNoImportantChangesAndNoFailures(): void
+    {
+        $quiet = new ReleaseContent(version: '12.4.20', changes: [], newsLink: null, news: null);
+        $batch = new ReleaseContentBatch(results: ['12.4.20' => $quiet], failures: []);
+
+        $report = implode("\n", $this->formatter->formatBatchReport($batch, '12.4.19', '12.4.20'));
+
+        $this->assertStringContainsString('No breaking changes or security updates found.', $report);
+    }
+
+    #[Test]
+    public function batchReportRendersFailuresWithRetrySuggestion(): void
+    {
+        $batch = new ReleaseContentBatch(
+            results: [],
+            failures: ['12.4.21' => new ApiFailure(ApiFailureCategory::NotFound, 'HTTP 404', 404)],
+        );
+
+        $report = implode("\n", $this->formatter->formatBatchReport($batch, '12.4.20', '12.4.21'));
+
+        $this->assertStringContainsString('composer typo3:check-updates 12.4.20 12.4.21', $report);
+        $this->assertStringContainsString('Proceeding with update (dominant failure: not_found)', $report);
+    }
+
+    #[Test]
+    public function batchReportReportsTotalFetchFailureWhenBatchIsEmpty(): void
+    {
+        $batch = new ReleaseContentBatch(results: [], failures: []);
+
+        $report = implode("\n", $this->formatter->formatBatchReport($batch, '12.4.19', '12.4.20'));
+
+        $this->assertStringContainsString('Failed to fetch release information.', $report);
     }
 }

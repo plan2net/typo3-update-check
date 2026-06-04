@@ -7,7 +7,6 @@ namespace Plan2net\Typo3UpdateCheck\Command;
 use Composer\Command\BaseCommand;
 use Plan2net\Typo3UpdateCheck\ConsoleFormatter;
 use Plan2net\Typo3UpdateCheck\Release\ApiFailureException;
-use Plan2net\Typo3UpdateCheck\Release\FailureMessageFormatter;
 use Plan2net\Typo3UpdateCheck\Release\ReleaseProvider;
 use Plan2net\Typo3UpdateCheck\ReleaseProviderFactory;
 use Plan2net\Typo3UpdateCheck\UpdateChecker;
@@ -86,39 +85,13 @@ class CheckUpdatesCommand extends BaseCommand
         }
 
         $batch = $provider->getReleaseContents($versions);
-        $formatter = new ConsoleFormatter();
-        $failureFormatter = new FailureMessageFormatter();
-        $hasImportantChanges = false;
 
-        foreach ($batch->results as $content) {
-            if ($content->getBreakingChanges() || $content->getSecurityUpdates()) {
-                $hasImportantChanges = true;
-                $output->writeln($formatter->format($content));
-            }
-        }
-
-        if ($batch->hasFailures()) {
-            foreach ($batch->failures as $version => $failure) {
-                $output->writeln('<comment>' . $failureFormatter->describe($version, $failure) . '</comment>');
-            }
-            $output->writeln(sprintf(
-                '<comment>Retry later with: composer typo3:check-updates %s %s</comment>',
-                $fromNormalized,
-                $toNormalized,
-            ));
+        foreach ((new ConsoleFormatter())->formatBatchReport($batch, $fromNormalized, $toNormalized) as $line) {
+            $output->writeln($line);
         }
 
         if (!$batch->hasResults() && $batch->hasFailures()) {
-            $output->writeln(sprintf(
-                '<comment>Proceeding with update (dominant failure: %s).</comment>',
-                $batch->dominantFailureCategory()?->value ?? 'unknown',
-            ));
-
             return 2;
-        }
-
-        if (!$hasImportantChanges && !$batch->hasFailures()) {
-            $output->writeln('✓ No breaking changes or security updates found.');
         }
 
         return 0;

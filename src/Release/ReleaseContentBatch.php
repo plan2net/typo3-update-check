@@ -26,6 +26,17 @@ final class ReleaseContentBatch
         return $this->failures !== [];
     }
 
+    public function hasImportantChanges(): bool
+    {
+        foreach ($this->results as $content) {
+            if ($content->getBreakingChanges() || $content->getSecurityUpdates()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function dominantFailureCategory(): ?ApiFailureCategory
     {
         if ($this->failures === []) {

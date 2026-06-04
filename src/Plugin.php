@@ -17,7 +17,6 @@ use Plan2net\Typo3UpdateCheck\Command\CommandProvider;
 use Plan2net\Typo3UpdateCheck\Release\ApiFailure;
 use Plan2net\Typo3UpdateCheck\Release\ApiFailureCategory;
 use Plan2net\Typo3UpdateCheck\Release\ApiFailureException;
-use Plan2net\Typo3UpdateCheck\Release\FailureMessageFormatter;
 use Plan2net\Typo3UpdateCheck\Release\ReleaseProvider;
 
 final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
@@ -28,7 +27,6 @@ final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
     private UpdateChecker $updateChecker;
     private ?ReleaseProvider $releaseProvider = null;
     private ConsoleFormatter $consoleFormatter;
-    private FailureMessageFormatter $failureFormatter;
     private bool $hasChecked = false;
 
     public function activate(Composer $composer, IOInterface $io): void
@@ -38,7 +36,6 @@ final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
         $this->versionParser = new VersionParser();
         $this->updateChecker = new UpdateChecker($this->versionParser);
         $this->consoleFormatter = new ConsoleFormatter();
-        $this->failureFormatter = new FailureMessageFormatter();
     }
 
     public static function getSubscribedEvents(): array
@@ -179,50 +176,11 @@ final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
     {
         $batch = $this->getReleaseProvider()->getReleaseContents($versions);
 
-        if (!$batch->hasResults() && !$batch->hasFailures()) {
-            $this->io->write('<error>Failed to fetch release information.</error>');
-            $this->io->write('<comment>The TYPO3 API might be temporarily unavailable. Proceeding with update.</comment>');
-
-            return false;
+        foreach ($this->consoleFormatter->formatBatchReport($batch, $currentVersion, $targetVersion) as $line) {
+            $this->io->write($line);
         }
 
-        $hasImportantChanges = false;
-        foreach ($batch->results as $content) {
-            if ($content->getBreakingChanges() || $content->getSecurityUpdates()) {
-                $hasImportantChanges = true;
-                $this->io->write($this->consoleFormatter->format($content));
-            }
-        }
-
-        if ($batch->hasFailures()) {
-            foreach ($batch->failures as $version => $failure) {
-                $this->io->write(sprintf(
-                    '<comment>%s</comment>',
-                    $this->failureFormatter->describe($version, $failure),
-                ));
-            }
-            $this->io->write(sprintf(
-                '<comment>Retry later with: composer typo3:check-updates %s %s</comment>',
-                $currentVersion,
-                $targetVersion,
-            ));
-
-            if (!$batch->hasResults()) {
-                $dominant = $batch->dominantFailureCategory();
-                $this->io->write(sprintf(
-                    '<comment>Proceeding with update (dominant failure: %s).</comment>',
-                    $dominant?->value ?? 'unknown',
-                ));
-
-                return false;
-            }
-        }
-
-        if (!$hasImportantChanges && !$batch->hasFailures()) {
-            $this->io->write('✓ No breaking changes or security updates found.');
-        }
-
-        return $hasImportantChanges;
+        return $batch->hasImportantChanges();
     }
 
     private function handleUserConfirmation(bool $hasImportantChanges): void

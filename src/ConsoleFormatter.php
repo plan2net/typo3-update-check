@@ -4,10 +4,61 @@ declare(strict_types=1);
 
 namespace Plan2net\Typo3UpdateCheck;
 
+use Plan2net\Typo3UpdateCheck\Release\FailureMessageFormatter;
 use Plan2net\Typo3UpdateCheck\Release\ReleaseContent;
+use Plan2net\Typo3UpdateCheck\Release\ReleaseContentBatch;
 
 final class ConsoleFormatter
 {
+    public function __construct(
+        private readonly FailureMessageFormatter $failureFormatter = new FailureMessageFormatter(),
+    ) {
+    }
+
+    /**
+     * @return string[]
+     */
+    public function formatBatchReport(ReleaseContentBatch $batch, string $fromVersion, string $toVersion): array
+    {
+        if (!$batch->hasResults() && !$batch->hasFailures()) {
+            return [
+                '<error>Failed to fetch release information.</error>',
+                '<comment>The TYPO3 API might be temporarily unavailable. Proceeding with update.</comment>',
+            ];
+        }
+
+        $lines = [];
+        foreach ($batch->results as $content) {
+            if ($content->getBreakingChanges() || $content->getSecurityUpdates()) {
+                $lines[] = $this->format($content);
+            }
+        }
+
+        if ($batch->hasFailures()) {
+            foreach ($batch->failures as $version => $failure) {
+                $lines[] = '<comment>' . $this->failureFormatter->describe($version, $failure) . '</comment>';
+            }
+            $lines[] = sprintf(
+                '<comment>Retry later with: composer typo3:check-updates %s %s</comment>',
+                $fromVersion,
+                $toVersion,
+            );
+
+            if (!$batch->hasResults()) {
+                $lines[] = sprintf(
+                    '<comment>Proceeding with update (dominant failure: %s).</comment>',
+                    $batch->dominantFailureCategory()?->value ?? 'unknown',
+                );
+            }
+        }
+
+        if (!$batch->hasImportantChanges() && !$batch->hasFailures()) {
+            $lines[] = '✓ No breaking changes or security updates found.';
+        }
+
+        return $lines;
+    }
+
     public function format(ReleaseContent $content): string
     {
         $output = "<info>Changes in version {$content->version}:</info>\n";

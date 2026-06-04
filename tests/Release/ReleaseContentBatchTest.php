@@ -6,6 +6,9 @@ namespace Plan2net\Typo3UpdateCheck\Tests\Release;
 
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use Plan2net\Typo3UpdateCheck\Change\BreakingChange;
+use Plan2net\Typo3UpdateCheck\Change\RegularChange;
+use Plan2net\Typo3UpdateCheck\Change\SecurityUpdate;
 use Plan2net\Typo3UpdateCheck\Release\ApiFailure;
 use Plan2net\Typo3UpdateCheck\Release\ApiFailureCategory;
 use Plan2net\Typo3UpdateCheck\Release\ReleaseContent;
@@ -43,6 +46,52 @@ final class ReleaseContentBatchTest extends TestCase
 
         $this->assertFalse($batch->hasResults());
         $this->assertFalse($batch->hasFailures());
+    }
+
+    #[Test]
+    public function reportsImportantChangesWhenAResultHasBreakingOrSecurity(): void
+    {
+        $withBreaking = new ReleaseContent(
+            version: '12.4.20',
+            changes: [new BreakingChange('[!!!][TASK] Remove API')],
+            newsLink: null,
+            news: null,
+        );
+        $batch = new ReleaseContentBatch(results: ['12.4.20' => $withBreaking], failures: []);
+
+        $this->assertTrue($batch->hasImportantChanges());
+    }
+
+    #[Test]
+    public function reportsNoImportantChangesWhenResultsOnlyContainRegularChanges(): void
+    {
+        $regularOnly = new ReleaseContent(
+            version: '12.4.20',
+            changes: [new RegularChange('[FEATURE] Add something')],
+            newsLink: null,
+            news: null,
+        );
+        $batch = new ReleaseContentBatch(results: ['12.4.20' => $regularOnly], failures: []);
+
+        $this->assertFalse($batch->hasImportantChanges());
+    }
+
+    #[Test]
+    public function reportsImportantChangesAcrossMultipleResults(): void
+    {
+        $quiet = new ReleaseContent(version: '12.4.20', changes: [], newsLink: null, news: null);
+        $security = new ReleaseContent(
+            version: '12.4.21',
+            changes: [new SecurityUpdate('[SECURITY] Fix XSS')],
+            newsLink: null,
+            news: null,
+        );
+        $batch = new ReleaseContentBatch(
+            results: ['12.4.20' => $quiet, '12.4.21' => $security],
+            failures: [],
+        );
+
+        $this->assertTrue($batch->hasImportantChanges());
     }
 
     #[Test]
