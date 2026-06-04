@@ -7,6 +7,7 @@ namespace Plan2net\Typo3UpdateCheck\Tests;
 use Composer\Package\PackageInterface;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use Plan2net\Typo3UpdateCheck\Release\Release;
 use Plan2net\Typo3UpdateCheck\UpdateChecker;
 use Plan2net\Typo3UpdateCheck\VersionParser;
 
@@ -67,5 +68,36 @@ final class UpdateCheckerTest extends TestCase
         $filtered = $this->checker->filterVersionsBetween($versions, '12.4.1', '12.4.4');
 
         $this->assertSame(['12.4.2', '12.4.3', '12.4.4'], $filtered);
+    }
+
+    #[Test]
+    public function findsSortedSecurityReleasesAboveTarget(): void
+    {
+        $releases = [
+            $this->release('12.4.21', 'security'),
+            $this->release('12.4.25', 'regular'),
+            $this->release('12.4.41', 'security'),
+            $this->release('12.4.31', 'security'),
+        ];
+
+        $above = $this->checker->securityReleasesAbove($releases, '12.4.25');
+
+        $this->assertSame(['12.4.31', '12.4.41'], $above);
+    }
+
+    #[Test]
+    public function returnsNoSecurityReleasesWhenTargetIsLatest(): void
+    {
+        $releases = [
+            $this->release('12.4.21', 'security'),
+            $this->release('12.4.41', 'security'),
+        ];
+
+        $this->assertSame([], $this->checker->securityReleasesAbove($releases, '12.4.41'));
+    }
+
+    private function release(string $version, string $type): Release
+    {
+        return new Release($version, $type, new \DateTimeImmutable('2025-01-01'));
     }
 }

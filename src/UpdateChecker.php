@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Plan2net\Typo3UpdateCheck;
 
 use Composer\Package\PackageInterface;
+use Plan2net\Typo3UpdateCheck\Release\Release;
 
 final class UpdateChecker
 {
@@ -53,5 +54,30 @@ final class UpdateChecker
             return version_compare($version, $fromVersion, '>')
                 && version_compare($version, $toVersion, '<=');
         }));
+    }
+
+    /**
+     * @param Release[] $releases
+     *
+     * @return string[]
+     */
+    public function securityReleasesAbove(array $releases, string $targetVersion): array
+    {
+        $versions = [];
+
+        foreach ($releases as $release) {
+            if ($release->type !== 'security') {
+                continue;
+            }
+
+            $normalized = $this->versionParser->normalize($release->version);
+            if ($normalized !== null && version_compare($normalized, $targetVersion, '>')) {
+                $versions[] = $normalized;
+            }
+        }
+
+        usort($versions, fn ($a, $b) => version_compare($a, $b));
+
+        return $versions;
     }
 }

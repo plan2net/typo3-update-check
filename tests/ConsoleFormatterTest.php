@@ -202,7 +202,53 @@ https://typo3.org/security/advisory/typo3-core-sa-2025-012',
 
         $report = implode("\n", $this->formatter->formatBatchReport($batch, '12.4.19', '12.4.20'));
 
-        $this->assertStringContainsString('No breaking changes or security updates found.', $report);
+        $this->assertStringContainsString('bugfixes only', $report);
+        $this->assertStringContainsString('no breaking changes or security updates', $report);
+    }
+
+    #[Test]
+    public function batchReportEndsWithDigestSummaryOfImportantChanges(): void
+    {
+        $breaking = new ReleaseContent(
+            version: '12.4.20',
+            changes: [new BreakingChange('[!!!][TASK] Remove API')],
+            newsLink: null,
+            news: null,
+        );
+        $security = new ReleaseContent(
+            version: '12.4.21',
+            changes: [new SecurityUpdate('[SECURITY] Fix XSS'), new SecurityUpdate('[SECURITY] Fix RCE')],
+            newsLink: null,
+            news: null,
+            securitySeverities: ['High' => 1, 'Medium' => 2],
+        );
+        $batch = new ReleaseContentBatch(
+            results: ['12.4.20' => $breaking, '12.4.21' => $security],
+            failures: [],
+        );
+
+        $lines = $this->formatter->formatBatchReport($batch, '12.4.19', '12.4.21');
+        $digest = end($lines);
+
+        $this->assertStringContainsString('2 releases (12.4.19 → 12.4.21)', $digest);
+        $this->assertStringContainsString('1 with security (1 High, 2 Medium)', $digest);
+        $this->assertStringContainsString('1 with breaking changes', $digest);
+    }
+
+    #[Test]
+    public function formatSecurityGapListsNewerSecurityVersions(): void
+    {
+        $lines = $this->formatter->formatSecurityGap('12.4.25', ['12.4.31', '12.4.41']);
+
+        $report = implode("\n", $lines);
+        $this->assertStringContainsString('target 12.4.25 is missing security fixes', $report);
+        $this->assertStringContainsString('12.4.31, 12.4.41', $report);
+    }
+
+    #[Test]
+    public function formatSecurityGapIsEmptyWhenNothingNewer(): void
+    {
+        $this->assertSame([], $this->formatter->formatSecurityGap('12.4.41', []));
     }
 
     #[Test]

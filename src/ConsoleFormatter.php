@@ -52,11 +52,74 @@ final class ConsoleFormatter
             }
         }
 
-        if (!$batch->hasImportantChanges() && !$batch->hasFailures()) {
-            $lines[] = '✓ No breaking changes or security updates found.';
+        $releaseCount = count($batch->results) + count($batch->failures);
+
+        if ($batch->hasImportantChanges()) {
+            $lines[] = $this->formatDigest($batch, $fromVersion, $toVersion, $releaseCount);
+        } elseif (!$batch->hasFailures()) {
+            $lines[] = sprintf(
+                '✓ %d release%s (%s → %s), bugfixes only — no breaking changes or security updates',
+                $releaseCount,
+                $releaseCount === 1 ? '' : 's',
+                $fromVersion,
+                $toVersion,
+            );
         }
 
         return $lines;
+    }
+
+    /**
+     * @param string[] $newerSecurityVersions
+     *
+     * @return string[]
+     */
+    public function formatSecurityGap(string $targetVersion, array $newerSecurityVersions): array
+    {
+        if ($newerSecurityVersions === []) {
+            return [];
+        }
+
+        return [
+            sprintf(
+                '<comment>⚡ Your target %s is missing security fixes released in %s.</comment>',
+                $targetVersion,
+                implode(', ', $newerSecurityVersions),
+            ),
+            '<comment>   Raise your version constraint to install them.</comment>',
+        ];
+    }
+
+    private function formatDigest(ReleaseContentBatch $batch, string $fromVersion, string $toVersion, int $releaseCount): string
+    {
+        $securityReleases = 0;
+        $breakingReleases = 0;
+        $severities = [];
+
+        foreach ($batch->results as $content) {
+            if ($content->getSecurityUpdates()) {
+                ++$securityReleases;
+                foreach ($content->securitySeverities as $level => $count) {
+                    $severities[$level] = ($severities[$level] ?? 0) + $count;
+                }
+            }
+            if ($content->getBreakingChanges()) {
+                ++$breakingReleases;
+            }
+        }
+
+        $segments = [sprintf('%d release%s (%s → %s)', $releaseCount, $releaseCount === 1 ? '' : 's', $fromVersion, $toVersion)];
+
+        if ($securityReleases > 0) {
+            $breakdown = $this->severityBreakdown($severities);
+            $segments[] = sprintf('⚡ %d with security%s', $securityReleases, $breakdown === '' ? '' : " ({$breakdown})");
+        }
+
+        if ($breakingReleases > 0) {
+            $segments[] = sprintf('⚠️  %d with breaking changes', $breakingReleases);
+        }
+
+        return '<options=bold>' . implode(' · ', $segments) . '</>';
     }
 
     public function format(ReleaseContent $content): string
@@ -109,10 +172,16 @@ final class ConsoleFormatter
      */
     private function formatSeveritySummary(array $severities): string
     {
-        if (empty($severities)) {
-            return '';
-        }
+        $breakdown = $this->severityBreakdown($severities);
 
+        return $breakdown === '' ? '' : " ({$breakdown})";
+    }
+
+    /**
+     * @param array<string, int> $severities
+     */
+    private function severityBreakdown(array $severities): string
+    {
         $order = ['Critical', 'High', 'Medium', 'Low'];
         $parts = [];
 
@@ -122,6 +191,6 @@ final class ConsoleFormatter
             }
         }
 
-        return ' (' . implode(', ', $parts) . ')';
+        return implode(', ', $parts);
     }
 }

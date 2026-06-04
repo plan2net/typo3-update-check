@@ -17,6 +17,7 @@ use Plan2net\Typo3UpdateCheck\Command\CommandProvider;
 use Plan2net\Typo3UpdateCheck\Release\ApiFailure;
 use Plan2net\Typo3UpdateCheck\Release\ApiFailureCategory;
 use Plan2net\Typo3UpdateCheck\Release\ApiFailureException;
+use Plan2net\Typo3UpdateCheck\Release\Release;
 use Plan2net\Typo3UpdateCheck\Release\ReleaseProvider;
 
 final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
@@ -76,14 +77,22 @@ final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
 
         $this->announceUpdate($currentVersion, $targetVersion);
 
-        $versions = $this->fetchVersionList($currentVersion, $targetVersion);
-        if (!$versions) {
+        $releases = $this->fetchReleases($currentVersion);
+        if ($releases === null) {
             $this->writeFooter();
 
             return;
         }
 
-        $hasImportantChanges = $this->processVersions($versions, $currentVersion, $targetVersion);
+        $versions = $this->versionsBetween($releases, $currentVersion, $targetVersion);
+        if ($versions === []) {
+            $this->io->write('No intermediate versions found.');
+            $this->writeFooter();
+
+            return;
+        }
+
+        $hasImportantChanges = $this->processVersions($versions, $releases, $currentVersion, $targetVersion);
         $this->writeFooter();
         $this->handleUserConfirmation($hasImportantChanges);
 
@@ -143,14 +152,16 @@ final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
     }
 
     /**
-     * @return string[]|null
+     * @return Release[]|null
      *
      * @throws \Exception
      */
-    private function fetchVersionList(string $currentVersion, string $targetVersion): ?array
+    private function fetchReleases(string $fromVersion): ?array
     {
+        $majorVersion = (int) explode('.', $fromVersion)[0];
+
         try {
-            $versions = $this->getVersionsBetween($currentVersion, $targetVersion);
+            return $this->getReleaseProvider()->getReleasesForMajorVersion($majorVersion);
         } catch (ApiFailureException $exception) {
             $this->io->write(sprintf(
                 '<error>%s — proceeding with update without breaking-change preview.</error>',
@@ -159,24 +170,41 @@ final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
 
             return null;
         }
-
-        if (empty($versions)) {
-            $this->io->write('No intermediate versions found.');
-
-            return null;
-        }
-
-        return $versions;
     }
 
     /**
-     * @param string[] $versions
+     * @param Release[] $releases
+     *
+     * @return string[]
      */
-    private function processVersions(array $versions, string $currentVersion, string $targetVersion): bool
+    private function versionsBetween(array $releases, string $fromVersion, string $toVersion): array
+    {
+        $allVersions = [];
+        foreach ($releases as $release) {
+            $normalized = $this->versionParser->normalize($release->version);
+            if ($normalized) {
+                $allVersions[] = $normalized;
+            }
+        }
+
+        return $this->updateChecker->filterVersionsBetween($allVersions, $fromVersion, $toVersion);
+    }
+
+    /**
+     * @param string[]  $versions
+     * @param Release[] $releases
+     */
+    private function processVersions(array $versions, array $releases, string $currentVersion, string $targetVersion): bool
     {
         $batch = $this->getReleaseProvider()->getReleaseContents($versions);
 
-        foreach ($this->consoleFormatter->formatBatchReport($batch, $currentVersion, $targetVersion) as $line) {
+        $lines = $this->consoleFormatter->formatBatchReport($batch, $currentVersion, $targetVersion);
+        $lines = array_merge($lines, $this->consoleFormatter->formatSecurityGap(
+            $targetVersion,
+            $this->updateChecker->securityReleasesAbove($releases, $targetVersion),
+        ));
+
+        foreach ($lines as $line) {
             $this->io->write($line);
         }
 
@@ -199,28 +227,6 @@ final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
             $this->io->write('<info>Update cancelled by user.</info>');
             exit(0);
         }
-    }
-
-    /**
-     * @return string[]
-     *
-     * @throws \Exception
-     */
-    private function getVersionsBetween(string $fromVersion, string $toVersion): array
-    {
-        $majorVersion = (int) explode('.', $fromVersion)[0];
-        $releaseProvider = $this->getReleaseProvider();
-        $releases = $releaseProvider->getReleasesForMajorVersion($majorVersion);
-
-        $allVersions = [];
-        foreach ($releases as $release) {
-            $normalized = $this->versionParser->normalize($release->version);
-            if ($normalized) {
-                $allVersions[] = $normalized;
-            }
-        }
-
-        return $this->updateChecker->filterVersionsBetween($allVersions, $fromVersion, $toVersion);
     }
 
     private function humanizeFailure(ApiFailure $failure): string

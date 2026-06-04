@@ -86,7 +86,14 @@ class CheckUpdatesCommand extends BaseCommand
 
         $batch = $provider->getReleaseContents($versions);
 
-        foreach ((new ConsoleFormatter())->formatBatchReport($batch, $fromNormalized, $toNormalized) as $line) {
+        $formatter = new ConsoleFormatter();
+        $lines = $formatter->formatBatchReport($batch, $fromNormalized, $toNormalized);
+        $lines = array_merge($lines, $formatter->formatSecurityGap(
+            $toNormalized,
+            $updateChecker->securityReleasesAbove($releases, $toNormalized),
+        ));
+
+        foreach ($lines as $line) {
             $output->writeln($line);
         }
 
