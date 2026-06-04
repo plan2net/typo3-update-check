@@ -26,8 +26,8 @@ class CheckUpdatesCommand extends BaseCommand
 {
     protected function configure(): void
     {
-        $this->addArgument('from', InputArgument::REQUIRED, 'Current version (e.g., 12.4.1)')
-            ->addArgument('to', InputArgument::REQUIRED, 'Target version (e.g., 12.4.10)');
+        $this->addArgument('from', InputArgument::OPTIONAL, 'Current version (e.g., 12.4.1); defaults to the installed version')
+            ->addArgument('to', InputArgument::OPTIONAL, 'Target version (e.g., 12.4.45); defaults to the latest release');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -43,19 +43,30 @@ class CheckUpdatesCommand extends BaseCommand
     {
         $from = $input->getArgument('from');
         $to = $input->getArgument('to');
+        $fromDetected = $from === null;
+        $toDefaulted = $to === null;
+        $autoDetect = $fromDetected || $toDefaulted;
 
-        $versionParser = new VersionParser();
-        $fromNormalized = $versionParser->normalize($from);
-        $toNormalized = $versionParser->normalize($to);
-
-        if ($fromNormalized === null || $toNormalized === null) {
-            $output->writeln('<error>Invalid version format</error>');
+        if ($autoDetect && !$input->isInteractive()) {
+            $output->writeln('<error>Provide a current and target version, e.g. composer typo3:check-updates 12.4.3 12.4.45</error>');
 
             return self::FAILURE;
         }
 
-        if (version_compare($toNormalized, $fromNormalized, '<=')) {
-            $output->writeln('<error>Target version must be greater than current version</error>');
+        $versionParser = new VersionParser();
+
+        if ($from === null) {
+            $from = $this->installedCoreVersion();
+            if ($from === null) {
+                $output->writeln('<error>Could not detect an installed typo3/cms-core. Pass the versions explicitly.</error>');
+
+                return self::FAILURE;
+            }
+        }
+
+        $fromNormalized = $versionParser->normalize($from);
+        if ($fromNormalized === null) {
+            $output->writeln('<error>Invalid version format</error>');
 
             return self::FAILURE;
         }
@@ -82,6 +93,7 @@ class CheckUpdatesCommand extends BaseCommand
         }
 
         $latest = $this->latestVersion($knownVersions);
+        $latestNormalized = $versionParser->normalize($latest);
 
         if (!isset($knownVersions[$fromNormalized])) {
             $output->writeln(sprintf(
@@ -93,6 +105,19 @@ class CheckUpdatesCommand extends BaseCommand
 
             return self::FAILURE;
         }
+
+        if ($to === null) {
+            $to = $latest;
+        }
+
+        $toNormalized = $versionParser->normalize($to);
+        if ($toNormalized === null) {
+            $output->writeln('<error>Invalid version format</error>');
+
+            return self::FAILURE;
+        }
+
+        $toResolvedToLatest = $toDefaulted;
 
         if (!isset($knownVersions[$toNormalized])) {
             $output->writeln(sprintf(
@@ -108,34 +133,51 @@ class CheckUpdatesCommand extends BaseCommand
 
             $helper = $this->getHelper('question');
             \assert($helper instanceof QuestionHelper);
-            $useLatest = $helper->ask(
-                $input,
-                $output,
-                new ConfirmationQuestion(sprintf('Use the latest (%s) instead? [Y/n] ', $latest), true),
-            );
-            if ($useLatest !== true) {
+            $useLatest = $helper->ask($input, $output, new ConfirmationQuestion(
+                sprintf('Use the latest (%s) instead? [Y/n] ', $latest),
+                true,
+            ));
+            if ($useLatest !== true || $latestNormalized === null) {
                 return self::FAILURE;
             }
 
-            $normalizedLatest = $versionParser->normalize($latest);
-            if ($normalizedLatest === null) {
-                return self::FAILURE;
-            }
-            $toNormalized = $normalizedLatest;
             $to = $latest;
+            $toNormalized = $latestNormalized;
+            $toResolvedToLatest = true;
+        }
+
+        if (version_compare($toNormalized, $fromNormalized, '<=')) {
+            if ($autoDetect || $toResolvedToLatest) {
+                $output->writeln(sprintf(
+                    '<comment>Already on the latest release (%s) in the %d.x line.</comment>',
+                    (string) $from,
+                    $majorVersion,
+                ));
+
+                return self::SUCCESS;
+            }
+
+            $output->writeln('<error>Target version must be greater than current version</error>');
+
+            return self::FAILURE;
+        }
+
+        if ($autoDetect) {
+            $current = (string) $from . ($fromDetected ? ' (installed)' : '');
+            $target = (string) $to . ($toDefaulted ? ' (latest)' : '');
+
+            $helper = $this->getHelper('question');
+            \assert($helper instanceof QuestionHelper);
+            $proceed = $helper->ask($input, $output, new ConfirmationQuestion(
+                sprintf('Check %s → %s? [Y/n] ', $current, $target),
+                true,
+            ));
+            if ($proceed !== true) {
+                return self::SUCCESS;
+            }
         }
 
         $versions = $updateChecker->filterVersionsBetween(array_keys($knownVersions), $fromNormalized, $toNormalized);
-
-        if ($versions === []) {
-            $output->writeln(sprintf(
-                '<comment>%s is already the latest release in the %d.x line.</comment>',
-                (string) $to,
-                $majorVersion,
-            ));
-
-            return self::SUCCESS;
-        }
 
         $batch = $provider->getReleaseContents($versions);
 
@@ -183,6 +225,16 @@ class CheckUpdatesCommand extends BaseCommand
     {
         $output->writeln('<fg=blue>────────────────────────────────────────────────────────────</>');
         $output->writeln('');
+    }
+
+    protected function installedCoreVersion(): ?string
+    {
+        $package = $this->requireComposer()
+            ->getRepositoryManager()
+            ->getLocalRepository()
+            ->findPackage('typo3/cms-core', '*');
+
+        return $package?->getPrettyVersion();
     }
 
     protected function createReleaseProvider(): ReleaseProvider

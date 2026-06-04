@@ -42,6 +42,23 @@ final class CheckUpdatesCommandTest extends TestCase
     }
 
     #[Test]
+    public function runsSilentlyWithoutPromptWhenBothVersionsGivenAndValid(): void
+    {
+        $command = $this->commandWithMockResponses([
+            new Response(200, [], $this->majorList()),
+            new Response(200, [], $this->releaseContent('14.2.1')),
+        ]);
+        $tester = new CommandTester($command);
+
+        $exit = $tester->execute(['from' => '14.2.0', 'to' => '14.2.1']);
+
+        $output = $tester->getDisplay();
+        $this->assertSame(0, $exit);
+        $this->assertStringNotContainsString('[Y/n]', $output);
+        $this->assertStringNotContainsString('(installed)', $output);
+    }
+
+    #[Test]
     public function returnsNonZeroOnTotalFailure(): void
     {
         $command = $this->commandWithMockResponses([
@@ -116,7 +133,82 @@ final class CheckUpdatesCommandTest extends TestCase
         $this->assertStringContainsString('14.2.5 is not a released TYPO3 version', $tester->getDisplay());
     }
 
-    private function commandWithMockResponses(array $responses): CheckUpdatesCommand
+    #[Test]
+    public function detectsInstalledVersionAndOffersLatestWhenNoArguments(): void
+    {
+        $command = $this->commandWithMockResponses([
+            new Response(200, [], $this->majorList()),
+            new Response(200, [], $this->releaseContent('14.2.1')),
+            new Response(200, [], $this->releaseContent('14.3.0')),
+        ], installedVersion: '14.2.0');
+        $tester = new CommandTester($command);
+        $tester->setInputs(['yes']);
+
+        $exit = $tester->execute([]);
+
+        $output = $tester->getDisplay();
+        $this->assertSame(0, $exit);
+        $this->assertStringContainsString('Check 14.2.0 (installed) → 14.3.0 (latest)', $output);
+    }
+
+    #[Test]
+    public function defaultsTargetToLatestWithoutClaimingInstalledWhenOnlyCurrentGiven(): void
+    {
+        $command = $this->commandWithMockResponses([
+            new Response(200, [], $this->majorList()),
+            new Response(200, [], $this->releaseContent('14.2.1')),
+            new Response(200, [], $this->releaseContent('14.3.0')),
+        ], installedVersion: '14.0.0');
+        $tester = new CommandTester($command);
+        $tester->setInputs(['yes']);
+
+        $exit = $tester->execute(['from' => '14.2.0']);
+
+        $output = $tester->getDisplay();
+        $this->assertSame(0, $exit);
+        $this->assertStringContainsString('Check 14.2.0 → 14.3.0 (latest)', $output);
+        $this->assertStringNotContainsString('(installed)', $output);
+    }
+
+    #[Test]
+    public function reportsAlreadyOnLatestWhenInstalledEqualsLatest(): void
+    {
+        $command = $this->commandWithMockResponses([
+            new Response(200, [], $this->majorList()),
+        ], installedVersion: '14.3.0');
+        $tester = new CommandTester($command);
+
+        $exit = $tester->execute([]);
+
+        $this->assertSame(0, $exit);
+        $this->assertStringContainsString('Already on the latest release (14.3.0)', $tester->getDisplay());
+    }
+
+    #[Test]
+    public function requiresExplicitVersionsWhenNonInteractiveAndNoArguments(): void
+    {
+        $command = $this->commandWithMockResponses([], installedVersion: '14.2.0');
+        $tester = new CommandTester($command);
+
+        $exit = $tester->execute([], ['interactive' => false]);
+
+        $this->assertSame(1, $exit);
+        $this->assertStringContainsString('Provide a current and target version', $tester->getDisplay());
+    }
+
+    #[Test]
+    public function errorsWhenInstalledVersionCannotBeDetected(): void
+    {
+        $command = $this->commandWithMockResponses([], installedVersion: null);
+        $tester = new CommandTester($command);
+
+        $exit = $tester->execute([]);
+
+        $this->assertSame(1, $exit);
+        $this->assertStringContainsString('Could not detect an installed typo3/cms-core', $tester->getDisplay());
+    }
+
+    private function commandWithMockResponses(array $responses, ?string $installedVersion = null): CheckUpdatesCommand
     {
         $mock = new MockHandler($responses);
         $stack = HandlerStack::create($mock);
@@ -124,15 +216,22 @@ final class CheckUpdatesCommandTest extends TestCase
         $client = new Client(['handler' => $stack]);
         $provider = new ReleaseProvider($client, new ChangeParser(new ChangeFactory()));
 
-        $command = new #[AsCommand(name: 'typo3:check-updates')] class ($provider) extends CheckUpdatesCommand {
-            public function __construct(private readonly ReleaseProvider $injected)
-            {
+        $command = new #[AsCommand(name: 'typo3:check-updates')] class ($provider, $installedVersion) extends CheckUpdatesCommand {
+            public function __construct(
+                private readonly ReleaseProvider $injected,
+                private readonly ?string $installedVersion,
+            ) {
                 parent::__construct();
             }
 
             protected function createReleaseProvider(): ReleaseProvider
             {
                 return $this->injected;
+            }
+
+            protected function installedCoreVersion(): ?string
+            {
+                return $this->installedVersion;
             }
         };
 
