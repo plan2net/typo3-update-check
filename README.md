@@ -32,24 +32,34 @@ The plugin automatically activates during `composer update` and:
 1. **Detects TYPO3 core updates** — Monitors when `typo3/cms-core` is being updated
 2. **Fetches release information** — Retrieves data from the TYPO3 API for all versions between current and target
 3. **Analyzes security bulletins** — Fetches severity levels (Critical, High, Medium, Low) from TYPO3 security advisories
-4. **Displays important changes** — Shows only versions with breaking changes or security updates
-5. **Requests confirmation** — Prompts before proceeding when breaking changes are found
+4. **Displays important changes** — Shows each affected version's breaking changes and security updates, followed by a one-line digest (releases scanned, security updates with severity totals, breaking changes)
+5. **Warns about skipped security fixes** — If the target lands below newer security releases, it lists them so you can raise your constraint
+6. **Requests confirmation** — Prompts before proceeding when breaking changes or security updates are found
 
 In non-interactive environments (CI/CD), the plugin displays information but proceeds automatically. If the TYPO3 API is temporarily unavailable, the update continues without interruption.
 
 ## Example output
 
-![Demo](documentation/demo.gif)
+![Demo](documentation/demo-8cbb9a4f.gif)
 
 ## Manual check
 
 You can check for breaking changes and security updates between any two versions without running an actual update:
 
 ```bash
-composer typo3:check-updates 13.0.0 13.0.1
+composer typo3:check-updates 13.4.10 13.4.12
 ```
 
-![Demo](documentation/check-updates.gif)
+Both arguments are optional. With no arguments it uses your installed `typo3/cms-core` version and the latest release in that line; with only the first it defaults the target to the latest:
+
+```bash
+composer typo3:check-updates             # installed version → latest release
+composer typo3:check-updates 13.4.10     # 13.4.10 → latest release
+```
+
+When a version is auto-detected or defaulted, the command asks for confirmation before checking. If you pass a target that doesn't exist, it offers the latest instead; an unknown current version (or missing versions in a non-interactive shell) is rejected with a hint.
+
+![Demo](documentation/check-updates-a09d6b14.gif)
 
 ## API availability
 
