@@ -4,47 +4,80 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-A Composer plugin that intercepts TYPO3 core updates during `composer update` and displays breaking changes and security updates before proceeding. It fetches release information from the TYPO3 API and prompts for user confirmation when important changes are found.
+A Composer plugin that intercepts TYPO3 core updates during `composer update` and displays breaking changes and security updates before proceeding. It fetches release information from the TYPO3 API and prompts for user confirmation when important changes are found. It also ships a standalone Composer command (`typo3:check-updates`) for ad-hoc checks.
+
+This is a Composer **plugin/library** (`composer-plugin`), not a TYPO3 site. A local DDEV environment (PHP 8.2) is present — per the global instructions, run commands inside the container: `ddev exec 'cd /var/www/html && <command>'`.
 
 ## Commands
 
 ```bash
 composer install          # Install dependencies
-composer test             # Run PHPUnit tests
-composer analyse          # Run PHPStan (level 8)
-composer cs-fix           # Run PHP CS Fixer
+composer test             # PHPUnit (unit + E2E suites under tests/)
+composer analyse          # PHPStan (level 8)
+composer cs-fix           # PHP CS Fixer (PSR-12)
 ```
 
 Run a single test:
 ```bash
-vendor/bin/phpunit tests/UpdateCheckerTest.php --filter testMethodName
+vendor/bin/phpunit --filter testMethodName
+vendor/bin/phpunit tests/UpdateCheckerTest.php
 ```
 
-Manual version check (useful for testing without running composer update):
+Run only the E2E suite (spins up a `php -S` stub server, no network):
 ```bash
-composer typo3:check-updates 12.4.10 12.4.20
+vendor/bin/phpunit tests/E2E
 ```
+
+Manual version check (exercises the same flow without running `composer update`):
+```bash
+composer typo3:check-updates 12.4.10 12.4.20   # explicit from → to
+composer typo3:check-updates 12.4.10           # → latest in the line
+composer typo3:check-updates                   # installed version → latest
+```
+
+PHPUnit runs in strict mode (`failOnRisky`, `failOnWarning`, `beStrictAboutOutputDuringTests`, random order). Output written directly during a test (not via the IO mock) will fail the run.
 
 ## Architecture
 
-The plugin hooks into Composer's `PRE_POOL_CREATE` event via `Plugin.php`:
+The plugin both subscribes to a Composer event and exposes a command capability (`Plugin` implements `PluginInterface`, `EventSubscriberInterface`, and `Capable`).
 
-1. **Plugin** (`src/Plugin.php`) - Entry point implementing `PluginInterface` and `EventSubscriberInterface`. Orchestrates the update check flow.
+**Update-check flow** (`Plugin::checkForBreakingChanges`, hooked on `PRE_POOL_CREATE` at priority 1000, guarded by `hasChecked`):
 
-2. **ReleaseProvider** (`src/Release/`) - Fetches release data from `https://get.typo3.org/api/v1`. Returns `Release` objects (version metadata) and `ReleaseContent` (parsed changes).
+1. **Plugin** (`src/Plugin.php`) — detects a `typo3/cms-core` upgrade (current installed version → highest target in the pool), orchestrates the check, prints the report, and prompts for confirmation. In non-interactive shells it prints and proceeds; on API failure it prints a humanized reason and proceeds without blocking the update.
 
-3. **ChangeParser** (`src/Change/ChangeParser.php`) - Parses API response to extract breaking changes and security updates. Uses `ChangeFactory` to create typed `Change` objects (`BreakingChange`, `SecurityUpdate`, `RegularChange`).
+2. **UpdateChecker** (`src/UpdateChecker.php`) — pure version logic, no I/O: `findTargetVersion` (highest core version in the pool), `filterVersionsBetween`, and `securityReleasesAbove` (security releases newer than the target — the "security gap" warning).
 
-4. **SecurityBulletinFetcher** (`src/Security/`) - Fetches severity levels (Critical/High/Medium/Low) from TYPO3 security bulletin pages.
+3. **VersionParser** (`src/VersionParser.php`) — normalizes pretty versions to comparable `x.y.z` strings; returns `null` for unparseable input (callers must handle null).
 
-5. **CacheManager** (`src/Cache/`) - Caches API responses in Composer's global cache directory. Release lists expire after 1 hour; release content and security bulletins are cached indefinitely.
+4. **ReleaseProviderFactory** (`src/ReleaseProviderFactory.php`) — composition root. Wires the Guzzle client (10s timeout, JSON Accept header, `RetryPolicy` middleware), `CacheManager`, `SecurityBulletinFetcher`, `ChangeParser`, and `ReleaseProvider`. Both `Plugin` and `CheckUpdatesCommand` build their provider through this factory. `Plugin::setReleaseProvider` is a test seam only.
 
-6. **ConsoleFormatter** (`src/ConsoleFormatter.php`) - Formats `ReleaseContent` for terminal output with proper escaping.
+5. **ReleaseProvider** (`src/Release/`) — fetches release lists per major version and release content. Content is fetched **concurrently** via a Guzzle `Pool` (concurrency 5) and returned as a `ReleaseContentBatch`. Per-version fetch failures are captured (not thrown) so partial results still display; list-fetch failure throws `ApiFailureException`.
+
+6. **ReleaseContentBatch** (`src/Release/ReleaseContentBatch.php`) — value object holding `results` (version → `ReleaseContent`) and `failures` (version → `ApiFailure`), plus `hasImportantChanges()` and `dominantFailureCategory()`.
+
+7. **Error categorization** (`src/Release/`) — `ApiFailureClassifier` maps any `Throwable` to an `ApiFailure` with an `ApiFailureCategory` (ConnectionError, ServerError, NotFound, MalformedResponse, Unknown). `ApiFailureException` wraps a failure; `FailureMessageFormatter` turns it into user-facing text.
+
+8. **RetryPolicy** (`src/Release/RetryPolicy.php`) — Guzzle retry middleware: up to 2 retries on connect errors, HTTP 429, and 5xx. Exponential backoff (1s, 2s); honors `Retry-After`, capped at 5s.
+
+9. **ChangeParser** (`src/Change/ChangeParser.php`) — parses API content into typed `Change` objects (`BreakingChange`, `SecurityUpdate`, `RegularChange`) via `ChangeFactory`, enriching security updates with severities from the bulletin fetcher.
+
+10. **SecurityBulletinFetcher** (`src/Security/`) — fetches severity levels (Critical/High/Medium/Low) from TYPO3 security bulletin pages.
+
+11. **CacheManager** (`src/Cache/`) — caches API responses in Composer's global cache dir. Release lists expire after 1 hour; release content and security bulletins are cached permanently.
+
+12. **ConsoleFormatter** (`src/ConsoleFormatter.php`) — `formatBatchReport` renders the per-version report plus a one-line digest (releases scanned, security updates with severity totals, breaking changes); `formatSecurityGap` renders the warning for newer security releases above the target.
+
+13. **CheckUpdatesCommand** (`src/Command/`) — the `typo3:check-updates` command (registered via `CommandProvider`). Resolves/validates from/to versions against the released list, offers the latest when a target is unknown, then runs the same batch + formatter pipeline. Exit codes: `SUCCESS`, `FAILURE`, `INVALID` (results empty but failures present).
+
+## Testing
+
+- **Unit tests** mock the IO / HTTP boundary and exercise classes directly.
+- **E2E tests** (`tests/E2E/`) start a real `php -S` stub server (`tests/E2E/stub/server.php`) on a random port and drive `ReleaseProvider` against it — used to verify retry/backoff and partial-failure behavior without hitting the network. `BaseE2ETestCase::makeProvider($withRetry)` builds providers pointed at the stub.
 
 ## Code Style
 
-- PHP 8.1+ with strict types
-- PSR-12 coding standard (enforced by PHP CS Fixer)
+- PHP 8.1+ with `declare(strict_types=1)`
+- PSR-12 (enforced by PHP CS Fixer)
 - PHPStan level 8
-- Use readonly classes/properties where applicable
-- Prefer `match` expressions over switch statements
+- `final` + readonly classes/properties where applicable; prefer `match` over `switch` and early returns
+- No abbreviated names
