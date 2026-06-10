@@ -50,19 +50,14 @@ final class ReleaseContentBatch
         }
 
         $maxCount = max($counts);
-        $candidates = array_keys(array_filter(
-            $counts,
-            static fn (int $count): bool => $count === $maxCount,
-        ));
+        $best = null;
+        foreach ($counts as $value => $count) {
+            if ($count !== $maxCount) {
+                continue;
+            }
 
-        if (count($candidates) === 1) {
-            return ApiFailureCategory::from($candidates[0]);
-        }
-
-        $best = ApiFailureCategory::from($candidates[0]);
-        foreach ($candidates as $value) {
             $category = ApiFailureCategory::from($value);
-            if ($category->severity() > $best->severity()) {
+            if ($best === null || $category->severity() > $best->severity()) {
                 $best = $category;
             }
         }

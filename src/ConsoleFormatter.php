@@ -47,7 +47,7 @@ final class ConsoleFormatter
             if (!$batch->hasResults()) {
                 $lines[] = sprintf(
                     '<comment>Proceeding with update (dominant failure: %s).</comment>',
-                    $batch->dominantFailureCategory()?->value ?? 'unknown',
+                    $batch->dominantFailureCategory()->value ?? 'unknown',
                 );
             }
         }
