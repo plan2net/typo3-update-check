@@ -64,7 +64,7 @@ final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
      */
     public function checkForBreakingChanges(PrePoolCreateEvent $event): void
     {
-        if ($this->hasChecked) {
+        if ($this->hasChecked || $this->isDisabledByEnvironment()) {
             return;
         }
 
@@ -227,6 +227,16 @@ final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
             $this->io->write('<info>Update cancelled by user.</info>');
             exit(0);
         }
+    }
+
+    private function isDisabledByEnvironment(): bool
+    {
+        $value = getenv('TYPO3_UPDATE_CHECK');
+        if ($value === false) {
+            return false;
+        }
+
+        return filter_var($value, FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE) === false;
     }
 
     private function humanizeFailure(ApiFailure $failure): string

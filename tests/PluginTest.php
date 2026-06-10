@@ -79,6 +79,23 @@ final class PluginTest extends TestCase
     }
 
     #[Test]
+    public function skipsCheckWhenDisabledViaEnvironmentVariable(): void
+    {
+        putenv('TYPO3_UPDATE_CHECK=0');
+
+        try {
+            $this->setupCurrentTypo3('12.4.31');
+            $this->setupUpdatePackages(['typo3/cms-core' => '12.4.34']);
+
+            $this->io->expects($this->never())->method('write');
+
+            $this->plugin->checkForBreakingChanges($this->event);
+        } finally {
+            putenv('TYPO3_UPDATE_CHECK');
+        }
+    }
+
+    #[Test]
     public function ignoresDowngrades(): void
     {
         $this->setupCurrentTypo3('12.4.34');

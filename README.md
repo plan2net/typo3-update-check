@@ -61,6 +61,16 @@ When a version is auto-detected or defaulted, the command asks for confirmation 
 
 ![Demo](documentation/check-updates-a6c8a669.gif)
 
+## Disabling the check
+
+Set the environment variable `TYPO3_UPDATE_CHECK=0` to skip the check, for a single run or permanently in environments where it is not wanted:
+
+```bash
+TYPO3_UPDATE_CHECK=0 composer update
+```
+
+The values `0`, `false`, `off`, and `no` (case-insensitive) are recognized. The manual `typo3:check-updates` command is not affected.
+
 ## API availability
 
 The plugin tolerates transient TYPO3 API issues automatically:
