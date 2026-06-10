@@ -2,7 +2,7 @@
     "name": "plan2net/typo3-update-check",
     "description": "A Composer plugin that checks for TYPO3 updates and provides detailed information about breaking changes and security updates",
     "type": "composer-plugin",
-    "license": "GPL-2.0+",
+    "license": "GPL-2.0-or-later",
     "homepage": "https://github.com/plan2net/typo3-update-check",
     "keywords": [
         "typo3",
