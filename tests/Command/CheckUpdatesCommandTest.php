@@ -5,18 +5,14 @@ declare(strict_types=1);
 namespace Plan2net\Typo3UpdateCheck\Tests\Command;
 
 use Composer\Console\Application;
-use GuzzleHttp\Client;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Middleware;
-use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Plan2net\Typo3UpdateCheck\Change\ChangeFactory;
 use Plan2net\Typo3UpdateCheck\Change\ChangeParser;
 use Plan2net\Typo3UpdateCheck\Command\CheckUpdatesCommand;
+use Plan2net\Typo3UpdateCheck\Http\HttpTransportException;
 use Plan2net\Typo3UpdateCheck\Release\ReleaseProvider;
-use Plan2net\Typo3UpdateCheck\Release\RetryPolicy;
+use Plan2net\Typo3UpdateCheck\Tests\Http\FakeHttpClient;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Tester\CommandTester;
 
@@ -25,12 +21,9 @@ final class CheckUpdatesCommandTest extends TestCase
     #[Test]
     public function rendersPerVersionWarningsAndReturnsZeroWhenSomeSucceed(): void
     {
-        // Use 404 (no retry) to avoid response interleaving between concurrent pool requests.
-        $command = $this->commandWithMockResponses([
-            new Response(200, [], $this->majorList()),
-            new Response(404),
-            new Response(200, [], $this->releaseContent('14.2.1')),
-        ]);
+        $http = $this->fakeHttp('14.2.1');
+        $http->queue('https://get.typo3.org/api/v1/release/14.3.0/content', HttpTransportException::forHttpError('not found', 404));
+        $command = $this->commandWithFakeHttp($http);
         $tester = new CommandTester($command);
 
         $exit = $tester->execute(['from' => '14.2.0', 'to' => '14.3.0']);
@@ -44,10 +37,7 @@ final class CheckUpdatesCommandTest extends TestCase
     #[Test]
     public function runsSilentlyWithoutPromptWhenBothVersionsGivenAndValid(): void
     {
-        $command = $this->commandWithMockResponses([
-            new Response(200, [], $this->majorList()),
-            new Response(200, [], $this->releaseContent('14.2.1')),
-        ]);
+        $command = $this->commandWithFakeHttp($this->fakeHttp('14.2.1'));
         $tester = new CommandTester($command);
 
         $exit = $tester->execute(['from' => '14.2.0', 'to' => '14.2.1']);
@@ -61,11 +51,10 @@ final class CheckUpdatesCommandTest extends TestCase
     #[Test]
     public function returnsNonZeroOnTotalFailure(): void
     {
-        $command = $this->commandWithMockResponses([
-            new Response(200, [], $this->majorList()),
-            new Response(503), new Response(503), new Response(503),
-            new Response(503), new Response(503), new Response(503),
-        ]);
+        $http = $this->fakeHttp();
+        $http->queue('https://get.typo3.org/api/v1/release/14.2.1/content', HttpTransportException::forHttpError('server error', 503));
+        $http->queue('https://get.typo3.org/api/v1/release/14.3.0/content', HttpTransportException::forHttpError('server error', 503));
+        $command = $this->commandWithFakeHttp($http);
         $tester = new CommandTester($command);
 
         $exit = $tester->execute(['from' => '14.2.0', 'to' => '14.3.0']);
@@ -77,9 +66,7 @@ final class CheckUpdatesCommandTest extends TestCase
     #[Test]
     public function rejectsUnknownTargetVersionWhenNonInteractive(): void
     {
-        $command = $this->commandWithMockResponses([
-            new Response(200, [], $this->majorList()),
-        ]);
+        $command = $this->commandWithFakeHttp($this->fakeHttp());
         $tester = new CommandTester($command);
 
         $exit = $tester->execute(['from' => '14.2.0', 'to' => '14.9.9'], ['interactive' => false]);
@@ -91,11 +78,7 @@ final class CheckUpdatesCommandTest extends TestCase
     #[Test]
     public function offersLatestForUnknownTargetAndProceedsWhenConfirmed(): void
     {
-        $command = $this->commandWithMockResponses([
-            new Response(200, [], $this->majorList()),
-            new Response(200, [], $this->releaseContent('14.2.1')),
-            new Response(200, [], $this->releaseContent('14.3.0')),
-        ]);
+        $command = $this->commandWithFakeHttp($this->fakeHttp('14.2.1', '14.3.0'));
         $tester = new CommandTester($command);
         $tester->setInputs(['yes']);
 
@@ -108,9 +91,7 @@ final class CheckUpdatesCommandTest extends TestCase
     #[Test]
     public function returnsErrorWhenLatestOfferIsDeclined(): void
     {
-        $command = $this->commandWithMockResponses([
-            new Response(200, [], $this->majorList()),
-        ]);
+        $command = $this->commandWithFakeHttp($this->fakeHttp());
         $tester = new CommandTester($command);
         $tester->setInputs(['no']);
 
@@ -122,9 +103,7 @@ final class CheckUpdatesCommandTest extends TestCase
     #[Test]
     public function rejectsCurrentVersionThatDoesNotExist(): void
     {
-        $command = $this->commandWithMockResponses([
-            new Response(200, [], $this->majorList()),
-        ]);
+        $command = $this->commandWithFakeHttp($this->fakeHttp());
         $tester = new CommandTester($command);
 
         $exit = $tester->execute(['from' => '14.2.5', 'to' => '14.3.0']);
@@ -136,11 +115,7 @@ final class CheckUpdatesCommandTest extends TestCase
     #[Test]
     public function detectsInstalledVersionAndOffersLatestWhenNoArguments(): void
     {
-        $command = $this->commandWithMockResponses([
-            new Response(200, [], $this->majorList()),
-            new Response(200, [], $this->releaseContent('14.2.1')),
-            new Response(200, [], $this->releaseContent('14.3.0')),
-        ], installedVersion: '14.2.0');
+        $command = $this->commandWithFakeHttp($this->fakeHttp('14.2.1', '14.3.0'), installedVersion: '14.2.0');
         $tester = new CommandTester($command);
         $tester->setInputs(['yes']);
 
@@ -154,11 +129,7 @@ final class CheckUpdatesCommandTest extends TestCase
     #[Test]
     public function defaultsTargetToLatestWithoutClaimingInstalledWhenOnlyCurrentGiven(): void
     {
-        $command = $this->commandWithMockResponses([
-            new Response(200, [], $this->majorList()),
-            new Response(200, [], $this->releaseContent('14.2.1')),
-            new Response(200, [], $this->releaseContent('14.3.0')),
-        ], installedVersion: '14.0.0');
+        $command = $this->commandWithFakeHttp($this->fakeHttp('14.2.1', '14.3.0'), installedVersion: '14.0.0');
         $tester = new CommandTester($command);
         $tester->setInputs(['yes']);
 
@@ -173,9 +144,7 @@ final class CheckUpdatesCommandTest extends TestCase
     #[Test]
     public function reportsAlreadyOnLatestWhenInstalledEqualsLatest(): void
     {
-        $command = $this->commandWithMockResponses([
-            new Response(200, [], $this->majorList()),
-        ], installedVersion: '14.3.0');
+        $command = $this->commandWithFakeHttp($this->fakeHttp(), installedVersion: '14.3.0');
         $tester = new CommandTester($command);
 
         $exit = $tester->execute([]);
@@ -187,7 +156,7 @@ final class CheckUpdatesCommandTest extends TestCase
     #[Test]
     public function requiresExplicitVersionsWhenNonInteractiveAndNoArguments(): void
     {
-        $command = $this->commandWithMockResponses([], installedVersion: '14.2.0');
+        $command = $this->commandWithFakeHttp(new FakeHttpClient(), installedVersion: '14.2.0');
         $tester = new CommandTester($command);
 
         $exit = $tester->execute([], ['interactive' => false]);
@@ -199,7 +168,7 @@ final class CheckUpdatesCommandTest extends TestCase
     #[Test]
     public function errorsWhenInstalledVersionCannotBeDetected(): void
     {
-        $command = $this->commandWithMockResponses([], installedVersion: null);
+        $command = $this->commandWithFakeHttp(new FakeHttpClient(), installedVersion: null);
         $tester = new CommandTester($command);
 
         $exit = $tester->execute([]);
@@ -208,13 +177,9 @@ final class CheckUpdatesCommandTest extends TestCase
         $this->assertStringContainsString('Could not detect an installed typo3/cms-core', $tester->getDisplay());
     }
 
-    private function commandWithMockResponses(array $responses, ?string $installedVersion = null): CheckUpdatesCommand
+    private function commandWithFakeHttp(FakeHttpClient $http, ?string $installedVersion = null): CheckUpdatesCommand
     {
-        $mock = new MockHandler($responses);
-        $stack = HandlerStack::create($mock);
-        $stack->push(Middleware::retry(RetryPolicy::decider(), static fn (): int => 0));
-        $client = new Client(['handler' => $stack]);
-        $provider = new ReleaseProvider($client, new ChangeParser(new ChangeFactory()));
+        $provider = new ReleaseProvider($http, new ChangeParser(new ChangeFactory()));
 
         $command = new #[AsCommand(name: 'typo3:check-updates')] class ($provider, $installedVersion) extends CheckUpdatesCommand {
             public function __construct(
@@ -242,9 +207,23 @@ final class CheckUpdatesCommandTest extends TestCase
         return $command;
     }
 
+    private function fakeHttp(string ...$contentVersions): FakeHttpClient
+    {
+        $http = new FakeHttpClient();
+        $http->queueJson('https://get.typo3.org/api/v1/major/14/release/', $this->majorList());
+        foreach ($contentVersions as $version) {
+            $http->queueJson(
+                'https://get.typo3.org/api/v1/release/' . $version . '/content',
+                $this->releaseContent($version),
+            );
+        }
+
+        return $http;
+    }
+
     private function majorList(): string
     {
-        return json_encode([
+        return (string) json_encode([
             ['version' => '14.3.0', 'date' => '2026-04-21T09:30:20+02:00', 'type' => 'regular'],
             ['version' => '14.2.1', 'date' => '2026-02-20T09:25:10+01:00', 'type' => 'regular'],
             ['version' => '14.2.0', 'date' => '2026-03-31T07:38:51+02:00', 'type' => 'regular'],
@@ -253,7 +232,7 @@ final class CheckUpdatesCommandTest extends TestCase
 
     private function releaseContent(string $version): string
     {
-        return json_encode([
+        return (string) json_encode([
             'version' => $version,
             'release_notes' => ['version' => $version, 'changes' => ''],
         ]);

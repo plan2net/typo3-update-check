@@ -75,11 +75,13 @@ The values `0`, `false`, `off`, and `no` (case-insensitive) are recognized. The 
 
 The plugin tolerates transient TYPO3 API issues automatically:
 
-- **Bounded retry:** each request is retried up to two times (three
-  attempts total) on connection errors, timeouts, HTTP 5xx, and HTTP
-  429 responses. Backoff is exponential (1 s, 2 s) and honors the
-  server's `Retry-After` header when present, capped at 5 s so a
-  `composer update` is never delayed for long.
+- **Transient errors:** connection failures and HTTP 5xx responses are
+  retried by Composer's own HTTP transport where it supports that
+  (Composer ≥ 2.3 with ext-curl). On older Composer versions or the
+  PHP-streams fallback, requests get a single attempt.
+- **Rate limiting:** HTTP 429 responses are retried by the plugin itself —
+  up to two retries with exponential backoff (1 s, 2 s), honoring the
+  server's `Retry-After` header capped at 5 s.
 - **No retry on deterministic errors:** HTTP 4xx responses other than
   429 are treated as final and reported immediately.
 - **Per-version reporting:** when only some versions fail to fetch,
@@ -87,9 +89,12 @@ The plugin tolerates transient TYPO3 API issues automatically:
   error, server error, not found, or malformed response — and the
   plugin suggests retrying with `composer typo3:check-updates` for the
   skipped versions.
-- **Fail-soft:** if every request fails after retries, the plugin
-  reports the dominant failure category and lets the update proceed
-  so your development workflow is never blocked.
+- **Fail-soft:** if every request fails, the plugin reports the dominant
+  failure category and lets the update proceed so your development
+  workflow is never blocked.
+
+Downloads run through Composer's HTTP layer, so its parallelism setting
+(`COMPOSER_MAX_PARALLEL_HTTP`, default 12) applies.
 
 
 ## Caching
@@ -106,6 +111,7 @@ The cache is shared across all TYPO3 projects on the same machine.
 
 - PHP 8.1+
 - Composer 2.0+
+- No third-party runtime dependencies (uses Composer's own HTTP layer)
 
 ## License
 

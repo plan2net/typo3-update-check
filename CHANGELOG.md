@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - unreleased
+
+### Removed
+- The `guzzlehttp/guzzle` dependency. The plugin now uses Composer's own
+  HTTP layer (`HttpDownloader`) and has no third-party runtime
+  dependencies, eliminating dependency conflicts with host projects.
+
+### Changed
+- Retry behavior: transient connection/5xx failures are now retried by
+  Composer's transport (Composer ≥ 2.3 with ext-curl); the plugin itself
+  retries only HTTP 429, honoring `Retry-After` capped at 5 s. Fail-soft
+  behavior, output, caching, and exit codes are unchanged.
+- Concurrent fetches follow Composer's parallelism setting
+  (`COMPOSER_MAX_PARALLEL_HTTP`) instead of a fixed limit of 5.
+- PHP class APIs reshaped around the new `HttpClient` boundary
+  (`ReleaseProviderFactory::create()` now requires an `HttpDownloader`;
+  `ReleaseProvider`/`SecurityBulletinFetcher` take an `HttpClient`;
+  `RetryPolicy` moved to the `Http` namespace with a new
+  `shouldRetry()`/`delayMs()` API).
+
 ## [1.3.0] - 2026-06-04
 
 ### Added

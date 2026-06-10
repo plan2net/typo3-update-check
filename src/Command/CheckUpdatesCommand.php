@@ -239,8 +239,12 @@ class CheckUpdatesCommand extends BaseCommand
 
     protected function createReleaseProvider(): ReleaseProvider
     {
-        $cacheDir = $this->requireComposer()->getConfig()->get('cache-dir');
+        $composer = $this->requireComposer();
+        $cacheDir = $composer->getConfig()->get('cache-dir');
 
-        return ReleaseProviderFactory::create(is_string($cacheDir) ? $cacheDir : null);
+        return ReleaseProviderFactory::create(
+            $composer->getLoop()->getHttpDownloader(),
+            is_string($cacheDir) ? $cacheDir : null,
+        );
     }
 }

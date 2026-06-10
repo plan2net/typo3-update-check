@@ -4,19 +4,18 @@ declare(strict_types=1);
 
 namespace Plan2net\Typo3UpdateCheck\Tests;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Plan2net\Typo3UpdateCheck\Cache\CacheInterface;
 use Plan2net\Typo3UpdateCheck\Change\ChangeFactory;
 use Plan2net\Typo3UpdateCheck\Change\ChangeParser;
+use Plan2net\Typo3UpdateCheck\Http\HttpResponse;
+use Plan2net\Typo3UpdateCheck\Http\HttpTransportException;
 use Plan2net\Typo3UpdateCheck\Release\ApiFailureCategory;
 use Plan2net\Typo3UpdateCheck\Release\ReleaseContent;
 use Plan2net\Typo3UpdateCheck\Release\ReleaseContentBatch;
 use Plan2net\Typo3UpdateCheck\Release\ReleaseProvider;
+use Plan2net\Typo3UpdateCheck\Tests\Http\FakeHttpClient;
 
 final class ReleaseProviderContentTest extends TestCase
 {
@@ -33,11 +32,11 @@ final class ReleaseProviderContentTest extends TestCase
             ],
         ]);
 
-        $mock = new MockHandler([new Response(200, [], $apiData)]);
-        $client = new Client(['handler' => HandlerStack::create($mock)]);
+        $http = new FakeHttpClient();
+        $http->queueJson('https://get.typo3.org/api/v1/release/12.0.0/content', (string) $apiData);
 
         $parser = new ChangeParser(new ChangeFactory());
-        $provider = new ReleaseProvider($client, $parser);
+        $provider = new ReleaseProvider($http, $parser);
         $batch = $provider->getReleaseContents(['12.0.0']);
 
         $this->assertInstanceOf(ReleaseContentBatch::class, $batch);
@@ -54,8 +53,7 @@ final class ReleaseProviderContentTest extends TestCase
     #[Test]
     public function usesReleaseContentCacheWhenAvailable(): void
     {
-        $mock = new MockHandler([]);
-        $client = new Client(['handler' => HandlerStack::create($mock)]);
+        $http = new FakeHttpClient();
         $cache = $this->createMock(CacheInterface::class);
 
         $cachedData = [
@@ -74,7 +72,7 @@ final class ReleaseProviderContentTest extends TestCase
         $cache->expects($this->never())->method('set');
 
         $parser = new ChangeParser(new ChangeFactory());
-        $provider = new ReleaseProvider($client, $parser, $cache);
+        $provider = new ReleaseProvider($http, $parser, $cache);
         $batch = $provider->getReleaseContents(['12.4.20']);
 
         $this->assertInstanceOf(ReleaseContentBatch::class, $batch);
@@ -82,6 +80,7 @@ final class ReleaseProviderContentTest extends TestCase
         $this->assertArrayHasKey('12.4.20', $batch->results);
         $this->assertInstanceOf(ReleaseContent::class, $batch->results['12.4.20']);
         $this->assertSame('12.4.20', $batch->results['12.4.20']->version);
+        $this->assertSame([], $http->requests);
     }
 
     #[Test]
@@ -96,15 +95,15 @@ final class ReleaseProviderContentTest extends TestCase
             ],
         ];
 
-        $mock = new MockHandler([new Response(200, [], json_encode($apiData))]);
-        $client = new Client(['handler' => HandlerStack::create($mock)]);
+        $http = new FakeHttpClient();
+        $http->queueJson('https://get.typo3.org/api/v1/release/12.4.20/content', (string) json_encode($apiData));
         $cache = $this->createMock(CacheInterface::class);
 
         $cache->method('get')->with('content-12.4.20')->willReturn(null);
         $cache->expects($this->once())->method('set')->with('content-12.4.20', $apiData);
 
         $parser = new ChangeParser(new ChangeFactory());
-        $provider = new ReleaseProvider($client, $parser, $cache);
+        $provider = new ReleaseProvider($http, $parser, $cache);
         $batch = $provider->getReleaseContents(['12.4.20']);
 
         $this->assertInstanceOf(ReleaseContentBatch::class, $batch);
@@ -114,17 +113,15 @@ final class ReleaseProviderContentTest extends TestCase
     }
 
     #[Test]
-    public function fetchesMultipleVersionsInParallel(): void
+    public function fetchesMultipleVersionsViaGetMany(): void
     {
-        $mock = new MockHandler([
-            new Response(200, [], json_encode(['release_notes' => ['version' => '12.4.1', 'changes' => '']])),
-            new Response(200, [], json_encode(['release_notes' => ['version' => '12.4.2', 'changes' => '']])),
-            new Response(200, [], json_encode(['release_notes' => ['version' => '12.4.3', 'changes' => '']])),
-        ]);
-        $client = new Client(['handler' => HandlerStack::create($mock)]);
+        $http = new FakeHttpClient();
+        $http->queueJson('https://get.typo3.org/api/v1/release/12.4.1/content', (string) json_encode(['release_notes' => ['version' => '12.4.1', 'changes' => '']]));
+        $http->queueJson('https://get.typo3.org/api/v1/release/12.4.2/content', (string) json_encode(['release_notes' => ['version' => '12.4.2', 'changes' => '']]));
+        $http->queueJson('https://get.typo3.org/api/v1/release/12.4.3/content', (string) json_encode(['release_notes' => ['version' => '12.4.3', 'changes' => '']]));
 
         $parser = new ChangeParser(new ChangeFactory());
-        $provider = new ReleaseProvider($client, $parser);
+        $provider = new ReleaseProvider($http, $parser);
         $batch = $provider->getReleaseContents(['12.4.1', '12.4.2', '12.4.3']);
 
         $this->assertInstanceOf(ReleaseContentBatch::class, $batch);
@@ -133,20 +130,19 @@ final class ReleaseProviderContentTest extends TestCase
         $this->assertArrayHasKey('12.4.1', $batch->results);
         $this->assertArrayHasKey('12.4.2', $batch->results);
         $this->assertArrayHasKey('12.4.3', $batch->results);
+        $this->assertSame(['getMany', 'getMany', 'getMany'], array_column($http->requests, 'method'));
     }
 
     #[Test]
     public function returnsSortedResultsByVersion(): void
     {
-        $mock = new MockHandler([
-            new Response(200, [], json_encode(['release_notes' => ['version' => '12.4.15', 'changes' => '']])),
-            new Response(200, [], json_encode(['release_notes' => ['version' => '12.4.21', 'changes' => '']])),
-            new Response(200, [], json_encode(['release_notes' => ['version' => '12.4.18', 'changes' => '']])),
-        ]);
-        $client = new Client(['handler' => HandlerStack::create($mock)]);
+        $http = new FakeHttpClient();
+        $http->queueJson('https://get.typo3.org/api/v1/release/12.4.15/content', (string) json_encode(['release_notes' => ['version' => '12.4.15', 'changes' => '']]));
+        $http->queueJson('https://get.typo3.org/api/v1/release/12.4.21/content', (string) json_encode(['release_notes' => ['version' => '12.4.21', 'changes' => '']]));
+        $http->queueJson('https://get.typo3.org/api/v1/release/12.4.18/content', (string) json_encode(['release_notes' => ['version' => '12.4.18', 'changes' => '']]));
 
         $parser = new ChangeParser(new ChangeFactory());
-        $provider = new ReleaseProvider($client, $parser);
+        $provider = new ReleaseProvider($http, $parser);
         $batch = $provider->getReleaseContents(['12.4.15', '12.4.21', '12.4.18']);
 
         $this->assertInstanceOf(ReleaseContentBatch::class, $batch);
@@ -157,11 +153,11 @@ final class ReleaseProviderContentTest extends TestCase
     #[Test]
     public function recordsJsonExceptionAsMalformedResponseFailure(): void
     {
-        $mock = new MockHandler([new Response(200, [], '<html>oops</html>')]);
-        $client = new Client(['handler' => HandlerStack::create($mock)]);
+        $http = new FakeHttpClient();
+        $http->queue('https://get.typo3.org/api/v1/release/14.3.0/content', new HttpResponse(200, [], '<html>oops</html>'));
 
         $parser = new ChangeParser(new ChangeFactory());
-        $provider = new ReleaseProvider($client, $parser);
+        $provider = new ReleaseProvider($http, $parser);
         $batch = $provider->getReleaseContents(['14.3.0']);
 
         $this->assertArrayHasKey('14.3.0', $batch->failures);
@@ -175,11 +171,11 @@ final class ReleaseProviderContentTest extends TestCase
     #[Test]
     public function recordsRejectedResponseAsServerErrorFailure(): void
     {
-        $mock = new MockHandler([new Response(503)]);
-        $client = new Client(['handler' => HandlerStack::create($mock)]);
+        $http = new FakeHttpClient();
+        $http->queue('https://get.typo3.org/api/v1/release/14.3.0/content', HttpTransportException::forHttpError('server error', 503));
 
         $parser = new ChangeParser(new ChangeFactory());
-        $provider = new ReleaseProvider($client, $parser);
+        $provider = new ReleaseProvider($http, $parser);
         $batch = $provider->getReleaseContents(['14.3.0']);
 
         $this->assertArrayHasKey('14.3.0', $batch->failures);
@@ -198,14 +194,12 @@ final class ReleaseProviderContentTest extends TestCase
             'release_notes' => ['version' => '14.2.0', 'changes' => ''],
         ]);
 
-        $mock = new MockHandler([
-            new Response(200, [], $apiData),
-            new Response(503),
-        ]);
-        $client = new Client(['handler' => HandlerStack::create($mock)]);
+        $http = new FakeHttpClient();
+        $http->queueJson('https://get.typo3.org/api/v1/release/14.2.0/content', (string) $apiData);
+        $http->queue('https://get.typo3.org/api/v1/release/14.3.0/content', HttpTransportException::forHttpError('server error', 503));
 
         $parser = new ChangeParser(new ChangeFactory());
-        $provider = new ReleaseProvider($client, $parser);
+        $provider = new ReleaseProvider($http, $parser);
         $batch = $provider->getReleaseContents(['14.2.0', '14.3.0']);
 
         $this->assertArrayHasKey('14.2.0', $batch->results);

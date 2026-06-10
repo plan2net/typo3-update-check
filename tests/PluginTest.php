@@ -11,18 +11,14 @@ use Composer\Plugin\PluginEvents;
 use Composer\Plugin\PrePoolCreateEvent;
 use Composer\Repository\InstalledRepositoryInterface;
 use Composer\Repository\RepositoryManager;
-use GuzzleHttp\Client;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Middleware;
-use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Plan2net\Typo3UpdateCheck\Change\ChangeFactory;
 use Plan2net\Typo3UpdateCheck\Change\ChangeParser;
+use Plan2net\Typo3UpdateCheck\Http\HttpTransportException;
 use Plan2net\Typo3UpdateCheck\Plugin;
 use Plan2net\Typo3UpdateCheck\Release\ReleaseProvider;
-use Plan2net\Typo3UpdateCheck\Release\RetryPolicy;
+use Plan2net\Typo3UpdateCheck\Tests\Http\FakeHttpClient;
 
 final class PluginTest extends TestCase
 {
@@ -116,15 +112,10 @@ final class PluginTest extends TestCase
             ['version' => '14.3.0', 'date' => '2026-04-21T09:30:20+02:00', 'type' => 'regular'],
             ['version' => '14.2.0', 'date' => '2026-03-31T07:38:51+02:00', 'type' => 'regular'],
         ]);
-        // Use 404 (no retry) so there is no response interleaving between concurrent pool requests.
-        $mock = new MockHandler([
-            new Response(200, [], $majorList),
-            new Response(404),
-        ]);
-        $stack = HandlerStack::create($mock);
-        $stack->push(Middleware::retry(RetryPolicy::decider(), static fn (): int => 0));
-        $client = new Client(['handler' => $stack]);
-        $provider = new ReleaseProvider($client, new ChangeParser(new ChangeFactory()));
+        $http = new FakeHttpClient();
+        $http->queueJson('https://get.typo3.org/api/v1/major/14/release/', (string) $majorList);
+        $http->queue('https://get.typo3.org/api/v1/release/14.3.0/content', HttpTransportException::forHttpError('not found', 404));
+        $provider = new ReleaseProvider($http, new ChangeParser(new ChangeFactory()));
         $this->plugin->setReleaseProvider($provider);
 
         $messages = [];
@@ -149,16 +140,10 @@ final class PluginTest extends TestCase
             ['version' => '14.3.0', 'date' => '2026-04-21T09:30:20+02:00', 'type' => 'regular'],
             ['version' => '14.2.0', 'date' => '2026-03-31T07:38:51+02:00', 'type' => 'regular'],
         ]);
-        $mock = new MockHandler([
-            new Response(200, [], $majorList),
-            new Response(503),
-            new Response(503),
-            new Response(503),
-        ]);
-        $stack = HandlerStack::create($mock);
-        $stack->push(Middleware::retry(RetryPolicy::decider(), static fn (): int => 0));
-        $client = new Client(['handler' => $stack]);
-        $provider = new ReleaseProvider($client, new ChangeParser(new ChangeFactory()));
+        $http = new FakeHttpClient();
+        $http->queueJson('https://get.typo3.org/api/v1/major/14/release/', (string) $majorList);
+        $http->queue('https://get.typo3.org/api/v1/release/14.3.0/content', HttpTransportException::forHttpError('server error', 503));
+        $provider = new ReleaseProvider($http, new ChangeParser(new ChangeFactory()));
         $this->plugin->setReleaseProvider($provider);
 
         $messages = [];

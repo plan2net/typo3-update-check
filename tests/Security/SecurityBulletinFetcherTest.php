@@ -4,52 +4,42 @@ declare(strict_types=1);
 
 namespace Plan2net\Typo3UpdateCheck\Tests\Security;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Promise\FulfilledPromise;
-use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Plan2net\Typo3UpdateCheck\Cache\CacheInterface;
+use Plan2net\Typo3UpdateCheck\Http\HttpResponse;
+use Plan2net\Typo3UpdateCheck\Http\HttpTransportException;
 use Plan2net\Typo3UpdateCheck\Security\SecurityBulletinFetcher;
+use Plan2net\Typo3UpdateCheck\Tests\Http\FakeHttpClient;
 
 final class SecurityBulletinFetcherTest extends TestCase
 {
     #[Test]
-    public function fetchesBulletinsConcurrentlyThroughAsyncPool(): void
+    public function fetchesBulletinsConcurrentlyViaGetMany(): void
     {
-        $httpClient = $this->createMock(ClientInterface::class);
+        $http = new FakeHttpClient();
+        $http->queue('https://typo3.org/security/advisory/typo3-core-sa-2025-001', new HttpResponse(200, [], '<li><strong>Severity:</strong> High</li>'));
+        $http->queue('https://typo3.org/security/advisory/typo3-core-sa-2025-002', new HttpResponse(200, [], '<li><strong>Severity:</strong> High</li>'));
 
-        $httpClient->expects($this->never())->method('request');
-        $httpClient->expects($this->exactly(2))
-            ->method('sendAsync')
-            ->willReturnCallback(static fn () => new FulfilledPromise(
-                new Response(200, [], '<li><strong>Severity:</strong> High</li>')
-            ));
-
-        $fetcher = new SecurityBulletinFetcher($httpClient);
-
+        $fetcher = new SecurityBulletinFetcher($http);
         $severities = $fetcher->fetchSeverities([
             'https://typo3.org/security/advisory/typo3-core-sa-2025-001',
             'https://typo3.org/security/advisory/typo3-core-sa-2025-002',
         ]);
 
         $this->assertEquals(['High' => 2], $severities);
+        $this->assertSame(['getMany', 'getMany'], array_column($http->requests, 'method'));
     }
 
     #[Test]
     public function fetchesSeveritiesFromSecurityBulletins(): void
     {
-        $mock = new MockHandler([
-            new Response(200, [], '<li><strong>Severity:</strong> High</li>'),
-            new Response(200, [], '<li><strong>Severity:</strong> Low</li>'),
-            new Response(200, [], '<li><strong>Severity:</strong> High</li>'),
-        ]);
-        $httpClient = new Client(['handler' => HandlerStack::create($mock)]);
+        $http = new FakeHttpClient();
+        $http->queue('https://typo3.org/security/advisory/typo3-core-sa-2025-001', new HttpResponse(200, [], '<li><strong>Severity:</strong> High</li>'));
+        $http->queue('https://typo3.org/security/advisory/typo3-core-sa-2025-002', new HttpResponse(200, [], '<li><strong>Severity:</strong> Low</li>'));
+        $http->queue('https://typo3.org/security/advisory/typo3-core-sa-2025-003', new HttpResponse(200, [], '<li><strong>Severity:</strong> High</li>'));
 
-        $fetcher = new SecurityBulletinFetcher($httpClient);
+        $fetcher = new SecurityBulletinFetcher($http);
 
         $severities = $fetcher->fetchSeverities([
             'https://typo3.org/security/advisory/typo3-core-sa-2025-001',
@@ -63,14 +53,12 @@ final class SecurityBulletinFetcherTest extends TestCase
     #[Test]
     public function handlesMissingAndFailedBulletins(): void
     {
-        $mock = new MockHandler([
-            new Response(200, [], '<li><strong>Severity:</strong> Medium</li>'),
-            new \RuntimeException('Network error'),
-            new Response(200, [], '<html>No severity information</html>'),
-        ]);
-        $httpClient = new Client(['handler' => HandlerStack::create($mock)]);
+        $http = new FakeHttpClient();
+        $http->queue('https://typo3.org/security/advisory/typo3-core-sa-2025-001', new HttpResponse(200, [], '<li><strong>Severity:</strong> Medium</li>'));
+        $http->queue('https://typo3.org/security/advisory/typo3-core-sa-2025-002', HttpTransportException::forConnectionError('network error'));
+        $http->queue('https://typo3.org/security/advisory/typo3-core-sa-2025-003', new HttpResponse(200, [], '<html>No severity information</html>'));
 
-        $fetcher = new SecurityBulletinFetcher($httpClient);
+        $fetcher = new SecurityBulletinFetcher($http);
 
         $severities = $fetcher->fetchSeverities([
             'https://typo3.org/security/advisory/typo3-core-sa-2025-001',
@@ -99,13 +87,11 @@ final class SecurityBulletinFetcherTest extends TestCase
                 $this->equalTo(['severity' => 'High'])
             );
 
-        $mock = new MockHandler([
-            new Response(200, [], '<li><strong>Severity:</strong> High</li>'),
-            new Response(200, [], '<li><strong>Severity:</strong> High</li>'),
-        ]);
-        $httpClient = new Client(['handler' => HandlerStack::create($mock)]);
+        $http = new FakeHttpClient();
+        $http->queue('https://typo3.org/security/advisory/typo3-core-sa-2025-001', new HttpResponse(200, [], '<li><strong>Severity:</strong> High</li>'));
+        $http->queue('https://typo3.org/security/advisory/typo3-core-sa-2025-002', new HttpResponse(200, [], '<li><strong>Severity:</strong> High</li>'));
 
-        $fetcher = new SecurityBulletinFetcher($httpClient, $cache);
+        $fetcher = new SecurityBulletinFetcher($http, $cache);
 
         $severities = $fetcher->fetchSeverities([
             'https://typo3.org/security/advisory/typo3-core-sa-2025-001',
@@ -117,7 +103,7 @@ final class SecurityBulletinFetcherTest extends TestCase
     #[Test]
     public function returnsCachedSeverities(): void
     {
-        $httpClient = $this->createMock(ClientInterface::class);
+        $http = new FakeHttpClient();
         $cache = $this->createMock(CacheInterface::class);
 
         // Cache hits - no HTTP requests
@@ -128,15 +114,13 @@ final class SecurityBulletinFetcherTest extends TestCase
                 ['severity' => 'Low']
             );
 
-        $httpClient->expects($this->never())->method('request');
-        $httpClient->expects($this->never())->method('sendAsync');
-
-        $fetcher = new SecurityBulletinFetcher($httpClient, $cache);
+        $fetcher = new SecurityBulletinFetcher($http, $cache);
 
         $severities = $fetcher->fetchSeverities([
             'https://typo3.org/security/advisory/typo3-core-sa-2025-001',
             'https://typo3.org/security/advisory/typo3-core-sa-2025-002',
         ]);
         $this->assertEquals(['High' => 1, 'Low' => 1], $severities);
+        $this->assertSame([], $http->requests);
     }
 }

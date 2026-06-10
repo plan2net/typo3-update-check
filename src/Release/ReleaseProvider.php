@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Plan2net\Typo3UpdateCheck\Release;
 
-use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Pool;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Response;
 use Plan2net\Typo3UpdateCheck\Cache\CacheInterface;
 use Plan2net\Typo3UpdateCheck\Change\ChangeParser;
+use Plan2net\Typo3UpdateCheck\Http\HttpClient;
+use Plan2net\Typo3UpdateCheck\Http\HttpResponse;
+use Plan2net\Typo3UpdateCheck\Http\HttpTransportException;
 
 final class ReleaseProvider
 {
@@ -18,7 +17,7 @@ final class ReleaseProvider
     private ApiFailureClassifier $classifier;
 
     public function __construct(
-        private readonly ClientInterface $httpClient,
+        private readonly HttpClient $httpClient,
         private readonly ChangeParser $changeParser,
         private readonly ?CacheInterface $cache = null,
         ?ApiFailureClassifier $classifier = null,
@@ -45,9 +44,8 @@ final class ReleaseProvider
 
         $url = sprintf('%s/major/%d/release/', $this->apiBaseUrl, $majorVersion);
         try {
-            $response = $this->httpClient->request('GET', $url);
-            $body = (string) $response->getBody();
-            $data = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+            $response = $this->httpClient->get($url);
+            $data = json_decode($response->body, true, 512, JSON_THROW_ON_ERROR);
         } catch (\Throwable $exception) {
             throw new ApiFailureException($this->classifier->fromThrowable($exception));
         }
@@ -82,29 +80,27 @@ final class ReleaseProvider
             return new ReleaseContentBatch(results: $results, failures: []);
         }
 
-        $requests = function () use ($uncached) {
-            foreach ($uncached as $version) {
-                yield $version => new Request('GET', $this->apiBaseUrl . '/release/' . $version . '/content');
+        $urls = [];
+        foreach ($uncached as $version) {
+            $urls[$version] = $this->apiBaseUrl . '/release/' . $version . '/content';
+        }
+
+        /** @var array<string, HttpResponse|HttpTransportException> $outcomes */
+        $outcomes = $this->httpClient->getMany($urls);
+        foreach ($outcomes as $version => $outcome) {
+            if (!$outcome instanceof HttpResponse) {
+                $failures[$version] = $this->classifier->fromThrowable($outcome);
+                continue;
             }
-        };
 
-        $pool = new Pool($this->httpClient, $requests(), [
-            'concurrency' => 5,
-            'fulfilled' => function (Response $response, string $version) use (&$results, &$failures) {
-                try {
-                    $data = json_decode((string) $response->getBody(), true, 512, JSON_THROW_ON_ERROR);
-                    $this->cache?->set("content-{$version}", $data);
-                    $results[$version] = $this->changeParser->parse($data);
-                } catch (\JsonException $exception) {
-                    $failures[$version] = $this->classifier->fromThrowable($exception);
-                }
-            },
-            'rejected' => function (\Throwable $reason, string $version) use (&$failures) {
-                $failures[$version] = $this->classifier->fromThrowable($reason);
-            },
-        ]);
-
-        $pool->promise()->wait();
+            try {
+                $data = json_decode($outcome->body, true, 512, JSON_THROW_ON_ERROR);
+                $this->cache?->set("content-{$version}", $data);
+                $results[$version] = $this->changeParser->parse($data);
+            } catch (\JsonException $exception) {
+                $failures[$version] = $this->classifier->fromThrowable($exception);
+            }
+        }
 
         uksort($results, static fn (string $a, string $b) => version_compare($a, $b));
         uksort($failures, static fn (string $a, string $b) => version_compare($a, $b));

@@ -4,13 +4,9 @@ declare(strict_types=1);
 
 namespace Plan2net\Typo3UpdateCheck\Tests\Release;
 
-use GuzzleHttp\Exception\ConnectException;
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Exception\ServerException;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use Plan2net\Typo3UpdateCheck\Http\HttpTransportException;
 use Plan2net\Typo3UpdateCheck\Release\ApiFailureCategory;
 use Plan2net\Typo3UpdateCheck\Release\ApiFailureClassifier;
 
@@ -21,46 +17,6 @@ final class ApiFailureClassifierTest extends TestCase
     protected function setUp(): void
     {
         $this->classifier = new ApiFailureClassifier();
-    }
-
-    #[Test]
-    public function classifiesConnectExceptionAsConnectionError(): void
-    {
-        $exception = new ConnectException('Connection refused', new Request('GET', 'http://x'));
-
-        $failure = $this->classifier->fromThrowable($exception);
-
-        $this->assertSame(ApiFailureCategory::ConnectionError, $failure->category);
-        $this->assertNull($failure->statusCode);
-    }
-
-    #[Test]
-    public function classifies5xxAsServerError(): void
-    {
-        $exception = new ServerException(
-            'Server error',
-            new Request('GET', 'http://x'),
-            new Response(503),
-        );
-
-        $failure = $this->classifier->fromThrowable($exception);
-
-        $this->assertSame(ApiFailureCategory::ServerError, $failure->category);
-        $this->assertSame(503, $failure->statusCode);
-    }
-
-    #[Test]
-    public function classifies404AsNotFound(): void
-    {
-        $exception = RequestException::create(
-            new Request('GET', 'http://x'),
-            new Response(404),
-        );
-
-        $failure = $this->classifier->fromThrowable($exception);
-
-        $this->assertSame(ApiFailureCategory::NotFound, $failure->category);
-        $this->assertSame(404, $failure->statusCode);
     }
 
     #[Test]
@@ -91,5 +47,41 @@ final class ApiFailureClassifierTest extends TestCase
         $failure = $this->classifier->fromThrowable($exception);
 
         $this->assertStringContainsString('Syntax error, malformed JSON', $failure->detail);
+    }
+
+    #[Test]
+    public function classifiesTransportConnectionErrorAsConnectionError(): void
+    {
+        $failure = $this->classifier->fromThrowable(HttpTransportException::forConnectionError('curl error 7'));
+
+        $this->assertSame(ApiFailureCategory::ConnectionError, $failure->category);
+        $this->assertNull($failure->statusCode);
+    }
+
+    #[Test]
+    public function classifiesTransport5xxAsServerError(): void
+    {
+        $failure = $this->classifier->fromThrowable(HttpTransportException::forHttpError('boom', 503));
+
+        $this->assertSame(ApiFailureCategory::ServerError, $failure->category);
+        $this->assertSame(503, $failure->statusCode);
+    }
+
+    #[Test]
+    public function classifiesTransport404AsNotFound(): void
+    {
+        $failure = $this->classifier->fromThrowable(HttpTransportException::forHttpError('gone', 404));
+
+        $this->assertSame(ApiFailureCategory::NotFound, $failure->category);
+        $this->assertSame(404, $failure->statusCode);
+    }
+
+    #[Test]
+    public function classifiesTransport429AsUnknown(): void
+    {
+        $failure = $this->classifier->fromThrowable(HttpTransportException::forHttpError('rate limited', 429));
+
+        $this->assertSame(ApiFailureCategory::Unknown, $failure->category);
+        $this->assertSame(429, $failure->statusCode);
     }
 }

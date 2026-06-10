@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Plan2net\Typo3UpdateCheck\Tests\E2E;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Middleware;
+use Composer\Config;
+use Composer\IO\NullIO;
+use Composer\Util\HttpDownloader;
+use Composer\Util\Loop;
 use PHPUnit\Framework\TestCase;
 use Plan2net\Typo3UpdateCheck\Change\ChangeFactory;
 use Plan2net\Typo3UpdateCheck\Change\ChangeParser;
+use Plan2net\Typo3UpdateCheck\Http\ComposerHttpClient;
 use Plan2net\Typo3UpdateCheck\Release\ReleaseProvider;
-use Plan2net\Typo3UpdateCheck\Release\RetryPolicy;
-use Psr\Http\Message\ResponseInterface;
 
 abstract class BaseE2ETestCase extends TestCase
 {
@@ -61,31 +61,35 @@ abstract class BaseE2ETestCase extends TestCase
     protected function setUp(): void
     {
         self::$recordedDelaysMs = [];
+        @file_get_contents('http://127.0.0.1:' . self::$port . '/reset');
     }
 
-    protected static function makeProvider(bool $withRetry = false): ReleaseProvider
+    protected static function makeProvider(): ReleaseProvider
     {
-        $stack = HandlerStack::create();
-
-        if ($withRetry) {
-            $defaultDelay = RetryPolicy::defaultDelay();
-            $recordingDelay = static function (
-                int $retries,
-                ?ResponseInterface $response = null,
-            ) use ($defaultDelay): int {
-                self::$recordedDelaysMs[] = $defaultDelay($retries, $response);
-
-                return 0;
-            };
-            $stack->push(Middleware::retry(RetryPolicy::decider(), $recordingDelay));
-        }
-
         return new ReleaseProvider(
-            new Client(['handler' => $stack]),
+            self::makeHttpClient(['Accept: application/json']),
             new ChangeParser(new ChangeFactory()),
             null,
             null,
             'http://127.0.0.1:' . self::$port . '/api/v1',
+        );
+    }
+
+    /**
+     * @param string[] $headers
+     */
+    protected static function makeHttpClient(array $headers = []): ComposerHttpClient
+    {
+        $config = new Config(false);
+        $config->merge(['config' => ['secure-http' => false]]);
+        $loop = new Loop(new HttpDownloader(new NullIO(), $config));
+
+        return new ComposerHttpClient(
+            $loop->getHttpDownloader(),
+            $headers,
+            static function (int $delayMs): void {
+                self::$recordedDelaysMs[] = $delayMs;
+            },
         );
     }
 }

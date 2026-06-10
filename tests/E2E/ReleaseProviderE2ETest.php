@@ -25,7 +25,7 @@ final class ReleaseProviderE2ETest extends BaseE2ETestCase
     {
         $this->expectException(ApiFailureException::class);
         try {
-            self::makeProvider(withRetry: true)->getReleasesForMajorVersion(503);
+            self::makeProvider()->getReleasesForMajorVersion(503);
         } catch (ApiFailureException $exception) {
             $this->assertSame(ApiFailureCategory::ServerError, $exception->failure->category);
             $this->assertSame(503, $exception->failure->statusCode);
@@ -45,7 +45,7 @@ final class ReleaseProviderE2ETest extends BaseE2ETestCase
     #[Test]
     public function content404IsNotFoundFailureWithNoRetry(): void
     {
-        $batch = self::makeProvider(withRetry: true)->getReleaseContents(['error-404']);
+        $batch = self::makeProvider()->getReleaseContents(['error-404']);
 
         $this->assertSame(ApiFailureCategory::NotFound, $batch->failures['error-404']->category);
         $this->assertSame([], $batch->results);
@@ -53,13 +53,55 @@ final class ReleaseProviderE2ETest extends BaseE2ETestCase
     }
 
     #[Test]
-    public function content503ExhaustsRetriesAndReportsServerError(): void
+    public function content503IsServerErrorWithoutAdapterRetry(): void
     {
-        $batch = self::makeProvider(withRetry: true)->getReleaseContents(['error-503']);
+        $batch = self::makeProvider()->getReleaseContents(['error-503']);
 
         $this->assertSame(ApiFailureCategory::ServerError, $batch->failures['error-503']->category);
         $this->assertSame(503, $batch->failures['error-503']->statusCode);
+        $this->assertSame([], self::$recordedDelaysMs);
+    }
+
+    #[Test]
+    public function content429ExhaustsAdapterRetriesWithBackoff(): void
+    {
+        $batch = self::makeProvider()->getReleaseContents(['error-429']);
+
+        $this->assertSame(429, $batch->failures['error-429']->statusCode);
         $this->assertSame([1000, 2000], self::$recordedDelaysMs);
+    }
+
+    #[Test]
+    public function retryAfterHeaderIsHonoredAndCappedAtFiveSeconds(): void
+    {
+        $batch = self::makeProvider()->getReleaseContents(['error-429-retry-after']);
+
+        $this->assertSame(429, $batch->failures['error-429-retry-after']->statusCode);
+        $this->assertSame([5000, 5000], self::$recordedDelaysMs);
+    }
+
+    #[Test]
+    public function batchRetryRoundRecovers429AlongsideStableResults(): void
+    {
+        $batch = self::makeProvider()->getReleaseContents(['14.3.0', 'flaky-429']);
+
+        $this->assertArrayHasKey('14.3.0', $batch->results);
+        $this->assertArrayHasKey('flaky-429', $batch->results);
+        $this->assertSame([], $batch->failures);
+        $this->assertSame([1000], self::$recordedDelaysMs);
+    }
+
+    #[Test]
+    public function transient5xxRecoversViaComposerTransport(): void
+    {
+        if (!extension_loaded('curl') || !self::composerSupportsTransientRetries()) {
+            $this->markTestSkipped('Transient 5xx retry is delegated to the curl transport of Composer >= 2.3');
+        }
+
+        $batch = self::makeProvider()->getReleaseContents(['flaky-503']);
+
+        $this->assertArrayHasKey('flaky-503', $batch->results);
+        $this->assertSame([], self::$recordedDelaysMs);
     }
 
     #[Test]
@@ -75,18 +117,6 @@ final class ReleaseProviderE2ETest extends BaseE2ETestCase
     }
 
     #[Test]
-    public function retryAfterHeaderIsHonoredAndCappedAtFiveSeconds(): void
-    {
-        $batch = self::makeProvider(withRetry: true)->getReleaseContents(['error-retry-after']);
-
-        $this->assertSame(
-            ApiFailureCategory::ServerError,
-            $batch->failures['error-retry-after']->category,
-        );
-        $this->assertSame([5000, 5000], self::$recordedDelaysMs);
-    }
-
-    #[Test]
     public function partialBatchContainsBothResultsAndFailures(): void
     {
         $batch = self::makeProvider()->getReleaseContents(['14.3.0', 'error-404']);
@@ -95,5 +125,16 @@ final class ReleaseProviderE2ETest extends BaseE2ETestCase
         $this->assertTrue($batch->hasFailures());
         $this->assertArrayHasKey('14.3.0', $batch->results);
         $this->assertArrayHasKey('error-404', $batch->failures);
+    }
+
+    private static function composerSupportsTransientRetries(): bool
+    {
+        $composerVersion = \Composer\Composer::VERSION;
+        if (preg_match('/^\d+\.\d+/', $composerVersion) !== 1) {
+            // Source installs report a branch placeholder; assume a current Composer.
+            return true;
+        }
+
+        return version_compare($composerVersion, '2.3.0', '>=');
     }
 }

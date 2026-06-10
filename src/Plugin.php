@@ -270,7 +270,10 @@ final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
     {
         if ($this->releaseProvider === null) {
             $cacheDir = $this->composer->getConfig()->get('cache-dir');
-            $this->releaseProvider = ReleaseProviderFactory::create(is_string($cacheDir) ? $cacheDir : null);
+            $this->releaseProvider = ReleaseProviderFactory::create(
+                $this->composer->getLoop()->getHttpDownloader(),
+                is_string($cacheDir) ? $cacheDir : null,
+            );
         }
 
         return $this->releaseProvider;

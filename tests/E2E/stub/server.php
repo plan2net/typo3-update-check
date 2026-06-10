@@ -4,6 +4,23 @@ declare(strict_types=1);
 
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
+$stateFile = sys_get_temp_dir() . '/typo3-update-check-e2e-stub-state.json';
+
+if ($path === '/reset') {
+    @unlink($stateFile);
+    http_response_code(204);
+
+    return;
+}
+
+$attemptNumber = static function (string $key) use ($stateFile): int {
+    $state = is_file($stateFile) ? (json_decode((string) file_get_contents($stateFile), true) ?: []) : [];
+    $state[$key] = ($state[$key] ?? 0) + 1;
+    file_put_contents($stateFile, json_encode($state));
+
+    return $state[$key];
+};
+
 if (preg_match('#^/api/v1/major/(\d+)/release/?$#', $path, $matches)) {
     header('Content-Type: application/json');
     if ((int) $matches[1] === 503) {
@@ -32,9 +49,27 @@ if (preg_match('#^/api/v1/release/([^/]+)/content$#', $path, $matches)) {
 
         return;
     }
-    if ($version === 'error-retry-after') {
-        http_response_code(503);
+    if ($version === 'error-429') {
+        http_response_code(429);
+        header('Content-Type: application/json');
+
+        return;
+    }
+    if ($version === 'error-429-retry-after') {
+        http_response_code(429);
         header('Retry-After: 60');
+        header('Content-Type: application/json');
+
+        return;
+    }
+    if ($version === 'flaky-429' && $attemptNumber('flaky-429') === 1) {
+        http_response_code(429);
+        header('Content-Type: application/json');
+
+        return;
+    }
+    if ($version === 'flaky-503' && $attemptNumber('flaky-503') === 1) {
+        http_response_code(503);
         header('Content-Type: application/json');
 
         return;

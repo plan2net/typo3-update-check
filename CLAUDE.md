@@ -49,30 +49,32 @@ The plugin both subscribes to a Composer event and exposes a command capability 
 
 3. **VersionParser** (`src/VersionParser.php`) — normalizes pretty versions to comparable `x.y.z` strings; returns `null` for unparseable input (callers must handle null).
 
-4. **ReleaseProviderFactory** (`src/ReleaseProviderFactory.php`) — composition root. Wires the Guzzle client (10s timeout, JSON Accept header, `RetryPolicy` middleware), `CacheManager`, `SecurityBulletinFetcher`, `ChangeParser`, and `ReleaseProvider`. Both `Plugin` and `CheckUpdatesCommand` build their provider through this factory. `Plugin::setReleaseProvider` is a test seam only.
+4. **HTTP boundary** (`src/Http/`) — `HttpClient` interface (`get`/`getMany`), `HttpResponse`/`HttpTransportException` value types, and `ComposerHttpClient`, the only class translating Composer HTTP types (`HttpDownloader`, `TransportException`). `getMany()` guarantees an outcome per input key and never throws.
 
-5. **ReleaseProvider** (`src/Release/`) — fetches release lists per major version and release content. Content is fetched **concurrently** via a Guzzle `Pool` (concurrency 5) and returned as a `ReleaseContentBatch`. Per-version fetch failures are captured (not thrown) so partial results still display; list-fetch failure throws `ApiFailureException`.
+5. **ReleaseProviderFactory** (`src/ReleaseProviderFactory.php`) — composition root. Wires two `ComposerHttpClient` adapters over the injected `Composer\Util\HttpDownloader` (API client with `Accept: application/json` + 10s timeout, bulletin client without the header), plus `CacheManager`, `SecurityBulletinFetcher`, `ChangeParser`, and `ReleaseProvider`. Both `Plugin` and `CheckUpdatesCommand` pass `$composer->getLoop()->getHttpDownloader()`. `Plugin::setReleaseProvider` is a test seam only.
 
-6. **ReleaseContentBatch** (`src/Release/ReleaseContentBatch.php`) — value object holding `results` (version → `ReleaseContent`) and `failures` (version → `ApiFailure`), plus `hasImportantChanges()` and `dominantFailureCategory()`.
+6. **ReleaseProvider** (`src/Release/`) — fetches release lists per major version and release content. Content is fetched **concurrently** via `HttpClient::getMany()` (Composer's HTTP layer, parallelism per `COMPOSER_MAX_PARALLEL_HTTP`) and returned as a `ReleaseContentBatch`. Per-version fetch failures are captured (not thrown) so partial results still display; list-fetch failure throws `ApiFailureException`.
 
-7. **Error categorization** (`src/Release/`) — `ApiFailureClassifier` maps any `Throwable` to an `ApiFailure` with an `ApiFailureCategory` (ConnectionError, ServerError, NotFound, MalformedResponse, Unknown). `ApiFailureException` wraps a failure; `FailureMessageFormatter` turns it into user-facing text.
+7. **ReleaseContentBatch** (`src/Release/ReleaseContentBatch.php`) — value object holding `results` (version → `ReleaseContent`) and `failures` (version → `ApiFailure`), plus `hasImportantChanges()` and `dominantFailureCategory()`.
 
-8. **RetryPolicy** (`src/Release/RetryPolicy.php`) — Guzzle retry middleware: up to 2 retries on connect errors, HTTP 429, and 5xx. Exponential backoff (1s, 2s); honors `Retry-After`, capped at 5s.
+8. **Error categorization** (`src/Release/`) — `ApiFailureClassifier` maps any `Throwable` to an `ApiFailure` with an `ApiFailureCategory` (ConnectionError, ServerError, NotFound, MalformedResponse, Unknown). `ApiFailureException` wraps a failure; `FailureMessageFormatter` turns it into user-facing text.
 
-9. **ChangeParser** (`src/Change/ChangeParser.php`) — parses API content into typed `Change` objects (`BreakingChange`, `SecurityUpdate`, `RegularChange`) via `ChangeFactory`, enriching security updates with severities from the bulletin fetcher.
+9. **RetryPolicy** (`src/Http/RetryPolicy.php`) — 429 top-up policy used by `ComposerHttpClient`: up to 2 retries on HTTP 429 only (transient connect/5xx retries are delegated to Composer's transport). Exponential backoff (1s, 2s); honors `Retry-After`, capped at 5s.
 
-10. **SecurityBulletinFetcher** (`src/Security/`) — fetches severity levels (Critical/High/Medium/Low) from TYPO3 security bulletin pages.
+10. **ChangeParser** (`src/Change/ChangeParser.php`) — parses API content into typed `Change` objects (`BreakingChange`, `SecurityUpdate`, `RegularChange`) via `ChangeFactory`, enriching security updates with severities from the bulletin fetcher.
 
-11. **CacheManager** (`src/Cache/`) — caches API responses in Composer's global cache dir. Release lists expire after 1 hour; release content and security bulletins are cached permanently.
+11. **SecurityBulletinFetcher** (`src/Security/`) — fetches severity levels (Critical/High/Medium/Low) from TYPO3 security bulletin pages.
 
-12. **ConsoleFormatter** (`src/ConsoleFormatter.php`) — `formatBatchReport` renders the per-version report plus a one-line digest (releases scanned, security updates with severity totals, breaking changes); `formatSecurityGap` renders the warning for newer security releases above the target.
+12. **CacheManager** (`src/Cache/`) — caches API responses in Composer's global cache dir. Release lists expire after 1 hour; release content and security bulletins are cached permanently.
 
-13. **CheckUpdatesCommand** (`src/Command/`) — the `typo3:check-updates` command (registered via `CommandProvider`). Resolves/validates from/to versions against the released list, offers the latest when a target is unknown, then runs the same batch + formatter pipeline. Exit codes: `SUCCESS`, `FAILURE`, `INVALID` (results empty but failures present).
+13. **ConsoleFormatter** (`src/ConsoleFormatter.php`) — `formatBatchReport` renders the per-version report plus a one-line digest (releases scanned, security updates with severity totals, breaking changes); `formatSecurityGap` renders the warning for newer security releases above the target.
+
+14. **CheckUpdatesCommand** (`src/Command/`) — the `typo3:check-updates` command (registered via `CommandProvider`). Resolves/validates from/to versions against the released list, offers the latest when a target is unknown, then runs the same batch + formatter pipeline. Exit codes: `SUCCESS`, `FAILURE`, `INVALID` (results empty but failures present).
 
 ## Testing
 
 - **Unit tests** mock the IO / HTTP boundary and exercise classes directly.
-- **E2E tests** (`tests/E2E/`) start a real `php -S` stub server (`tests/E2E/stub/server.php`) on a random port and drive `ReleaseProvider` against it — used to verify retry/backoff and partial-failure behavior without hitting the network. `BaseE2ETestCase::makeProvider($withRetry)` builds providers pointed at the stub.
+- **E2E tests** (`tests/E2E/`) start a real `php -S` stub server (`tests/E2E/stub/server.php`) on a random port and drive `ReleaseProvider` against it — used to verify retry/backoff and partial-failure behavior without hitting the network. `BaseE2ETestCase::makeProvider()` builds providers with a real `ComposerHttpClient` pointed at the stub (secure-http disabled).
 
 ## Code Style
 

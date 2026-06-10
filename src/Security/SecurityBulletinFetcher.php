@@ -4,18 +4,15 @@ declare(strict_types=1);
 
 namespace Plan2net\Typo3UpdateCheck\Security;
 
-use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Pool;
-use GuzzleHttp\Psr7\Request;
 use Plan2net\Typo3UpdateCheck\Cache\CacheInterface;
-use Psr\Http\Message\ResponseInterface;
+use Plan2net\Typo3UpdateCheck\Http\HttpClient;
+use Plan2net\Typo3UpdateCheck\Http\HttpResponse;
+use Plan2net\Typo3UpdateCheck\Http\HttpTransportException;
 
 final class SecurityBulletinFetcher implements SecurityBulletinFetcherInterface
 {
-    private const CONCURRENCY = 5;
-
     public function __construct(
-        private readonly ClientInterface $httpClient,
+        private readonly HttpClient $httpClient,
         private readonly ?CacheInterface $cache = null,
     ) {
     }
@@ -43,34 +40,26 @@ final class SecurityBulletinFetcher implements SecurityBulletinFetcherInterface
             return $severities;
         }
 
-        $requests = static function () use ($uncachedUrls) {
-            foreach ($uncachedUrls as $index => $url) {
-                yield $index => new Request('GET', $url);
+        /** @var array<int, HttpResponse|HttpTransportException> $outcomes */
+        $outcomes = $this->httpClient->getMany($uncachedUrls);
+        foreach ($outcomes as $index => $outcome) {
+            if (!$outcome instanceof HttpResponse) {
+                continue; // Ignore failed bulletin fetches
             }
-        };
 
-        $pool = new Pool($this->httpClient, $requests(), [
-            'concurrency' => self::CONCURRENCY,
-            'fulfilled' => function (ResponseInterface $response, int $index) use (&$severities, $uncachedUrls) {
-                $severity = $this->parseSeverity((string) $response->getBody());
-                if ($severity === null) {
-                    return;
-                }
+            $severity = $this->parseSeverity($outcome->body);
+            if ($severity === null) {
+                continue;
+            }
 
-                try {
-                    $this->cache?->set($this->cacheKey($uncachedUrls[$index]), ['severity' => $severity]);
-                } catch (\Throwable) {
-                    // Ignore cache write failures
-                }
+            try {
+                $this->cache?->set($this->cacheKey($uncachedUrls[$index]), ['severity' => $severity]);
+            } catch (\Throwable) {
+                // Ignore cache write failures
+            }
 
-                $severities[$severity] = ($severities[$severity] ?? 0) + 1;
-            },
-            'rejected' => static function (): void {
-                // Ignore failed bulletin fetches
-            },
-        ]);
-
-        $pool->promise()->wait();
+            $severities[$severity] = ($severities[$severity] ?? 0) + 1;
+        }
 
         return $severities;
     }
