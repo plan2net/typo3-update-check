@@ -5,7 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.0.0] - unreleased
+## [2.0.0] - 2026-06-10
+
+### Added
+- The check can be disabled via the `TYPO3_UPDATE_CHECK` environment
+  variable (`0`, `false`, `off`, `no`); the manual `typo3:check-updates`
+  command is not affected.
 
 ### Removed
 - The `guzzlehttp/guzzle` dependency. The plugin now uses Composer's own
@@ -24,6 +29,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `ReleaseProvider`/`SecurityBulletinFetcher` take an `HttpClient`;
   `RetryPolicy` moved to the `Http` namespace with a new
   `shouldRetry()`/`delayMs()` API).
+- Security bulletin severities are fetched concurrently instead of
+  one request at a time.
+- The license identifier in composer.json uses the current SPDX form
+  `GPL-2.0-or-later`.
 
 ## [1.3.0] - 2026-06-04
 
