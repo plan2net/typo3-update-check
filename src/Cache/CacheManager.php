@@ -82,12 +82,12 @@ final class CacheManager implements CacheInterface
 
     private function getTtlForKey(string $key): int
     {
-        // Release content and security advisories never change - cache forever
-        if (str_starts_with($key, 'content-') || str_starts_with($key, 'security-bulletin-')) {
+        // Release content never changes - cache forever
+        if (str_starts_with($key, 'content-')) {
             return 0;
         }
 
-        // Default TTL
+        // Default TTL (release lists, advisory pool)
         return 3600;
     }
 }

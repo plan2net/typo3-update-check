@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Plan2net\Typo3UpdateCheck;
 
+use Plan2net\Typo3UpdateCheck\Advisory\Advisory;
 use Plan2net\Typo3UpdateCheck\Release\FailureMessageFormatter;
 use Plan2net\Typo3UpdateCheck\Release\ReleaseContent;
 use Plan2net\Typo3UpdateCheck\Release\ReleaseContentBatch;
@@ -29,7 +30,7 @@ final class ConsoleFormatter
 
         $lines = [];
         foreach ($batch->results as $content) {
-            if ($content->getBreakingChanges() || $content->getSecurityUpdates()) {
+            if ($content->getBreakingChanges() || $content->getSecurityUpdates() || $content->advisories !== []) {
                 $lines[] = $this->format($content);
             }
         }
@@ -97,9 +98,9 @@ final class ConsoleFormatter
         $severities = [];
 
         foreach ($batch->results as $content) {
-            if ($content->getSecurityUpdates()) {
+            if ($content->getSecurityUpdates() || $content->advisories !== []) {
                 ++$securityReleases;
-                foreach ($content->securitySeverities as $level => $count) {
+                foreach ($content->getSeverityCounts() as $level => $count) {
                     $severities[$level] = ($severities[$level] ?? 0) + $count;
                 }
             }
@@ -136,19 +137,31 @@ final class ConsoleFormatter
             }
         }
 
-        if ($security) {
-            $severitySummary = $this->formatSeveritySummary($content->securitySeverities);
-            $output .= "<comment>Security updates found{$severitySummary}:</comment>\n";
-            foreach ($security as $update) {
-                $output .= '  ⚡ ' . $this->escape($update->title) . "\n";
+        if ($content->advisories !== []) {
+            $output .= '<comment>' . $this->formatVulnerabilityHeading($content) . "</comment>\n";
+            foreach ($this->describeAdvisories($content->advisories) as $line) {
+                $output .= '  - ' . $line . "\n";
             }
-        }
+            if ($security) {
+                $output .= "\n<info>Fixed by:</info>\n";
+                foreach ($security as $update) {
+                    $output .= '  ⚡ ' . $this->escape($update->title) . "\n";
+                }
+            }
+        } else {
+            if ($security) {
+                $output .= "<comment>Security updates found:</comment>\n";
+                foreach ($security as $update) {
+                    $output .= '  ⚡ ' . $this->escape($update->title) . "\n";
+                }
+            }
 
-        $advisories = $content->getSecurityAdvisories();
-        if ($advisories) {
-            $output .= "\n<info>Security advisories:</info>\n";
-            foreach ($advisories as $advisory) {
-                $output .= '  - ' . $this->escape($advisory) . "\n";
+            $bulletinLines = [];
+            foreach ($content->getSecurityAdvisories() as $bulletinUrl) {
+                $bulletinLines[] = '  - ' . $this->escape($bulletinUrl);
+            }
+            if ($bulletinLines !== []) {
+                $output .= "\n<info>Security advisories:</info>\n" . implode("\n", $bulletinLines) . "\n";
             }
         }
 
@@ -167,14 +180,14 @@ final class ConsoleFormatter
         return $text;
     }
 
-    /**
-     * @param array<string, int> $severities
-     */
-    private function formatSeveritySummary(array $severities): string
+    private function formatVulnerabilityHeading(ReleaseContent $content): string
     {
-        $breakdown = $this->severityBreakdown($severities);
+        $advisoryCount = count($content->advisories);
+        $noun = $advisoryCount === 1 ? 'vulnerability' : 'vulnerabilities';
+        $breakdown = $this->severityBreakdown($content->getSeverityCounts());
+        $summary = $breakdown === '' ? "{$advisoryCount} {$noun}" : "{$advisoryCount} {$noun}: {$breakdown}";
 
-        return $breakdown === '' ? '' : " ({$breakdown})";
+        return "Security updates found ({$summary}):";
     }
 
     /**
@@ -182,15 +195,83 @@ final class ConsoleFormatter
      */
     private function severityBreakdown(array $severities): string
     {
-        $order = ['Critical', 'High', 'Medium', 'Low'];
+        $order = ['critical', 'high', 'medium', 'low'];
         $parts = [];
 
         foreach ($order as $level) {
             if (isset($severities[$level]) && $severities[$level] > 0) {
-                $parts[] = $severities[$level] . ' ' . $level;
+                $segment = $severities[$level] . ' ' . $level;
+                $parts[] = match ($level) {
+                    'critical' => '<fg=red;options=bold>' . $segment . '</>',
+                    'high' => '<fg=red>' . $segment . '</>',
+                    default => $segment,
+                };
             }
         }
 
         return implode(', ', $parts);
+    }
+
+    /**
+     * Returns ready-to-print lines: text parts are escaped, severity cells carry console markup.
+     *
+     * @param list<Advisory> $advisories
+     *
+     * @return string[]
+     */
+    private function describeAdvisories(array $advisories): array
+    {
+        $advisories = $this->sortBySeverity($advisories);
+
+        $cveWidth = 0;
+        $severityWidth = 0;
+        foreach ($advisories as $advisory) {
+            $cveWidth = max($cveWidth, strlen($advisory->cve ?? ''));
+            $severityWidth = max($severityWidth, $advisory->severity !== null ? strlen($advisory->severity) + 2 : 0);
+        }
+
+        $lines = [];
+        foreach ($advisories as $advisory) {
+            $parts = [];
+            if ($cveWidth > 0) {
+                $parts[] = $this->escape(str_pad($advisory->cve ?? '', $cveWidth));
+            }
+            if ($severityWidth > 0) {
+                $severityCell = $advisory->severity !== null ? "({$advisory->severity})" : '';
+                $paddedCell = $this->escape(str_pad($severityCell, $severityWidth, ' ', STR_PAD_LEFT));
+                $parts[] = $this->highlightSeverity($paddedCell, $advisory->severity);
+            }
+            $parts[] = $this->escape($advisory->title . ' — ' . $advisory->link);
+            $lines[] = implode('  ', $parts);
+        }
+
+        return $lines;
+    }
+
+    /**
+     * @param list<Advisory> $advisories
+     *
+     * @return list<Advisory>
+     */
+    private function sortBySeverity(array $advisories): array
+    {
+        $rankBySeverity = ['critical' => 0, 'high' => 1, 'medium' => 2, 'low' => 3];
+        $unknownRank = count($rankBySeverity);
+
+        usort(
+            $advisories,
+            static fn (Advisory $first, Advisory $second): int => ($rankBySeverity[$first->severity] ?? $unknownRank) <=> ($rankBySeverity[$second->severity] ?? $unknownRank),
+        );
+
+        return $advisories;
+    }
+
+    private function highlightSeverity(string $paddedCell, ?string $severity): string
+    {
+        return match ($severity) {
+            'critical' => '<fg=red;options=bold>' . $paddedCell . '</>',
+            'high' => '<fg=red>' . $paddedCell . '</>',
+            default => $paddedCell,
+        };
     }
 }

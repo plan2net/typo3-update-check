@@ -9,6 +9,7 @@ use Composer\IO\NullIO;
 use Composer\Util\HttpDownloader;
 use Composer\Util\Loop;
 use PHPUnit\Framework\TestCase;
+use Plan2net\Typo3UpdateCheck\Advisory\PackagistAdvisoryProvider;
 use Plan2net\Typo3UpdateCheck\Change\ChangeFactory;
 use Plan2net\Typo3UpdateCheck\Change\ChangeParser;
 use Plan2net\Typo3UpdateCheck\Http\ComposerHttpClient;
@@ -19,6 +20,7 @@ abstract class BaseE2ETestCase extends TestCase
     private static int $port;
     /** @var resource */
     private static $process;
+    private static ?HttpDownloader $httpDownloader = null;
 
     /** @var int[] */
     protected static array $recordedDelaysMs = [];
@@ -54,6 +56,7 @@ abstract class BaseE2ETestCase extends TestCase
 
     public static function tearDownAfterClass(): void
     {
+        self::$httpDownloader = null;
         proc_terminate(self::$process);
         proc_close(self::$process);
     }
@@ -61,17 +64,32 @@ abstract class BaseE2ETestCase extends TestCase
     protected function setUp(): void
     {
         self::$recordedDelaysMs = [];
-        @file_get_contents('http://127.0.0.1:' . self::$port . '/reset');
+        @file_get_contents(self::stubUrl('/reset'));
     }
 
-    protected static function makeProvider(): ReleaseProvider
+    protected static function stubUrl(string $path): string
+    {
+        return 'http://127.0.0.1:' . self::$port . $path;
+    }
+
+    protected static function makeAdvisoryProvider(string $basePath): PackagistAdvisoryProvider
+    {
+        return new PackagistAdvisoryProvider(
+            self::makeHttpClient(['Accept: application/json']),
+            null,
+            self::stubUrl($basePath),
+        );
+    }
+
+    protected static function makeProvider(bool $withAdvisories = false): ReleaseProvider
     {
         return new ReleaseProvider(
             self::makeHttpClient(['Accept: application/json']),
             new ChangeParser(new ChangeFactory()),
             null,
             null,
-            'http://127.0.0.1:' . self::$port . '/api/v1',
+            $withAdvisories ? self::makeAdvisoryProvider('/packagist') : null,
+            self::stubUrl('/api/v1'),
         );
     }
 
@@ -80,16 +98,28 @@ abstract class BaseE2ETestCase extends TestCase
      */
     protected static function makeHttpClient(array $headers = []): ComposerHttpClient
     {
-        $config = new Config(false);
-        $config->merge(['config' => ['secure-http' => false]]);
-        $loop = new Loop(new HttpDownloader(new NullIO(), $config));
-
         return new ComposerHttpClient(
-            $loop->getHttpDownloader(),
+            self::sharedHttpDownloader(),
             $headers,
             static function (int $delayMs): void {
                 self::$recordedDelaysMs[] = $delayMs;
             },
         );
+    }
+
+    /**
+     * Shared across all tests of a class: a fresh HttpDownloader per request
+     * leaves single-use keep-alive connections behind, which intermittently
+     * blocks the single-threaded php -S stub on Windows.
+     */
+    private static function sharedHttpDownloader(): HttpDownloader
+    {
+        if (self::$httpDownloader === null) {
+            $config = new Config(false);
+            $config->merge(['config' => ['secure-http' => false]]);
+            self::$httpDownloader = (new Loop(new HttpDownloader(new NullIO(), $config)))->getHttpDownloader();
+        }
+
+        return self::$httpDownloader;
     }
 }

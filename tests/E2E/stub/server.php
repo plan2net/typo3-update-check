@@ -21,6 +21,27 @@ $attemptNumber = static function (string $key) use ($stateFile): int {
     return $state[$key];
 };
 
+if (str_starts_with($path, '/packagist/api/security-advisories/')) {
+    header('Content-Type: application/json');
+    echo json_encode([
+        'advisories' => [
+            'typo3/cms-core' => [
+                [
+                    'advisoryId' => 'PKSA-e2e-0001',
+                    'packageName' => 'typo3/cms-core',
+                    'title' => 'E2E stub vulnerability',
+                    'link' => 'https://github.com/advisories/GHSA-e2e1',
+                    'cve' => 'CVE-2026-0001',
+                    'affectedVersions' => '>=14.0.0,<14.3.0',
+                    'severity' => 'high',
+                ],
+            ],
+        ],
+    ]);
+
+    return;
+}
+
 if (preg_match('#^/api/v1/major/(\d+)/release/?$#', $path, $matches)) {
     header('Content-Type: application/json');
     if ((int) $matches[1] === 503) {

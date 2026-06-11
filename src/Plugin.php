@@ -196,7 +196,7 @@ final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
      */
     private function processVersions(array $versions, array $releases, string $currentVersion, string $targetVersion): bool
     {
-        $batch = $this->getReleaseProvider()->getReleaseContents($versions);
+        $batch = $this->getReleaseProvider()->getReleaseContents($versions, $currentVersion);
 
         $lines = $this->consoleFormatter->formatBatchReport($batch, $currentVersion, $targetVersion);
         $lines = array_merge($lines, $this->consoleFormatter->formatSecurityGap(

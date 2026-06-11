@@ -80,6 +80,9 @@ jobs:
             - name: Install plugin dependencies
               run: composer install --no-dev
 
+            - name: Check advisory package list against Packagist
+              run: php bin/check-advisory-packages
+
             - name: Create test project
               run: |
                 mkdir -p /tmp/typo3-test
@@ -195,6 +198,13 @@ jobs:
                     echo "✓ Command showed security updates"
                 else
                     echo "✗ Command did not show security updates"
+                    exit 1
+                fi
+
+                if echo "$OUTPUT" | grep -qE "CVE-[0-9]+-[0-9]+ +\((critical|high|medium|low)\)"; then
+                    echo "✓ Command showed CVE with severity"
+                else
+                    echo "✗ Command did not show CVE with severity"
                     exit 1
                 fi
 

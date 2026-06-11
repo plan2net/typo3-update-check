@@ -1,0 +1,50 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+require __DIR__ . '/../vendor/autoload.php';
+
+use Plan2net\Typo3UpdateCheck\Advisory\PackagistAdvisoryProvider;
+
+$context = stream_context_create(['http' => [
+    'header' => 'User-Agent: plan2net/typo3-update-check package-list guard',
+    'timeout' => 10,
+]]);
+$body = @file_get_contents('https://packagist.org/packages/list.json?vendor=typo3', false, $context);
+if ($body === false) {
+    fwrite(STDERR, "Could not reach Packagist — skipping drift check.\n");
+    exit(0); // transient network problems must not fail CI
+}
+
+try {
+    $names = json_decode($body, true, 512, JSON_THROW_ON_ERROR)['packageNames'] ?? [];
+    $live = array_values(array_filter(
+        $names,
+        static fn (mixed $name): bool => is_string($name)
+            && ($name === 'typo3/cms' || str_starts_with($name, 'typo3/cms-')),
+    ));
+} catch (\Throwable) {
+    fwrite(STDERR, "Unexpected Packagist response — skipping drift check.\n");
+    exit(0);
+}
+sort($live);
+
+$hardcoded = PackagistAdvisoryProvider::packageNames();
+sort($hardcoded);
+
+$missing = array_diff($live, $hardcoded);
+$stale = array_diff($hardcoded, $live);
+
+if ($missing === [] && $stale === []) {
+    echo 'Package list is in sync (' . count($hardcoded) . " packages).\n";
+    exit(0);
+}
+
+foreach ($missing as $name) {
+    fwrite(STDERR, "MISSING from PackagistAdvisoryProvider::PACKAGES: {$name}\n");
+}
+foreach ($stale as $name) {
+    fwrite(STDERR, "STALE (no longer on Packagist): {$name}\n");
+}
+exit(1);

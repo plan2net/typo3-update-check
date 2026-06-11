@@ -6,6 +6,7 @@ namespace Plan2net\Typo3UpdateCheck\Tests;
 
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use Plan2net\Typo3UpdateCheck\Advisory\Advisory;
 use Plan2net\Typo3UpdateCheck\Cache\CacheInterface;
 use Plan2net\Typo3UpdateCheck\Change\ChangeFactory;
 use Plan2net\Typo3UpdateCheck\Change\ChangeParser;
@@ -15,6 +16,7 @@ use Plan2net\Typo3UpdateCheck\Release\ApiFailureCategory;
 use Plan2net\Typo3UpdateCheck\Release\ReleaseContent;
 use Plan2net\Typo3UpdateCheck\Release\ReleaseContentBatch;
 use Plan2net\Typo3UpdateCheck\Release\ReleaseProvider;
+use Plan2net\Typo3UpdateCheck\Tests\Advisory\FakeAdvisoryProvider;
 use Plan2net\Typo3UpdateCheck\Tests\Http\FakeHttpClient;
 
 final class ReleaseProviderContentTest extends TestCase
@@ -208,5 +210,77 @@ final class ReleaseProviderContentTest extends TestCase
             ApiFailureCategory::ServerError,
             $batch->failures['14.3.0']->category,
         );
+    }
+
+    #[Test]
+    public function enrichesResultsWithAdvisoriesAlongPredecessorChain(): void
+    {
+        $http = new FakeHttpClient();
+        $http->queueJson('https://get.typo3.org/api/v1/release/12.4.30/content', (string) json_encode([
+            'version' => '12.4.30',
+            'release_notes' => ['version' => '12.4.30', 'changes' => ''],
+        ]));
+        $http->queueJson('https://get.typo3.org/api/v1/release/12.4.31/content', (string) json_encode([
+            'version' => '12.4.31',
+            'release_notes' => ['version' => '12.4.31', 'changes' => ''],
+        ]));
+        $advisoryProvider = new FakeAdvisoryProvider();
+        $advisoryForThirty = new Advisory('typo3/cms-core', 'Fixed in .30', 'CVE-2025-0030', 'medium', 'https://link30', '>=12,<12.4.30');
+        $advisoryForThirtyOne = new Advisory('typo3/cms-core', 'Fixed in .31', 'CVE-2025-0031', 'high', 'https://link31', '>=12,<12.4.31');
+        $advisoryProvider->fix('12.4.29', '12.4.30', [$advisoryForThirty]);
+        $advisoryProvider->fix('12.4.30', '12.4.31', [$advisoryForThirtyOne]);
+
+        $provider = new ReleaseProvider($http, new ChangeParser(new ChangeFactory()), null, null, $advisoryProvider);
+        $batch = $provider->getReleaseContents(['12.4.30', '12.4.31'], '12.4.29');
+
+        $this->assertSame([$advisoryForThirty], $batch->results['12.4.30']->advisories);
+        $this->assertSame([$advisoryForThirtyOne], $batch->results['12.4.31']->advisories);
+        $this->assertSame([
+            ['previousVersion' => '12.4.29', 'version' => '12.4.30'],
+            ['previousVersion' => '12.4.30', 'version' => '12.4.31'],
+        ], $advisoryProvider->calls);
+    }
+
+    #[Test]
+    public function advancesPredecessorChainPastFailedVersions(): void
+    {
+        $http = new FakeHttpClient();
+        $http->queue(
+            'https://get.typo3.org/api/v1/release/12.4.30/content',
+            HttpTransportException::forHttpError('not found', 404),
+        );
+        $http->queueJson('https://get.typo3.org/api/v1/release/12.4.31/content', (string) json_encode([
+            'version' => '12.4.31',
+            'release_notes' => ['version' => '12.4.31', 'changes' => ''],
+        ]));
+        $advisoryProvider = new FakeAdvisoryProvider();
+        $advisory = new Advisory('typo3/cms-core', 'Fixed in .31', 'CVE-2025-0031', 'high', 'https://link31', '>=12,<12.4.31');
+        $advisoryProvider->fix('12.4.30', '12.4.31', [$advisory]);
+
+        $provider = new ReleaseProvider($http, new ChangeParser(new ChangeFactory()), null, null, $advisoryProvider);
+        $batch = $provider->getReleaseContents(['12.4.30', '12.4.31'], '12.4.29');
+
+        $this->assertSame([$advisory], $batch->results['12.4.31']->advisories);
+        $this->assertSame(
+            [['previousVersion' => '12.4.30', 'version' => '12.4.31']],
+            $advisoryProvider->calls,
+        );
+    }
+
+    #[Test]
+    public function skipsEnrichmentOfFirstVersionWithoutFromVersion(): void
+    {
+        $http = new FakeHttpClient();
+        $http->queueJson('https://get.typo3.org/api/v1/release/12.4.31/content', (string) json_encode([
+            'version' => '12.4.31',
+            'release_notes' => ['version' => '12.4.31', 'changes' => ''],
+        ]));
+        $advisoryProvider = new FakeAdvisoryProvider();
+
+        $provider = new ReleaseProvider($http, new ChangeParser(new ChangeFactory()), null, null, $advisoryProvider);
+        $batch = $provider->getReleaseContents(['12.4.31']);
+
+        $this->assertSame([], $batch->results['12.4.31']->advisories);
+        $this->assertSame([], $advisoryProvider->calls);
     }
 }

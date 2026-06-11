@@ -29,7 +29,7 @@ final class ReleaseContentBatch
     public function hasImportantChanges(): bool
     {
         foreach ($this->results as $content) {
-            if ($content->getBreakingChanges() || $content->getSecurityUpdates()) {
+            if ($content->getBreakingChanges() || $content->getSecurityUpdates() || $content->advisories !== []) {
                 return true;
             }
         }

@@ -6,6 +6,7 @@ namespace Plan2net\Typo3UpdateCheck\Tests;
 
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use Plan2net\Typo3UpdateCheck\Advisory\Advisory;
 use Plan2net\Typo3UpdateCheck\Change\BreakingChange;
 use Plan2net\Typo3UpdateCheck\Change\RegularChange;
 use Plan2net\Typo3UpdateCheck\Change\SecurityUpdate;
@@ -161,15 +162,321 @@ https://typo3.org/security/advisory/typo3-core-sa-2025-012',
             changes: $changes,
             newsLink: null,
             news: null,
-            securitySeverities: ['High' => 2, 'Medium' => 1, 'Low' => 3],
+            advisories: [
+                new Advisory('typo3/cms-core', 'Advisory A', null, 'high', 'https://example.org/a', '<12.4.31'),
+                new Advisory('typo3/cms-core', 'Advisory B', null, 'high', 'https://example.org/b', '<12.4.31'),
+                new Advisory('typo3/cms-core', 'Advisory C', null, 'medium', 'https://example.org/c', '<12.4.31'),
+                new Advisory('typo3/cms-core', 'Advisory D', null, 'low', 'https://example.org/d', '<12.4.31'),
+                new Advisory('typo3/cms-core', 'Advisory E', null, 'low', 'https://example.org/e', '<12.4.31'),
+                new Advisory('typo3/cms-core', 'Advisory F', null, 'low', 'https://example.org/f', '<12.4.31'),
+            ],
         );
 
         $output = $this->formatter->format($content);
 
-        $this->assertStringContainsString('Security updates found (2 High, 1 Medium, 3 Low):', $output);
+        $this->assertStringContainsString('Security updates found (6 vulnerabilities: <fg=red>2 high</>, 1 medium, 3 low):', $output);
+        $this->assertStringContainsString('Fixed by:', $output);
         $this->assertStringContainsString('[SECURITY] Fix XSS vulnerability', $output);
         $this->assertStringContainsString('[SECURITY] Fix information disclosure', $output);
         $this->assertStringContainsString('[SECURITY] Fix authentication bypass', $output);
+    }
+
+    #[Test]
+    public function rendersAdvisoryWithCveAndSeverity(): void
+    {
+        $content = new ReleaseContent(
+            version: '12.4.31',
+            changes: [new SecurityUpdate('[SECURITY] Fix XSS vulnerability')],
+            newsLink: null,
+            news: null,
+            advisories: [
+                new Advisory('typo3/cms-core', 'Cross-Site Scripting in backend', 'CVE-2025-0001', 'high', 'https://typo3.org/security/advisory/typo3-core-sa-2025-001', '>=12,<12.4.31'),
+            ],
+        );
+
+        $output = $this->formatter->format($content);
+
+        // Advisory rows render directly beneath the heading (no separate header, no blank line)
+        $this->assertStringContainsString(
+            "<comment>Security updates found (1 vulnerability: <fg=red>1 high</>):</comment>\n"
+            . '  - CVE-2025-0001  <fg=red>(high)</>  Cross-Site Scripting in backend — https://typo3.org/security/advisory/typo3-core-sa-2025-001',
+            $output,
+        );
+        $this->assertStringNotContainsString('Security advisories:', $output);
+        $this->assertStringContainsString(
+            "\n<info>Fixed by:</info>\n  ⚡ [SECURITY] Fix XSS vulnerability\n",
+            $output,
+        );
+    }
+
+    #[Test]
+    public function rendersMultipleAdvisoriesWithColumnAlignment(): void
+    {
+        // CVE-2024-1234 (len 13), CVE-2024-55921 (len 14) → cveWidth=14
+        // medium (len 8 with parens → (medium)), high (len 6 with parens → (high)) → severityWidth=8
+        // CVE-2024-1234  padded to 14: "CVE-2024-1234 "
+        // (medium) right-padded-left to 8: "(medium)"
+        // (high)   right-padded-left to 8: "  (high)"
+        $content = new ReleaseContent(
+            version: '12.4.31',
+            changes: [new SecurityUpdate('[SECURITY] Multiple fixes')],
+            newsLink: null,
+            news: null,
+            advisories: [
+                new Advisory('typo3/cms-core', 'Title A', 'CVE-2024-1234', 'medium', 'https://example.org/a', '<12.4.31'),
+                new Advisory('typo3/cms-core', 'Title B', 'CVE-2024-55921', 'high', 'https://example.org/b', '<12.4.31'),
+            ],
+        );
+
+        $output = $this->formatter->format($content);
+
+        $this->assertStringContainsString('Security updates found (2 vulnerabilities: <fg=red>1 high</>, 1 medium):', $output);
+        $this->assertStringContainsString(
+            '  - CVE-2024-1234   (medium)  Title A — https://example.org/a',
+            $output,
+        );
+        // Padding is computed on the raw cell text; the color tags wrap the already padded cell
+        $this->assertStringContainsString(
+            '  - CVE-2024-55921  <fg=red>  (high)</>  Title B — https://example.org/b',
+            $output,
+        );
+        // High severity sorts before medium
+        $this->assertLessThan(
+            strpos($output, 'CVE-2024-1234'),
+            strpos($output, 'CVE-2024-55921'),
+        );
+    }
+
+    #[Test]
+    public function sortsAdvisoriesBySeverityWithUnknownLastAndStableWithinGroups(): void
+    {
+        $content = new ReleaseContent(
+            version: '12.4.31',
+            changes: [],
+            newsLink: null,
+            news: null,
+            advisories: [
+                new Advisory('typo3/cms-core', 'Medium one', null, 'medium', 'https://example.org/a', '<12.4.31'),
+                new Advisory('typo3/cms-core', 'Low one', null, 'low', 'https://example.org/b', '<12.4.31'),
+                new Advisory('typo3/cms-core', 'High one', null, 'high', 'https://example.org/c', '<12.4.31'),
+                new Advisory('typo3/cms-core', 'Critical one', null, 'critical', 'https://example.org/d', '<12.4.31'),
+                new Advisory('typo3/cms-core', 'Unknown one', null, null, 'https://example.org/e', '<12.4.31'),
+                new Advisory('typo3/cms-core', 'Medium two', null, 'medium', 'https://example.org/f', '<12.4.31'),
+            ],
+        );
+
+        $output = $this->formatter->format($content);
+
+        $positions = array_map(
+            static fn (string $title): int => (int) strpos($output, $title),
+            ['Critical one', 'High one', 'Medium one', 'Medium two', 'Low one', 'Unknown one'],
+        );
+
+        $sortedPositions = $positions;
+        sort($sortedPositions);
+        $this->assertSame($sortedPositions, $positions);
+    }
+
+    #[Test]
+    public function highlightsCriticalAndHighSeveritiesButKeepsOthersPlain(): void
+    {
+        $content = new ReleaseContent(
+            version: '12.4.31',
+            changes: [],
+            newsLink: null,
+            news: null,
+            advisories: [
+                new Advisory('typo3/cms-core', 'Critical title', null, 'critical', 'https://example.org/a', '<12.4.31'),
+                new Advisory('typo3/cms-core', 'High title', null, 'high', 'https://example.org/b', '<12.4.31'),
+                new Advisory('typo3/cms-core', 'Medium title', null, 'medium', 'https://example.org/c', '<12.4.31'),
+                new Advisory('typo3/cms-core', 'Low title', null, 'low', 'https://example.org/d', '<12.4.31'),
+            ],
+        );
+
+        $output = $this->formatter->format($content);
+
+        // Widest cell is (critical) → width 10
+        $this->assertStringContainsString('  - <fg=red;options=bold>(critical)</>  Critical title — https://example.org/a', $output);
+        $this->assertStringContainsString('  - <fg=red>    (high)</>  High title — https://example.org/b', $output);
+        $this->assertStringContainsString('  -   (medium)  Medium title — https://example.org/c', $output);
+        $this->assertStringContainsString('  -      (low)  Low title — https://example.org/d', $output);
+        $this->assertStringNotContainsString('<fg=red>  (medium)', $output);
+        $this->assertStringNotContainsString('(low)</>', $output);
+    }
+
+    #[Test]
+    public function escapesConsoleFormattingTagsInAdvisoryRows(): void
+    {
+        $content = new ReleaseContent(
+            version: '12.4.31',
+            changes: [],
+            newsLink: null,
+            news: null,
+            advisories: [
+                new Advisory('typo3/cms-core', 'Title with <script>alert(1)</script>', 'CVE-2025-0001', 'high', 'https://example.org/<error>a</error>', '<12.4.31'),
+            ],
+        );
+
+        $output = $this->formatter->format($content);
+
+        $this->assertStringContainsString('Title with &lt;script&gt;alert(1)&lt;/script&gt;', $output);
+        $this->assertStringContainsString('https://example.org/&lt;error&gt;a&lt;/error&gt;', $output);
+        $this->assertStringNotContainsString('<script>', $output);
+        $this->assertStringNotContainsString('<error>a</error>', $output);
+    }
+
+    #[Test]
+    public function rendersNullSeverityRowWithSpacePaddingWhenOtherRowsHaveSeverity(): void
+    {
+        // CVE-2025-0001 (len 13), cveWidth=13; severityWidth=8 (from (critical))
+        // null severity row gets 8 spaces in severity column
+        $content = new ReleaseContent(
+            version: '12.4.31',
+            changes: [new SecurityUpdate('[SECURITY] Fix')],
+            newsLink: null,
+            news: null,
+            advisories: [
+                new Advisory('typo3/cms-core', 'Title A', 'CVE-2025-0001', 'critical', 'https://example.org/a', '<12.4.31'),
+                new Advisory('typo3/cms-core', 'Title B', 'CVE-2025-0002', null, 'https://example.org/b', '<12.4.31'),
+            ],
+        );
+
+        $output = $this->formatter->format($content);
+
+        $this->assertStringContainsString('Security updates found (2 vulnerabilities: <fg=red;options=bold>1 critical</>):', $output);
+        // (critical) has length 10 → severityWidth=10
+        $this->assertStringContainsString(
+            '  - CVE-2025-0001  <fg=red;options=bold>(critical)</>  Title A — https://example.org/a',
+            $output,
+        );
+        // null severity → 10 spaces padded left + 2-space separator on each side
+        $this->assertStringContainsString(
+            '  - CVE-2025-0002              Title B — https://example.org/b',
+            $output,
+        );
+    }
+
+    #[Test]
+    public function omitsCveColumnWhenAllAdvisoriesLackCve(): void
+    {
+        $content = new ReleaseContent(
+            version: '12.4.31',
+            changes: [],
+            newsLink: null,
+            news: null,
+            advisories: [
+                new Advisory('typo3/cms-core', 'Title A', null, 'high', 'https://example.org/a', '<12.4.31'),
+                new Advisory('typo3/cms-core', 'Title B', null, 'medium', 'https://example.org/b', '<12.4.31'),
+            ],
+        );
+
+        $output = $this->formatter->format($content);
+
+        // No CVE column; severity column present: (high)=6 chars, (medium)=8 chars → severityWidth=8
+        // (high) right-aligned to 8 = "  (high)", (medium) right-aligned to 8 = "(medium)"
+        $this->assertStringContainsString('Security updates found (2 vulnerabilities: <fg=red>1 high</>, 1 medium):', $output);
+        $this->assertStringContainsString('  - <fg=red>  (high)</>  Title A — https://example.org/a', $output);
+        $this->assertStringContainsString('  - (medium)  Title B — https://example.org/b', $output);
+        $this->assertStringNotContainsString('Fixed by:', $output);
+    }
+
+    #[Test]
+    public function rendersAdvisoryWithoutCveAndSeverityAsTitleAndLink(): void
+    {
+        $content = new ReleaseContent(
+            version: '12.4.31',
+            changes: [],
+            newsLink: null,
+            news: null,
+            advisories: [
+                new Advisory('typo3/cms-core', 'Information disclosure in install tool', null, null, 'https://example.org/advisory', '>=12,<12.4.31'),
+            ],
+        );
+
+        $output = $this->formatter->format($content);
+
+        $this->assertStringContainsString('Security updates found (1 vulnerability):', $output);
+        $this->assertStringContainsString(
+            '  - Information disclosure in install tool — https://example.org/advisory',
+            $output,
+        );
+        $this->assertStringNotContainsString('Fixed by:', $output);
+    }
+
+    #[Test]
+    public function omitsSeverityBreakdownWhenAllSeveritiesAreUnknown(): void
+    {
+        $content = new ReleaseContent(
+            version: '12.4.31',
+            changes: [],
+            newsLink: null,
+            news: null,
+            advisories: [
+                new Advisory('typo3/cms-core', 'Title A', 'CVE-2025-0001', null, 'https://example.org/a', '<12.4.31'),
+                new Advisory('typo3/cms-core', 'Title B', 'CVE-2025-0002', null, 'https://example.org/b', '<12.4.31'),
+            ],
+        );
+
+        $output = $this->formatter->format($content);
+
+        $this->assertStringContainsString('Security updates found (2 vulnerabilities):', $output);
+    }
+
+    #[Test]
+    public function suppressesBulletinUrlsWhenAdvisoriesArePresent(): void
+    {
+        $content = new ReleaseContent(
+            version: '12.4.31',
+            changes: [new SecurityUpdate('[SECURITY] Fix XSS vulnerability')],
+            newsLink: null,
+            news: 'Security release. https://typo3.org/security/advisory/typo3-core-sa-2025-001',
+            advisories: [
+                new Advisory('typo3/cms-core', 'Cross-Site Scripting in backend', 'CVE-2025-0001', 'high', 'https://typo3.org/security/advisory/typo3-core-sa-2025-001', '>=12,<12.4.31'),
+            ],
+        );
+
+        $output = $this->formatter->format($content);
+
+        $this->assertStringContainsString('CVE-2025-0001  <fg=red>(high)</>  Cross-Site Scripting in backend', $output);
+        $this->assertStringNotContainsString('  - https://typo3.org/security/advisory', $output);
+        $this->assertStringNotContainsString('Security advisories:', $output);
+    }
+
+    #[Test]
+    public function showsBulletinUrlsAsFallbackWhenNoAdvisories(): void
+    {
+        $content = new ReleaseContent(
+            version: '12.4.31',
+            changes: [],
+            newsLink: null,
+            news: 'Security release. https://typo3.org/security/advisory/typo3-core-sa-2025-001',
+        );
+
+        $output = $this->formatter->format($content);
+
+        $this->assertStringContainsString('Security advisories:', $output);
+        $this->assertStringContainsString('https://typo3.org/security/advisory/typo3-core-sa-2025-001', $output);
+    }
+
+    #[Test]
+    public function batchReportIncludesReleaseWithOnlyAdvisories(): void
+    {
+        $advisoryOnly = new ReleaseContent(
+            version: '12.4.31',
+            changes: [],
+            newsLink: null,
+            news: null,
+            advisories: [
+                new Advisory('typo3/cms-core', 'Cross-Site Scripting in backend', 'CVE-2025-0001', 'high', 'https://example.org/advisory', '>=12,<12.4.31'),
+            ],
+        );
+        $batch = new ReleaseContentBatch(results: ['12.4.31' => $advisoryOnly], failures: []);
+
+        $report = implode("\n", $this->formatter->formatBatchReport($batch, '12.4.30', '12.4.31'));
+
+        $this->assertStringContainsString('Changes in version 12.4.31:', $report);
+        $this->assertStringContainsString('Security updates found (1 vulnerability: <fg=red>1 high</>):', $report);
+        $this->assertStringContainsString('CVE-2025-0001  <fg=red>(high)</>  Cross-Site Scripting in backend', $report);
     }
 
     #[Test]
@@ -220,7 +527,11 @@ https://typo3.org/security/advisory/typo3-core-sa-2025-012',
             changes: [new SecurityUpdate('[SECURITY] Fix XSS'), new SecurityUpdate('[SECURITY] Fix RCE')],
             newsLink: null,
             news: null,
-            securitySeverities: ['High' => 1, 'Medium' => 2],
+            advisories: [
+                new Advisory('typo3/cms-core', 'Advisory A', null, 'high', 'https://example.org/a', '<12.4.21'),
+                new Advisory('typo3/cms-core', 'Advisory B', null, 'medium', 'https://example.org/b', '<12.4.21'),
+                new Advisory('typo3/cms-core', 'Advisory C', null, 'medium', 'https://example.org/c', '<12.4.21'),
+            ],
         );
         $batch = new ReleaseContentBatch(
             results: ['12.4.20' => $breaking, '12.4.21' => $security],
@@ -231,8 +542,31 @@ https://typo3.org/security/advisory/typo3-core-sa-2025-012',
         $digest = end($lines);
 
         $this->assertStringContainsString('2 releases (12.4.19 → 12.4.21)', $digest);
-        $this->assertStringContainsString('1 with security (1 High, 2 Medium)', $digest);
+        $this->assertStringContainsString('1 with security (<fg=red>1 high</>, 2 medium)', $digest);
         $this->assertStringContainsString('1 with breaking changes', $digest);
+    }
+
+    #[Test]
+    public function digestBreakdownWrapsCriticalAndHighInColorTags(): void
+    {
+        $security = new ReleaseContent(
+            version: '12.4.21',
+            changes: [],
+            newsLink: null,
+            news: null,
+            advisories: [
+                new Advisory('typo3/cms-core', 'Advisory A', null, 'critical', 'https://example.org/a', '<12.4.21'),
+                new Advisory('typo3/cms-core', 'Advisory B', null, 'high', 'https://example.org/b', '<12.4.21'),
+                new Advisory('typo3/cms-core', 'Advisory C', null, 'high', 'https://example.org/c', '<12.4.21'),
+                new Advisory('typo3/cms-core', 'Advisory D', null, 'low', 'https://example.org/d', '<12.4.21'),
+            ],
+        );
+        $batch = new ReleaseContentBatch(results: ['12.4.21' => $security], failures: []);
+
+        $lines = $this->formatter->formatBatchReport($batch, '12.4.20', '12.4.21');
+        $digest = end($lines);
+
+        $this->assertStringContainsString('(<fg=red;options=bold>1 critical</>, <fg=red>2 high</>, 1 low)', $digest);
     }
 
     #[Test]

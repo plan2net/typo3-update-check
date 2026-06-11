@@ -6,6 +6,7 @@ namespace Plan2net\Typo3UpdateCheck\Tests;
 
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use Plan2net\Typo3UpdateCheck\Advisory\Advisory;
 use Plan2net\Typo3UpdateCheck\Change\BreakingChange;
 use Plan2net\Typo3UpdateCheck\Change\Change;
 use Plan2net\Typo3UpdateCheck\Change\ChangeFactory;
@@ -85,5 +86,40 @@ final class ReleaseContentTest extends TestCase
         $this->assertCount(2, $advisories);
         $this->assertSame('https://typo3.org/security/advisory/typo3-core-sa-2025-011', $advisories[0]);
         $this->assertSame('https://typo3.org/security/advisory/typo3-core-sa-2025-012', $advisories[1]);
+    }
+
+    #[Test]
+    public function aggregatesSeverityCountsFromAdvisoriesInSeverityOrder(): void
+    {
+        $content = new ReleaseContent(
+            version: '12.4.31',
+            changes: [],
+            newsLink: null,
+            news: null,
+            advisories: [
+                new Advisory('typo3/cms-core', 'Advisory A', null, 'low', 'https://example.org/a', '<12.4.31'),
+                new Advisory('typo3/cms-core', 'Advisory B', null, 'high', 'https://example.org/b', '<12.4.31'),
+                new Advisory('typo3/cms-core', 'Advisory C', null, 'high', 'https://example.org/c', '<12.4.31'),
+            ],
+        );
+
+        $this->assertSame(['high' => 2, 'low' => 1], $content->getSeverityCounts());
+    }
+
+    #[Test]
+    public function ignoresAdvisoriesWithoutSeverityInSeverityCounts(): void
+    {
+        $content = new ReleaseContent(
+            version: '12.4.31',
+            changes: [],
+            newsLink: null,
+            news: null,
+            advisories: [
+                new Advisory('typo3/cms-core', 'Advisory A', null, null, 'https://example.org/a', '<12.4.31'),
+                new Advisory('typo3/cms-core', 'Advisory B', null, 'medium', 'https://example.org/b', '<12.4.31'),
+            ],
+        );
+
+        $this->assertSame(['medium' => 1], $content->getSeverityCounts());
     }
 }

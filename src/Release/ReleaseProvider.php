@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Plan2net\Typo3UpdateCheck\Release;
 
+use Plan2net\Typo3UpdateCheck\Advisory\AdvisoryProvider;
 use Plan2net\Typo3UpdateCheck\Cache\CacheInterface;
 use Plan2net\Typo3UpdateCheck\Change\ChangeParser;
 use Plan2net\Typo3UpdateCheck\Http\HttpClient;
@@ -21,6 +22,7 @@ final class ReleaseProvider
         private readonly ChangeParser $changeParser,
         private readonly ?CacheInterface $cache = null,
         ?ApiFailureClassifier $classifier = null,
+        private readonly ?AdvisoryProvider $advisoryProvider = null,
         private readonly string $apiBaseUrl = self::API_BASE_URL,
     ) {
         $this->classifier = $classifier ?? new ApiFailureClassifier();
@@ -58,7 +60,7 @@ final class ReleaseProvider
     /**
      * @param string[] $versions
      */
-    public function getReleaseContents(array $versions): ReleaseContentBatch
+    public function getReleaseContents(array $versions, ?string $fromVersion = null): ReleaseContentBatch
     {
         $results = [];
         $failures = [];
@@ -77,7 +79,10 @@ final class ReleaseProvider
         if ($uncached === []) {
             uksort($results, static fn (string $a, string $b) => version_compare($a, $b));
 
-            return new ReleaseContentBatch(results: $results, failures: []);
+            return new ReleaseContentBatch(
+                results: $this->enrichWithAdvisories($results, $versions, $fromVersion),
+                failures: [],
+            );
         }
 
         $urls = [];
@@ -105,7 +110,38 @@ final class ReleaseProvider
         uksort($results, static fn (string $a, string $b) => version_compare($a, $b));
         uksort($failures, static fn (string $a, string $b) => version_compare($a, $b));
 
-        return new ReleaseContentBatch(results: $results, failures: $failures);
+        return new ReleaseContentBatch(
+            results: $this->enrichWithAdvisories($results, $versions, $fromVersion),
+            failures: $failures,
+        );
+    }
+
+    /**
+     * @param array<string, ReleaseContent> $results
+     * @param string[]                      $requestedVersions
+     *
+     * @return array<string, ReleaseContent>
+     */
+    private function enrichWithAdvisories(array $results, array $requestedVersions, ?string $fromVersion): array
+    {
+        if ($this->advisoryProvider === null) {
+            return $results;
+        }
+
+        usort($requestedVersions, static fn (string $a, string $b) => version_compare($a, $b));
+
+        $previousVersion = $fromVersion;
+        foreach ($requestedVersions as $version) {
+            if ($previousVersion !== null && isset($results[$version])) {
+                $advisories = $this->advisoryProvider->advisoriesFixedIn($previousVersion, $version);
+                if ($advisories !== []) {
+                    $results[$version] = $results[$version]->withAdvisories(...$advisories);
+                }
+            }
+            $previousVersion = $version;
+        }
+
+        return $results;
     }
 
     /**

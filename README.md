@@ -31,7 +31,7 @@ The plugin automatically activates during `composer update` and:
 
 1. **Detects TYPO3 core updates** — Monitors when `typo3/cms-core` is being updated
 2. **Fetches release information** — Retrieves data from the TYPO3 API for all versions between current and target
-3. **Analyzes security bulletins** — Fetches severity levels (Critical, High, Medium, Low) from TYPO3 security advisories
+3. **Matches security advisories** — Determines fixed vulnerabilities per release from the Packagist security-advisories API (the same data source as composer audit), including CVE numbers and severity levels (critical, high, medium, low)
 4. **Displays important changes** — Shows each affected version's breaking changes and security updates, followed by a one-line digest (releases scanned, security updates with severity totals, breaking changes)
 5. **Warns about skipped security fixes** — If the target lands below newer security releases, it lists them so you can raise your constraint
 6. **Requests confirmation** — Prompts before proceeding when breaking changes or security updates are found
@@ -40,7 +40,7 @@ In non-interactive environments (CI/CD), the plugin displays information but pro
 
 ## Example output
 
-![Demo](documentation/demo-8cbb9a4f.gif)
+![Demo](documentation/demo-89177017.gif)
 
 ## Manual check
 
@@ -59,7 +59,7 @@ composer typo3:check-updates 13.4.10     # 13.4.10 → latest release
 
 When a version is auto-detected or defaulted, the command asks for confirmation before checking. If you pass a target that doesn't exist, it offers the latest instead; an unknown current version (or missing versions in a non-interactive shell) is rejected with a hint.
 
-![Demo](documentation/check-updates-a6c8a669.gif)
+![Demo](documentation/check-updates-379da430.gif)
 
 ## Disabling the check
 
@@ -103,7 +103,8 @@ API responses are cached to improve performance and reduce load on TYPO3 servers
 
 - **Location** — Composer's global cache directory (`~/.cache/composer` on Linux/macOS, `%LOCALAPPDATA%\Composer` on Windows)
 - **Release lists** — 1 hour
-- **Release content and security bulletins** — Permanent (content never changes)
+- **Release content** — Permanent (content never changes)
+- **Security advisories** — 1 hour
 
 The cache is shared across all TYPO3 projects on the same machine.
 

@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace Plan2net\Typo3UpdateCheck\Tests\E2E;
 
 use PHPUnit\Framework\Attributes\Test;
+use Plan2net\Typo3UpdateCheck\Change\ChangeFactory;
+use Plan2net\Typo3UpdateCheck\Change\ChangeParser;
 use Plan2net\Typo3UpdateCheck\Release\ApiFailureCategory;
 use Plan2net\Typo3UpdateCheck\Release\ApiFailureException;
 use Plan2net\Typo3UpdateCheck\Release\ReleaseContent;
+use Plan2net\Typo3UpdateCheck\Release\ReleaseProvider;
 
 final class ReleaseProviderE2ETest extends BaseE2ETestCase
 {
@@ -125,6 +128,37 @@ final class ReleaseProviderE2ETest extends BaseE2ETestCase
         $this->assertTrue($batch->hasFailures());
         $this->assertArrayHasKey('14.3.0', $batch->results);
         $this->assertArrayHasKey('error-404', $batch->failures);
+    }
+
+    #[Test]
+    public function enrichesReleaseWithAdvisoriesFromPackagistEndpoint(): void
+    {
+        $batch = self::makeProvider(withAdvisories: true)->getReleaseContents(['14.3.0'], '14.2.0');
+
+        $advisories = $batch->results['14.3.0']->advisories;
+        $this->assertCount(1, $advisories);
+        $this->assertSame('CVE-2026-0001', $advisories[0]->cve);
+        $this->assertSame('high', $advisories[0]->severity);
+        $this->assertSame(['high' => 1], $batch->results['14.3.0']->getSeverityCounts());
+    }
+
+    #[Test]
+    public function packagistFailureLeavesBatchIntactWithoutAdvisories(): void
+    {
+        $provider = new ReleaseProvider(
+            self::makeHttpClient(['Accept: application/json']),
+            new ChangeParser(new ChangeFactory()),
+            null,
+            null,
+            self::makeAdvisoryProvider('/packagist-broken'),
+            self::stubUrl('/api/v1'),
+        );
+
+        $batch = $provider->getReleaseContents(['14.3.0'], '14.2.0');
+
+        $this->assertArrayHasKey('14.3.0', $batch->results);
+        $this->assertSame([], $batch->results['14.3.0']->advisories);
+        $this->assertSame([], $batch->failures);
     }
 
     private static function composerSupportsTransientRetries(): bool

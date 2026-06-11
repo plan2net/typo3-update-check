@@ -78,19 +78,23 @@ final class CacheManagerTest extends TestCase
     }
 
     #[Test]
-    public function securityBulletinsNeverExpire(): void
+    public function advisoryPoolCacheExpiresAfter3600Seconds(): void
     {
-        $key = 'security-bulletin-typo3-core-sa-2025-001';
-        $data = ['severity' => 'High'];
+        $advisoryKey = 'advisories-typo3';
+        $contentKey = 'content-12.4.20';
+        $advisoryData = ['advisories' => []];
+        $contentData = ['permanent' => 'data'];
 
-        $this->cacheManager->set($key, $data);
+        $this->cacheManager->set($advisoryKey, $advisoryData);
+        $this->cacheManager->set($contentKey, $contentData);
 
-        $prefix = 'x_';
-        $filePath = $this->testCacheDir . '/plan2net/typo3-update-check/' . $prefix . md5($key) . '.json';
-        touch($filePath, time() - 86400);
+        $advisoryFilePath = $this->testCacheDir . '/plan2net/typo3-update-check/x_' . md5($advisoryKey) . '.json';
+        $contentFilePath = $this->testCacheDir . '/plan2net/typo3-update-check/c_' . md5($contentKey) . '.json';
+        touch($advisoryFilePath, time() - 3601);
+        touch($contentFilePath, time() - 3601);
 
-        $result = $this->cacheManager->get($key);
-        $this->assertEquals($data, $result);
+        $this->assertNull($this->cacheManager->get($advisoryKey));
+        $this->assertEquals($contentData, $this->cacheManager->get($contentKey));
     }
 
     #[Test]

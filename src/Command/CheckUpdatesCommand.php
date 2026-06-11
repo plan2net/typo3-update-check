@@ -179,7 +179,7 @@ class CheckUpdatesCommand extends BaseCommand
 
         $versions = $updateChecker->filterVersionsBetween(array_keys($knownVersions), $fromNormalized, $toNormalized);
 
-        $batch = $provider->getReleaseContents($versions);
+        $batch = $provider->getReleaseContents($versions, $fromNormalized);
 
         $formatter = new ConsoleFormatter();
         $lines = $formatter->formatBatchReport($batch, $fromNormalized, $toNormalized);

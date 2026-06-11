@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Plan2net\Typo3UpdateCheck\Release;
 
+use Plan2net\Typo3UpdateCheck\Advisory\Advisory;
 use Plan2net\Typo3UpdateCheck\Change\BreakingChange;
 use Plan2net\Typo3UpdateCheck\Change\Change;
 use Plan2net\Typo3UpdateCheck\Change\SecurityUpdate;
@@ -12,14 +13,14 @@ final class ReleaseContent
 {
     /**
      * @param Change[] $changes
-     * @param array<string, int> $securitySeverities
+     * @param list<Advisory> $advisories
      */
     public function __construct(
         public readonly string $version,
         public readonly array $changes,
         public readonly ?string $newsLink,
         public readonly ?string $news,
-        public readonly array $securitySeverities = [],
+        public readonly array $advisories = [],
     ) {
     }
 
@@ -43,6 +44,36 @@ final class ReleaseContent
             $this->changes,
             fn (Change $change) => $change instanceof SecurityUpdate
         ));
+    }
+
+    /**
+     * @return array<string, int> lowercase severity => count, ordered critical, high, medium, low
+     */
+    public function getSeverityCounts(): array
+    {
+        $counts = [];
+        foreach (['critical', 'high', 'medium', 'low'] as $severity) {
+            $countForSeverity = count(array_filter(
+                $this->advisories,
+                static fn (Advisory $advisory): bool => $advisory->severity === $severity,
+            ));
+            if ($countForSeverity > 0) {
+                $counts[$severity] = $countForSeverity;
+            }
+        }
+
+        return $counts;
+    }
+
+    public function withAdvisories(Advisory ...$advisories): self
+    {
+        return new self(
+            version: $this->version,
+            changes: $this->changes,
+            newsLink: $this->newsLink,
+            news: $this->news,
+            advisories: array_values($advisories),
+        );
     }
 
     /**

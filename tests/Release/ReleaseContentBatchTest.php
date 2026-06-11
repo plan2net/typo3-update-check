@@ -6,6 +6,7 @@ namespace Plan2net\Typo3UpdateCheck\Tests\Release;
 
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use Plan2net\Typo3UpdateCheck\Advisory\Advisory;
 use Plan2net\Typo3UpdateCheck\Change\BreakingChange;
 use Plan2net\Typo3UpdateCheck\Change\RegularChange;
 use Plan2net\Typo3UpdateCheck\Change\SecurityUpdate;
@@ -24,7 +25,6 @@ final class ReleaseContentBatchTest extends TestCase
             changes: [],
             newsLink: null,
             news: null,
-            securitySeverities: [],
         );
         $failure = new ApiFailure(ApiFailureCategory::ServerError, 'HTTP 503', 503);
 
@@ -74,6 +74,23 @@ final class ReleaseContentBatchTest extends TestCase
         $batch = new ReleaseContentBatch(results: ['12.4.20' => $regularOnly], failures: []);
 
         $this->assertFalse($batch->hasImportantChanges());
+    }
+
+    #[Test]
+    public function reportsImportantChangesWhenAResultHasOnlyAdvisories(): void
+    {
+        $advisoryOnly = new ReleaseContent(
+            version: '12.4.31',
+            changes: [],
+            newsLink: null,
+            news: null,
+            advisories: [
+                new Advisory('typo3/cms-core', 'Cross-Site Scripting in backend', 'CVE-2025-0001', 'high', 'https://example.org/advisory', '>=12,<12.4.31'),
+            ],
+        );
+        $batch = new ReleaseContentBatch(results: ['12.4.31' => $advisoryOnly], failures: []);
+
+        $this->assertTrue($batch->hasImportantChanges());
     }
 
     #[Test]
