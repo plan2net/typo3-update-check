@@ -59,6 +59,27 @@ final class ReleaseProvider
     }
 
     /**
+     * Merged, version-sorted releases of every major from $fromMajor to $toMajor
+     * inclusive. All-or-nothing: a partially merged list would hide an entire
+     * major's changes, so any single list failure fails the whole range.
+     *
+     * @return Release[]
+     *
+     * @throws ApiFailureException
+     */
+    public function getReleasesForMajorRange(int $fromMajor, int $toMajor): array
+    {
+        $releases = [];
+        for ($majorVersion = $fromMajor; $majorVersion <= $toMajor; ++$majorVersion) {
+            $releases = array_merge($releases, $this->getReleasesForMajorVersion($majorVersion));
+        }
+
+        usort($releases, static fn (Release $first, Release $second): int => version_compare($first->version, $second->version));
+
+        return $releases;
+    }
+
+    /**
      * @param string[] $versions
      */
     public function getReleaseContents(array $versions, ?string $fromVersion = null): ReleaseContentBatch

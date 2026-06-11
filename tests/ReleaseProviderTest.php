@@ -7,6 +7,8 @@ namespace Plan2net\Typo3UpdateCheck\Tests;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Plan2net\Typo3UpdateCheck\Cache\CacheInterface;
+use Plan2net\Typo3UpdateCheck\Http\HttpTransportException;
+use Plan2net\Typo3UpdateCheck\Release\ApiFailureException;
 use Plan2net\Typo3UpdateCheck\Release\Release;
 use Plan2net\Typo3UpdateCheck\Release\ReleaseProvider;
 use Plan2net\Typo3UpdateCheck\Tests\Http\FakeHttpClient;
@@ -168,5 +170,62 @@ final class ReleaseProviderTest extends TestCase
             [['method' => 'get', 'url' => 'https://get.typo3.org/api/v1/major/12/release/']],
             $http->requests,
         );
+    }
+
+    #[Test]
+    public function mergesAndSortsReleasesAcrossMajorVersions(): void
+    {
+        $http = new FakeHttpClient();
+        $http->queueJson('https://get.typo3.org/api/v1/major/12/release/', (string) json_encode([
+            ['version' => '12.4.20', 'date' => '2024-12-10T08:00:00+01:00', 'type' => 'regular'],
+            ['version' => '12.4.10', 'date' => '2024-02-13T08:00:00+01:00', 'type' => 'security'],
+        ]));
+        $http->queueJson('https://get.typo3.org/api/v1/major/13/release/', (string) json_encode([
+            ['version' => '13.4.5', 'date' => '2025-03-10T08:00:00+01:00', 'type' => 'regular'],
+            ['version' => '13.0.0', 'date' => '2024-01-30T08:00:00+01:00', 'type' => 'regular'],
+        ]));
+
+        $parser = new \Plan2net\Typo3UpdateCheck\Change\ChangeParser(new \Plan2net\Typo3UpdateCheck\Change\ChangeFactory());
+        $provider = new ReleaseProvider($http, $parser);
+
+        $releases = $provider->getReleasesForMajorRange(12, 13);
+
+        $versions = array_map(static fn (Release $release): string => $release->version, $releases);
+        $this->assertSame(['12.4.10', '12.4.20', '13.0.0', '13.4.5'], $versions);
+    }
+
+    #[Test]
+    public function throwsWhenAnyMajorListInRangeFails(): void
+    {
+        $http = new FakeHttpClient();
+        $http->queueJson('https://get.typo3.org/api/v1/major/12/release/', (string) json_encode([
+            ['version' => '12.4.20', 'date' => '2024-12-10T08:00:00+01:00', 'type' => 'regular'],
+        ]));
+        $http->queue('https://get.typo3.org/api/v1/major/13/release/', HttpTransportException::forHttpError('server error', 503));
+
+        $parser = new \Plan2net\Typo3UpdateCheck\Change\ChangeParser(new \Plan2net\Typo3UpdateCheck\Change\ChangeFactory());
+        $provider = new ReleaseProvider($http, $parser);
+
+        $this->expectException(ApiFailureException::class);
+
+        $provider->getReleasesForMajorRange(12, 13);
+    }
+
+    #[Test]
+    public function singleMajorRangeReturnsThatMajorsReleasesSortedAscending(): void
+    {
+        $http = new FakeHttpClient();
+        $http->queueJson('https://get.typo3.org/api/v1/major/12/release/', (string) json_encode([
+            ['version' => '12.4.20', 'date' => '2024-12-10T08:00:00+01:00', 'type' => 'regular'],
+            ['version' => '12.4.10', 'date' => '2024-02-13T08:00:00+01:00', 'type' => 'security'],
+        ]));
+
+        $parser = new \Plan2net\Typo3UpdateCheck\Change\ChangeParser(new \Plan2net\Typo3UpdateCheck\Change\ChangeFactory());
+        $provider = new ReleaseProvider($http, $parser);
+
+        $releases = $provider->getReleasesForMajorRange(12, 12);
+
+        $versions = array_map(static fn (Release $release): string => $release->version, $releases);
+        $this->assertSame(['12.4.10', '12.4.20'], $versions);
     }
 }
