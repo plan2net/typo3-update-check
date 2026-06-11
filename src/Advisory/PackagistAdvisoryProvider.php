@@ -152,6 +152,11 @@ final class PackagistAdvisoryProvider implements AdvisoryProvider
         return $advisories;
     }
 
+    public function isAvailable(): bool
+    {
+        return !$this->loadFailed;
+    }
+
     /**
      * @return list<array<string, mixed>>|null null when the pool is unavailable
      */

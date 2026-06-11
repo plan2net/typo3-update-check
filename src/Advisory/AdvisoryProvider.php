@@ -13,4 +13,10 @@ interface AdvisoryProvider
      * @return list<Advisory>
      */
     public function advisoriesFixedIn(string $previousVersion, string $version): array;
+
+    /**
+     * Whether the advisory data source could be consulted; distinguishes
+     * "no matching advisories" from "advisory data unavailable".
+     */
+    public function isAvailable(): bool;
 }

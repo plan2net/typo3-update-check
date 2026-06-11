@@ -15,6 +15,13 @@ final class FakeAdvisoryProvider implements AdvisoryProvider
     /** @var list<array{previousVersion: string, version: string}> */
     public array $calls = [];
 
+    public bool $available = true;
+
+    public function isAvailable(): bool
+    {
+        return $this->available;
+    }
+
     /**
      * @param list<Advisory> $advisories
      */

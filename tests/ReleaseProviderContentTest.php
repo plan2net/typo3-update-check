@@ -7,6 +7,7 @@ namespace Plan2net\Typo3UpdateCheck\Tests;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Plan2net\Typo3UpdateCheck\Advisory\Advisory;
+use Plan2net\Typo3UpdateCheck\Advisory\AdvisoryStatus;
 use Plan2net\Typo3UpdateCheck\Cache\CacheInterface;
 use Plan2net\Typo3UpdateCheck\Change\ChangeFactory;
 use Plan2net\Typo3UpdateCheck\Change\ChangeParser;
@@ -282,5 +283,63 @@ final class ReleaseProviderContentTest extends TestCase
 
         $this->assertSame([], $batch->results['12.4.31']->advisories);
         $this->assertSame([], $advisoryProvider->calls);
+    }
+
+    #[Test]
+    public function reportsAdvisoryStatusAvailableWhenProviderCouldBeConsulted(): void
+    {
+        $http = new FakeHttpClient();
+        $http->queueJson('https://get.typo3.org/api/v1/release/12.4.31/content', (string) json_encode([
+            'release_notes' => ['version' => '12.4.31', 'changes' => ''],
+        ]));
+
+        $provider = new ReleaseProvider($http, new ChangeParser(new ChangeFactory()), null, null, new FakeAdvisoryProvider());
+        $batch = $provider->getReleaseContents(['12.4.31'], '12.4.30');
+
+        $this->assertSame(AdvisoryStatus::Available, $batch->advisoryStatus);
+    }
+
+    #[Test]
+    public function reportsAdvisoryStatusUnavailableWhenProviderFailed(): void
+    {
+        $http = new FakeHttpClient();
+        $http->queueJson('https://get.typo3.org/api/v1/release/12.4.31/content', (string) json_encode([
+            'release_notes' => ['version' => '12.4.31', 'changes' => ''],
+        ]));
+        $advisoryProvider = new FakeAdvisoryProvider();
+        $advisoryProvider->available = false;
+
+        $provider = new ReleaseProvider($http, new ChangeParser(new ChangeFactory()), null, null, $advisoryProvider);
+        $batch = $provider->getReleaseContents(['12.4.31'], '12.4.30');
+
+        $this->assertSame(AdvisoryStatus::Unavailable, $batch->advisoryStatus);
+    }
+
+    #[Test]
+    public function reportsAdvisoryStatusNotAttemptedWithoutProvider(): void
+    {
+        $http = new FakeHttpClient();
+        $http->queueJson('https://get.typo3.org/api/v1/release/12.4.31/content', (string) json_encode([
+            'release_notes' => ['version' => '12.4.31', 'changes' => ''],
+        ]));
+
+        $provider = new ReleaseProvider($http, new ChangeParser(new ChangeFactory()));
+        $batch = $provider->getReleaseContents(['12.4.31'], '12.4.30');
+
+        $this->assertSame(AdvisoryStatus::NotAttempted, $batch->advisoryStatus);
+    }
+
+    #[Test]
+    public function reportsAdvisoryStatusOnFullyCachedBatches(): void
+    {
+        $cache = $this->createMock(CacheInterface::class);
+        $cache->method('get')
+            ->with('content-12.4.31')
+            ->willReturn(['release_notes' => ['version' => '12.4.31', 'changes' => '']]);
+
+        $provider = new ReleaseProvider(new FakeHttpClient(), new ChangeParser(new ChangeFactory()), $cache, null, new FakeAdvisoryProvider());
+        $batch = $provider->getReleaseContents(['12.4.31'], '12.4.30');
+
+        $this->assertSame(AdvisoryStatus::Available, $batch->advisoryStatus);
     }
 }

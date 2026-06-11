@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Plan2net\Typo3UpdateCheck\Release;
 
+use Plan2net\Typo3UpdateCheck\Advisory\AdvisoryStatus;
+
 final class ReleaseContentBatch
 {
     /**
@@ -13,6 +15,7 @@ final class ReleaseContentBatch
     public function __construct(
         public readonly array $results,
         public readonly array $failures,
+        public readonly AdvisoryStatus $advisoryStatus = AdvisoryStatus::NotAttempted,
     ) {
     }
 

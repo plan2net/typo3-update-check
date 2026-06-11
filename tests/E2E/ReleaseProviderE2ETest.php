@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Plan2net\Typo3UpdateCheck\Tests\E2E;
 
 use PHPUnit\Framework\Attributes\Test;
+use Plan2net\Typo3UpdateCheck\Advisory\AdvisoryStatus;
 use Plan2net\Typo3UpdateCheck\Change\ChangeFactory;
 use Plan2net\Typo3UpdateCheck\Change\ChangeParser;
 use Plan2net\Typo3UpdateCheck\Release\ApiFailureCategory;
@@ -159,6 +160,7 @@ final class ReleaseProviderE2ETest extends BaseE2ETestCase
         $this->assertArrayHasKey('14.3.0', $batch->results);
         $this->assertSame([], $batch->results['14.3.0']->advisories);
         $this->assertSame([], $batch->failures);
+        $this->assertSame(AdvisoryStatus::Unavailable, $batch->advisoryStatus);
     }
 
     private static function composerSupportsTransientRetries(): bool

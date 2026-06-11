@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Plan2net\Typo3UpdateCheck;
 
 use Plan2net\Typo3UpdateCheck\Advisory\Advisory;
+use Plan2net\Typo3UpdateCheck\Advisory\AdvisoryStatus;
 use Plan2net\Typo3UpdateCheck\Release\FailureMessageFormatter;
 use Plan2net\Typo3UpdateCheck\Release\ReleaseContent;
 use Plan2net\Typo3UpdateCheck\Release\ReleaseContentBatch;
@@ -31,8 +32,12 @@ final class ConsoleFormatter
         $lines = [];
         foreach ($batch->results as $content) {
             if ($content->getBreakingChanges() || $content->getSecurityUpdates() || $content->advisories !== []) {
-                $lines[] = $this->format($content);
+                $lines[] = $this->format($content, $batch->advisoryStatus);
             }
+        }
+
+        if ($batch->advisoryStatus === AdvisoryStatus::Unavailable && $this->hasSecurityUpdates($batch)) {
+            $lines[] = '<comment>⚠ Security advisory data from Packagist is unavailable — CVE and severity details are not shown.</comment>';
         }
 
         if ($batch->hasFailures()) {
@@ -95,6 +100,7 @@ final class ConsoleFormatter
     {
         $securityReleases = 0;
         $breakingReleases = 0;
+        $unratedReleases = 0;
         $severities = [];
 
         foreach ($batch->results as $content) {
@@ -102,6 +108,9 @@ final class ConsoleFormatter
                 ++$securityReleases;
                 foreach ($content->getSeverityCounts() as $level => $count) {
                     $severities[$level] = ($severities[$level] ?? 0) + $count;
+                }
+                if ($batch->advisoryStatus === AdvisoryStatus::Available && $content->advisories === []) {
+                    ++$unratedReleases;
                 }
             }
             if ($content->getBreakingChanges()) {
@@ -112,8 +121,12 @@ final class ConsoleFormatter
         $segments = [sprintf('%d release%s (%s → %s)', $releaseCount, $releaseCount === 1 ? '' : 's', $fromVersion, $toVersion)];
 
         if ($securityReleases > 0) {
-            $breakdown = $this->severityBreakdown($severities);
-            $segments[] = sprintf('⚡ %d with security%s', $securityReleases, $breakdown === '' ? '' : " ({$breakdown})");
+            $detailParts = array_filter([
+                $this->severityBreakdown($severities),
+                $unratedReleases > 0 ? "{$unratedReleases} unrated" : '',
+            ]);
+            $detail = implode(' · ', $detailParts);
+            $segments[] = sprintf('⚡ %d with security%s', $securityReleases, $detail === '' ? '' : " ({$detail})");
         }
 
         if ($breakingReleases > 0) {
@@ -123,7 +136,7 @@ final class ConsoleFormatter
         return '<options=bold>' . implode(' · ', $segments) . '</>';
     }
 
-    public function format(ReleaseContent $content): string
+    public function format(ReleaseContent $content, AdvisoryStatus $advisoryStatus = AdvisoryStatus::NotAttempted): string
     {
         $output = "<info>Changes in version {$content->version}:</info>\n";
 
@@ -163,6 +176,10 @@ final class ConsoleFormatter
             if ($bulletinLines !== []) {
                 $output .= "\n<info>Security advisories:</info>\n" . implode("\n", $bulletinLines) . "\n";
             }
+
+            if ($security && $advisoryStatus === AdvisoryStatus::Available) {
+                $output .= "\n<comment>CVE and severity details are not yet published on Packagist for this release.</comment>\n";
+            }
         }
 
         if ($content->newsLink) {
@@ -170,6 +187,17 @@ final class ConsoleFormatter
         }
 
         return $output;
+    }
+
+    private function hasSecurityUpdates(ReleaseContentBatch $batch): bool
+    {
+        foreach ($batch->results as $content) {
+            if ($content->getSecurityUpdates()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function escape(string $text): string

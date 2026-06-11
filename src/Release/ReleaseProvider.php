@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Plan2net\Typo3UpdateCheck\Release;
 
 use Plan2net\Typo3UpdateCheck\Advisory\AdvisoryProvider;
+use Plan2net\Typo3UpdateCheck\Advisory\AdvisoryStatus;
 use Plan2net\Typo3UpdateCheck\Cache\CacheInterface;
 use Plan2net\Typo3UpdateCheck\Change\ChangeParser;
 use Plan2net\Typo3UpdateCheck\Http\HttpClient;
@@ -78,10 +79,12 @@ final class ReleaseProvider
 
         if ($uncached === []) {
             uksort($results, static fn (string $a, string $b) => version_compare($a, $b));
+            $enrichedResults = $this->enrichWithAdvisories($results, $versions, $fromVersion);
 
             return new ReleaseContentBatch(
-                results: $this->enrichWithAdvisories($results, $versions, $fromVersion),
+                results: $enrichedResults,
                 failures: [],
+                advisoryStatus: $this->advisoryStatus(),
             );
         }
 
@@ -109,11 +112,28 @@ final class ReleaseProvider
 
         uksort($results, static fn (string $a, string $b) => version_compare($a, $b));
         uksort($failures, static fn (string $a, string $b) => version_compare($a, $b));
+        $enrichedResults = $this->enrichWithAdvisories($results, $versions, $fromVersion);
 
         return new ReleaseContentBatch(
-            results: $this->enrichWithAdvisories($results, $versions, $fromVersion),
+            results: $enrichedResults,
             failures: $failures,
+            advisoryStatus: $this->advisoryStatus(),
         );
+    }
+
+    /**
+     * Must run after enrichWithAdvisories(): the advisory pool is loaded lazily,
+     * so availability is only known once enrichment has been attempted.
+     */
+    private function advisoryStatus(): AdvisoryStatus
+    {
+        if ($this->advisoryProvider === null) {
+            return AdvisoryStatus::NotAttempted;
+        }
+
+        return $this->advisoryProvider->isAvailable()
+            ? AdvisoryStatus::Available
+            : AdvisoryStatus::Unavailable;
     }
 
     /**

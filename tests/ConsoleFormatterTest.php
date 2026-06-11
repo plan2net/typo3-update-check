@@ -7,6 +7,7 @@ namespace Plan2net\Typo3UpdateCheck\Tests;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Plan2net\Typo3UpdateCheck\Advisory\Advisory;
+use Plan2net\Typo3UpdateCheck\Advisory\AdvisoryStatus;
 use Plan2net\Typo3UpdateCheck\Change\BreakingChange;
 use Plan2net\Typo3UpdateCheck\Change\RegularChange;
 use Plan2net\Typo3UpdateCheck\Change\SecurityUpdate;
@@ -567,6 +568,103 @@ https://typo3.org/security/advisory/typo3-core-sa-2025-012',
         $digest = end($lines);
 
         $this->assertStringContainsString('(<fg=red;options=bold>1 critical</>, <fg=red>2 high</>, 1 low)', $digest);
+    }
+
+    #[Test]
+    public function annotatesSecurityReleaseWithoutAdvisoriesWhenAdvisoryDataIsAvailable(): void
+    {
+        $security = new ReleaseContent(
+            version: '12.4.46',
+            changes: [new SecurityUpdate('[SECURITY] Mitigate deserialization flaws')],
+            newsLink: null,
+            news: null,
+        );
+        $batch = new ReleaseContentBatch(
+            results: ['12.4.46' => $security],
+            failures: [],
+            advisoryStatus: AdvisoryStatus::Available,
+        );
+
+        $report = implode("\n", $this->formatter->formatBatchReport($batch, '12.4.45', '12.4.46'));
+
+        $this->assertStringContainsString(
+            'CVE and severity details are not yet published on Packagist for this release.',
+            $report,
+        );
+    }
+
+    #[Test]
+    public function doesNotAnnotateSecurityReleaseWhenAdvisoriesWereNotAttempted(): void
+    {
+        $security = new ReleaseContent(
+            version: '12.4.46',
+            changes: [new SecurityUpdate('[SECURITY] Mitigate deserialization flaws')],
+            newsLink: null,
+            news: null,
+        );
+        $batch = new ReleaseContentBatch(results: ['12.4.46' => $security], failures: []);
+
+        $report = implode("\n", $this->formatter->formatBatchReport($batch, '12.4.45', '12.4.46'));
+
+        $this->assertStringNotContainsString('Packagist', $report);
+    }
+
+    #[Test]
+    public function digestMarksSecurityReleasesWithoutSeverityRatingsAsUnrated(): void
+    {
+        $rated = (new ReleaseContent(
+            version: '12.4.41',
+            changes: [new SecurityUpdate('[SECURITY] Fix access control')],
+            newsLink: null,
+            news: null,
+        ))->withAdvisories(new Advisory(
+            packageName: 'typo3/cms-core',
+            title: 'Broken Access Control',
+            cve: 'CVE-2025-59022',
+            severity: 'high',
+            link: 'https://example.com/advisory',
+            affectedVersions: '<12.4.41',
+        ));
+        $unrated = new ReleaseContent(
+            version: '12.4.46',
+            changes: [new SecurityUpdate('[SECURITY] Mitigate deserialization flaws')],
+            newsLink: null,
+            news: null,
+        );
+        $batch = new ReleaseContentBatch(
+            results: ['12.4.41' => $rated, '12.4.46' => $unrated],
+            failures: [],
+            advisoryStatus: AdvisoryStatus::Available,
+        );
+
+        $lines = $this->formatter->formatBatchReport($batch, '12.4.40', '12.4.46');
+        $digest = end($lines);
+
+        $this->assertStringContainsString('2 with security (<fg=red>1 high</> · 1 unrated)', $digest);
+    }
+
+    #[Test]
+    public function warnsOnceWhenAdvisoryDataIsUnavailable(): void
+    {
+        $security = new ReleaseContent(
+            version: '12.4.46',
+            changes: [new SecurityUpdate('[SECURITY] Mitigate deserialization flaws')],
+            newsLink: null,
+            news: null,
+        );
+        $batch = new ReleaseContentBatch(
+            results: ['12.4.46' => $security],
+            failures: [],
+            advisoryStatus: AdvisoryStatus::Unavailable,
+        );
+
+        $report = implode("\n", $this->formatter->formatBatchReport($batch, '12.4.45', '12.4.46'));
+
+        $this->assertStringContainsString(
+            'Security advisory data from Packagist is unavailable — CVE and severity details are not shown.',
+            $report,
+        );
+        $this->assertStringNotContainsString('not yet published on Packagist', $report);
     }
 
     #[Test]
