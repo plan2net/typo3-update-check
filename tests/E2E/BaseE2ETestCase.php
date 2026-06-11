@@ -94,24 +94,23 @@ abstract class BaseE2ETestCase extends TestCase
     }
 
     /**
+     * Every request sends "Connection: close": idle keep-alive connections
+     * left open between tests stall the single-threaded php -S stub on
+     * Windows until they time out, failing whichever tests run meanwhile.
+     *
      * @param string[] $headers
      */
     protected static function makeHttpClient(array $headers = []): ComposerHttpClient
     {
         return new ComposerHttpClient(
             self::sharedHttpDownloader(),
-            $headers,
+            [...$headers, 'Connection: close'],
             static function (int $delayMs): void {
                 self::$recordedDelaysMs[] = $delayMs;
             },
         );
     }
 
-    /**
-     * Shared across all tests of a class: a fresh HttpDownloader per request
-     * leaves single-use keep-alive connections behind, which intermittently
-     * blocks the single-threaded php -S stub on Windows.
-     */
     private static function sharedHttpDownloader(): HttpDownloader
     {
         if (self::$httpDownloader === null) {
