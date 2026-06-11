@@ -157,6 +157,104 @@ final class PluginTest extends TestCase
         $this->assertStringContainsString('Proceeding with update (dominant failure: server_error)', $joined);
     }
 
+    #[Test]
+    public function showsBannerAndCondensedReportOnMajorBump(): void
+    {
+        $this->setupCurrentTypo3('14.3.0');
+        $this->setupUpdatePackages(['typo3/cms-core' => '15.0.0']);
+        $this->plugin->setReleaseProvider($this->crossMajorProvider());
+
+        $messages = [];
+        $this->io->method('write')->willReturnCallback(function (string $message) use (&$messages): void {
+            $messages[] = $message;
+        });
+
+        $this->plugin->checkForBreakingChanges($this->event);
+
+        $joined = implode("\n", $messages);
+        $this->assertStringContainsString('Major version upgrade: 14 → 15', $joined);
+        $this->assertStringContainsString('Changelog-15.html', $joined);
+        $this->assertStringContainsString('2 breaking changes', $joined);
+        $this->assertStringNotContainsString('Remove old API', $joined);
+        $this->assertStringContainsString('[SECURITY] Fix XSS', $joined);
+    }
+
+    #[Test]
+    public function promptsWithMajorUpgradeQuestionWhenMajorBumpHasNoImportantChanges(): void
+    {
+        $this->setupCurrentTypo3('14.3.0');
+        $this->setupUpdatePackages(['typo3/cms-core' => '15.0.0']);
+        $this->plugin->setReleaseProvider($this->crossMajorProvider(changes: ''));
+
+        $this->io->method('isInteractive')->willReturn(true);
+        $this->io->expects($this->once())
+            ->method('askConfirmation')
+            ->with($this->stringContains('major TYPO3 upgrade'))
+            ->willReturn(true);
+
+        $this->plugin->checkForBreakingChanges($this->event);
+    }
+
+    #[Test]
+    public function promptsOnMajorBumpEvenWhenReleaseListFetchFails(): void
+    {
+        $this->setupCurrentTypo3('14.3.0');
+        $this->setupUpdatePackages(['typo3/cms-core' => '15.0.0']);
+
+        $http = new FakeHttpClient();
+        $http->queueJson('https://get.typo3.org/api/v1/major/14/release/', (string) json_encode([
+            ['version' => '14.3.0', 'date' => '2026-04-21T09:30:20+02:00', 'type' => 'regular'],
+        ]));
+        $http->queue('https://get.typo3.org/api/v1/major/15/release/', HttpTransportException::forHttpError('server error', 503));
+        $this->plugin->setReleaseProvider(new ReleaseProvider($http, new ChangeParser(new ChangeFactory())));
+
+        $this->io->method('isInteractive')->willReturn(true);
+        $this->io->expects($this->once())
+            ->method('askConfirmation')
+            ->with($this->stringContains('major upgrade'))
+            ->willReturn(true);
+
+        $this->plugin->checkForBreakingChanges($this->event);
+    }
+
+    #[Test]
+    public function promptsOnMajorBumpWhenTargetMajorListIsEmpty(): void
+    {
+        $this->setupCurrentTypo3('14.3.0');
+        $this->setupUpdatePackages(['typo3/cms-core' => '15.0.0']);
+
+        $http = new FakeHttpClient();
+        $http->queueJson('https://get.typo3.org/api/v1/major/14/release/', (string) json_encode([
+            ['version' => '14.3.0', 'date' => '2026-04-21T09:30:20+02:00', 'type' => 'regular'],
+        ]));
+        $http->queueJson('https://get.typo3.org/api/v1/major/15/release/', '[]');
+        $this->plugin->setReleaseProvider(new ReleaseProvider($http, new ChangeParser(new ChangeFactory())));
+
+        $this->io->method('isInteractive')->willReturn(true);
+        $this->io->expects($this->once())
+            ->method('askConfirmation')
+            ->with($this->stringContains('major upgrade'))
+            ->willReturn(true);
+
+        $this->plugin->checkForBreakingChanges($this->event);
+    }
+
+    #[Test]
+    public function proceedsWithoutPromptWhenWithinMajorListFetchFails(): void
+    {
+        $this->setupCurrentTypo3('14.2.0');
+        $this->setupUpdatePackages(['typo3/cms-core' => '14.3.0']);
+
+        $http = new FakeHttpClient();
+        $http->queue('https://get.typo3.org/api/v1/major/14/release/', HttpTransportException::forHttpError('server error', 503));
+        $this->plugin->setReleaseProvider(new ReleaseProvider($http, new ChangeParser(new ChangeFactory())));
+
+        $this->io->method('isInteractive')->willReturn(true);
+        $this->io->expects($this->never())->method('askConfirmation');
+
+        $this->plugin->checkForBreakingChanges($this->event);
+    }
+
     private function setupCurrentTypo3(string $version): void
     {
         $package = $this->createMock(PackageInterface::class);
@@ -180,5 +278,26 @@ final class PluginTest extends TestCase
         }
 
         $this->event->method('getPackages')->willReturn($packageObjects);
+    }
+
+    private function crossMajorProvider(?string $changes = null): ReleaseProvider
+    {
+        $changes ??= " * 2026-09-01 abc123 [!!!][TASK] Remove old API (thanks to Alice)\n"
+            . " * 2026-09-01 def456 [!!!][TASK] Drop legacy mode (thanks to Bob)\n"
+            . ' * 2026-09-01 aaa111 [SECURITY] Fix XSS (thanks to Carol)';
+
+        $http = new FakeHttpClient();
+        $http->queueJson('https://get.typo3.org/api/v1/major/14/release/', (string) json_encode([
+            ['version' => '14.3.0', 'date' => '2026-04-21T09:30:20+02:00', 'type' => 'regular'],
+        ]));
+        $http->queueJson('https://get.typo3.org/api/v1/major/15/release/', (string) json_encode([
+            ['version' => '15.0.0', 'date' => '2026-09-01T08:00:00+02:00', 'type' => 'regular'],
+        ]));
+        $http->queueJson('https://get.typo3.org/api/v1/release/15.0.0/content', (string) json_encode([
+            'version' => '15.0.0',
+            'release_notes' => ['version' => '15.0.0', 'changes' => $changes],
+        ]));
+
+        return new ReleaseProvider($http, new ChangeParser(new ChangeFactory()));
     }
 }

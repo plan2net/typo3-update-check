@@ -68,33 +68,37 @@ final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
             return;
         }
 
-        $updateInfo = $this->detectUpdate($event);
-        if (!$updateInfo) {
+        $scope = $this->detectUpdate($event);
+        if (!$scope) {
             return;
         }
 
-        [$currentVersion, $targetVersion] = $updateInfo;
+        $this->announceUpdate($scope);
 
-        $this->announceUpdate($currentVersion, $targetVersion);
-
-        $releases = $this->fetchReleases($currentVersion);
+        $releases = $this->fetchReleases($scope);
         if ($releases === null) {
             $this->writeFooter();
+            if ($scope->isMajorBump()) {
+                $this->confirmContinuation('⚠️ Could not verify changes for this major upgrade. Do you want to continue with the update? [y/N] ');
+            }
 
             return;
         }
 
-        $versions = $this->versionsBetween($releases, $currentVersion, $targetVersion);
+        $versions = $this->versionsBetween($releases, $scope->fromVersion, $scope->toVersion);
         if ($versions === []) {
             $this->io->write('No intermediate versions found.');
             $this->writeFooter();
+            if ($scope->isMajorBump()) {
+                $this->confirmContinuation('⚠️ Could not verify changes for this major upgrade. Do you want to continue with the update? [y/N] ');
+            }
 
             return;
         }
 
-        $hasImportantChanges = $this->processVersions($versions, $releases, $currentVersion, $targetVersion);
+        $hasImportantChanges = $this->processVersions($versions, $releases, $scope);
         $this->writeFooter();
-        $this->handleUserConfirmation($hasImportantChanges);
+        $this->handleUserConfirmation($hasImportantChanges, $scope);
 
         $this->hasChecked = true;
     }
@@ -107,10 +111,7 @@ final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
     {
     }
 
-    /**
-     * @return array{string, string}|null
-     */
-    private function detectUpdate(PrePoolCreateEvent $event): ?array
+    private function detectUpdate(PrePoolCreateEvent $event): ?UpdateScope
     {
         $localRepository = $this->composer->getRepositoryManager()->getLocalRepository();
         $currentPackage = $localRepository->findPackage('typo3/cms-core', '*');
@@ -129,7 +130,7 @@ final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
             return null;
         }
 
-        return [$currentVersion, $targetVersion];
+        return new UpdateScope($currentVersion, $targetVersion);
     }
 
     /**
@@ -140,14 +141,17 @@ final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
         return $this->updateChecker->findTargetVersion($packages, '0.0.0');
     }
 
-    private function announceUpdate(string $currentVersion, string $targetVersion): void
+    private function announceUpdate(UpdateScope $scope): void
     {
         $this->writeHeader();
         $this->io->write(sprintf(
             '<info>TYPO3 core will be updated from %s to %s</info>',
-            $currentVersion,
-            $targetVersion
+            $scope->fromVersion,
+            $scope->toVersion
         ));
+        foreach ($this->consoleFormatter->formatMajorBumpHeader($scope) as $line) {
+            $this->io->write($line);
+        }
         $this->io->write('Fetching version information...');
     }
 
@@ -156,16 +160,18 @@ final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
      *
      * @throws \Exception
      */
-    private function fetchReleases(string $fromVersion): ?array
+    private function fetchReleases(UpdateScope $scope): ?array
     {
-        $majorVersion = (int) explode('.', $fromVersion)[0];
-
         try {
-            return $this->getReleaseProvider()->getReleasesForMajorVersion($majorVersion);
+            return $this->getReleaseProvider()->getReleasesForMajorRange($scope->fromMajor, $scope->toMajor);
         } catch (ApiFailureException $exception) {
+            $suffix = $scope->isMajorBump()
+                ? 'no change information for this major upgrade is available.'
+                : 'proceeding with update without breaking-change preview.';
             $this->io->write(sprintf(
-                '<error>%s — proceeding with update without breaking-change preview.</error>',
+                '<error>%s — %s</error>',
                 $this->humanizeFailure($exception->failure),
+                $suffix,
             ));
 
             return null;
@@ -194,14 +200,14 @@ final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
      * @param string[]  $versions
      * @param Release[] $releases
      */
-    private function processVersions(array $versions, array $releases, string $currentVersion, string $targetVersion): bool
+    private function processVersions(array $versions, array $releases, UpdateScope $scope): bool
     {
-        $batch = $this->getReleaseProvider()->getReleaseContents($versions, $currentVersion);
+        $batch = $this->getReleaseProvider()->getReleaseContents($versions, $scope->fromVersion);
 
-        $lines = $this->consoleFormatter->formatBatchReport($batch, new UpdateScope($currentVersion, $targetVersion));
+        $lines = $this->consoleFormatter->formatBatchReport($batch, $scope);
         $lines = array_merge($lines, $this->consoleFormatter->formatSecurityGap(
-            $targetVersion,
-            $this->updateChecker->securityReleasesAbove($releases, $targetVersion),
+            $scope->toVersion,
+            $this->updateChecker->securityReleasesAbove($releases, $scope->toVersion),
         ));
 
         foreach ($lines as $line) {
@@ -211,17 +217,24 @@ final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
         return $batch->hasImportantChanges();
     }
 
-    private function handleUserConfirmation(bool $hasImportantChanges): void
+    private function handleUserConfirmation(bool $hasImportantChanges, UpdateScope $scope): void
+    {
+        if ($hasImportantChanges) {
+            $this->confirmContinuation('⚠️ Breaking changes or security updates were found. Do you want to continue with the update? [y/N] ');
+
+            return;
+        }
+
+        if ($scope->isMajorBump()) {
+            $this->confirmContinuation('⚠️ This is a major TYPO3 upgrade. Do you want to continue with the update? [y/N] ');
+        }
+    }
+
+    private function confirmContinuation(string $question): void
     {
         if (!$this->io->isInteractive()) {
             return;
         }
-
-        if (!$hasImportantChanges) {
-            return;
-        }
-
-        $question = '⚠️ Breaking changes or security updates were found. Do you want to continue with the update? [y/N] ';
 
         if (!$this->io->askConfirmation($question, false)) {
             $this->io->write('<info>Update cancelled by user.</info>');
