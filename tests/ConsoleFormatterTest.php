@@ -16,6 +16,7 @@ use Plan2net\Typo3UpdateCheck\Release\ApiFailure;
 use Plan2net\Typo3UpdateCheck\Release\ApiFailureCategory;
 use Plan2net\Typo3UpdateCheck\Release\ReleaseContent;
 use Plan2net\Typo3UpdateCheck\Release\ReleaseContentBatch;
+use Plan2net\Typo3UpdateCheck\UpdateScope;
 
 final class ConsoleFormatterTest extends TestCase
 {
@@ -743,5 +744,35 @@ https://typo3.org/security/advisory/typo3-core-sa-2025-012',
 
         $this->assertStringContainsString('1 breaking change', $output);
         $this->assertStringNotContainsString('breaking changes', $output);
+    }
+
+    #[Test]
+    public function majorBumpHeaderListsChangelogForEveryCrossedMajor(): void
+    {
+        $lines = $this->formatter->formatMajorBumpHeader(new UpdateScope('12.4.10', '14.0.0'));
+
+        $joined = implode("\n", $lines);
+        $this->assertStringContainsString('Major version upgrade: 12 → 14', $joined);
+        $this->assertStringContainsString('https://docs.typo3.org/m/typo3/reference-coreapi/main/en-us/Administration/Upgrade/Index.html', $joined);
+        $this->assertStringContainsString('https://docs.typo3.org/c/typo3/cms-core/main/en-us/Changelog-13.html', $joined);
+        $this->assertStringContainsString('https://docs.typo3.org/c/typo3/cms-core/main/en-us/Changelog-14.html', $joined);
+        $this->assertStringNotContainsString('Changelog-12.html', $joined);
+        $this->assertStringContainsString('one major version at a time', $joined);
+        $this->assertSame('', $lines[array_key_last($lines)]);
+    }
+
+    #[Test]
+    public function majorBumpHeaderOmitsMultiMajorWarningForSingleMajorBump(): void
+    {
+        $joined = implode("\n", $this->formatter->formatMajorBumpHeader(new UpdateScope('12.4.10', '13.4.5')));
+
+        $this->assertStringContainsString('Major version upgrade: 12 → 13', $joined);
+        $this->assertStringNotContainsString('one major version at a time', $joined);
+    }
+
+    #[Test]
+    public function majorBumpHeaderIsEmptyWithinMajor(): void
+    {
+        $this->assertSame([], $this->formatter->formatMajorBumpHeader(new UpdateScope('12.4.10', '12.4.20')));
     }
 }

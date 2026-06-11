@@ -13,6 +13,9 @@ use Plan2net\Typo3UpdateCheck\Release\ReleaseContentBatch;
 
 final class ConsoleFormatter
 {
+    private const UPGRADE_GUIDE_URL = 'https://docs.typo3.org/m/typo3/reference-coreapi/main/en-us/Administration/Upgrade/Index.html';
+    private const CHANGELOG_URL_TEMPLATE = 'https://docs.typo3.org/c/typo3/cms-core/main/en-us/Changelog-%d.html';
+
     public function __construct(
         private readonly FailureMessageFormatter $failureFormatter = new FailureMessageFormatter(),
     ) {
@@ -95,6 +98,37 @@ final class ConsoleFormatter
             ),
             '<comment>   Raise your version constraint to install them.</comment>',
         ];
+    }
+
+    /**
+     * @return string[]
+     */
+    public function formatMajorBumpHeader(UpdateScope $scope): array
+    {
+        if (!$scope->isMajorBump()) {
+            return [];
+        }
+
+        $lines = [sprintf('<options=bold>⬆ Major version upgrade: %d → %d</>', $scope->fromMajor, $scope->toMajor)];
+
+        if ($scope->majorsCrossed() > 1) {
+            $lines[] = sprintf(
+                '<comment>⚠ This update crosses %d major versions. TYPO3 officially supports upgrading one major version at a time.</comment>',
+                $scope->majorsCrossed(),
+            );
+        }
+
+        $lines[] = 'Upgrade guide: ' . self::UPGRADE_GUIDE_URL;
+        for ($majorVersion = $scope->fromMajor + 1; $majorVersion <= $scope->toMajor; ++$majorVersion) {
+            $lines[] = sprintf(
+                'Changelog %d.x: %s',
+                $majorVersion,
+                sprintf(self::CHANGELOG_URL_TEMPLATE, $majorVersion),
+            );
+        }
+        $lines[] = '';
+
+        return $lines;
     }
 
     private function formatDigest(ReleaseContentBatch $batch, string $fromVersion, string $toVersion, int $releaseCount): string
