@@ -706,4 +706,42 @@ https://typo3.org/security/advisory/typo3-core-sa-2025-012',
 
         $this->assertStringContainsString('Failed to fetch release information.', $report);
     }
+
+    #[Test]
+    public function condensedFormatCollapsesBreakingChangesToCount(): void
+    {
+        $content = new ReleaseContent(
+            version: '15.0.0',
+            changes: [
+                new BreakingChange('[!!!][TASK] Remove feature A'),
+                new BreakingChange('[!!!][TASK] Remove feature B'),
+                new SecurityUpdate('[SECURITY] Fix XSS vulnerability'),
+            ],
+            newsLink: 'https://typo3.org/article/typo3-1500-released',
+            news: null,
+        );
+
+        $output = $this->formatter->format($content, AdvisoryStatus::NotAttempted, condensed: true);
+
+        $this->assertStringContainsString('2 breaking changes', $output);
+        $this->assertStringNotContainsString('Remove feature A', $output);
+        $this->assertStringContainsString('[SECURITY] Fix XSS vulnerability', $output);
+        $this->assertStringContainsString('https://typo3.org/article/typo3-1500-released', $output);
+    }
+
+    #[Test]
+    public function condensedFormatUsesSingularForOneBreakingChange(): void
+    {
+        $content = new ReleaseContent(
+            version: '15.0.0',
+            changes: [new BreakingChange('[!!!][TASK] Remove feature A')],
+            newsLink: null,
+            news: null,
+        );
+
+        $output = $this->formatter->format($content, AdvisoryStatus::NotAttempted, condensed: true);
+
+        $this->assertStringContainsString('1 breaking change', $output);
+        $this->assertStringNotContainsString('breaking changes', $output);
+    }
 }

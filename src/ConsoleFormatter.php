@@ -6,6 +6,7 @@ namespace Plan2net\Typo3UpdateCheck;
 
 use Plan2net\Typo3UpdateCheck\Advisory\Advisory;
 use Plan2net\Typo3UpdateCheck\Advisory\AdvisoryStatus;
+use Plan2net\Typo3UpdateCheck\Change\BreakingChange;
 use Plan2net\Typo3UpdateCheck\Release\FailureMessageFormatter;
 use Plan2net\Typo3UpdateCheck\Release\ReleaseContent;
 use Plan2net\Typo3UpdateCheck\Release\ReleaseContentBatch;
@@ -136,7 +137,7 @@ final class ConsoleFormatter
         return '<options=bold>' . implode(' · ', $segments) . '</>';
     }
 
-    public function format(ReleaseContent $content, AdvisoryStatus $advisoryStatus = AdvisoryStatus::NotAttempted): string
+    public function format(ReleaseContent $content, AdvisoryStatus $advisoryStatus = AdvisoryStatus::NotAttempted, bool $condensed = false): string
     {
         $output = "<info>Changes in version {$content->version}:</info>\n";
 
@@ -144,10 +145,9 @@ final class ConsoleFormatter
         $security = $content->getSecurityUpdates();
 
         if ($breaking) {
-            $output .= "<error>Breaking changes found:</error>\n";
-            foreach ($breaking as $change) {
-                $output .= '  ⚠️  ' . $this->escape($change->title) . "\n";
-            }
+            $output .= $condensed
+                ? sprintf("<error>⚠️  %d breaking change%s</error>\n", count($breaking), count($breaking) === 1 ? '' : 's')
+                : $this->formatBreakingChangeList($breaking);
         }
 
         if ($content->advisories !== []) {
@@ -184,6 +184,19 @@ final class ConsoleFormatter
 
         if ($content->newsLink) {
             $output .= "\n<info>Release announcement:</info> " . $this->escape($content->newsLink) . "\n";
+        }
+
+        return $output;
+    }
+
+    /**
+     * @param BreakingChange[] $breakingChanges
+     */
+    private function formatBreakingChangeList(array $breakingChanges): string
+    {
+        $output = "<error>Breaking changes found:</error>\n";
+        foreach ($breakingChanges as $change) {
+            $output .= '  ⚠️  ' . $this->escape($change->title) . "\n";
         }
 
         return $output;
