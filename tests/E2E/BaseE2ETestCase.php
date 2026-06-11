@@ -20,6 +20,7 @@ abstract class BaseE2ETestCase extends TestCase
     private static int $port;
     /** @var resource */
     private static $process;
+    private static string $serverLog;
     private static ?HttpDownloader $httpDownloader = null;
 
     /** @var int[] */
@@ -35,7 +36,10 @@ abstract class BaseE2ETestCase extends TestCase
         self::$port = (int) substr($address, strrpos($address, ':') + 1);
         fclose($socket);
 
-        $descriptors = [['pipe', 'r'], ['pipe', 'w'], ['pipe', 'w']];
+        // php -S logs every request to stderr; with unread pipes the small
+        // Windows pipe buffer fills up and blocks the single-threaded server.
+        self::$serverLog = tempnam(sys_get_temp_dir(), 'typo3-update-check-e2e-stub') ?: 'php://temp';
+        $descriptors = [['pipe', 'r'], ['file', self::$serverLog, 'a'], ['file', self::$serverLog, 'a']];
         self::$process = proc_open(
             ['php', '-S', '127.0.0.1:' . self::$port, 'stub/server.php'],
             $descriptors,
@@ -59,6 +63,7 @@ abstract class BaseE2ETestCase extends TestCase
         self::$httpDownloader = null;
         proc_terminate(self::$process);
         proc_close(self::$process);
+        @unlink(self::$serverLog);
     }
 
     protected function setUp(): void
@@ -94,17 +99,13 @@ abstract class BaseE2ETestCase extends TestCase
     }
 
     /**
-     * Every request sends "Connection: close": idle keep-alive connections
-     * left open between tests stall the single-threaded php -S stub on
-     * Windows until they time out, failing whichever tests run meanwhile.
-     *
      * @param string[] $headers
      */
     protected static function makeHttpClient(array $headers = []): ComposerHttpClient
     {
         return new ComposerHttpClient(
             self::sharedHttpDownloader(),
-            [...$headers, 'Connection: close'],
+            $headers,
             static function (int $delayMs): void {
                 self::$recordedDelaysMs[] = $delayMs;
             },
