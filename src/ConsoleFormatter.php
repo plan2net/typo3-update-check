@@ -10,6 +10,7 @@ use Plan2net\Typo3UpdateCheck\Change\BreakingChange;
 use Plan2net\Typo3UpdateCheck\Release\FailureMessageFormatter;
 use Plan2net\Typo3UpdateCheck\Release\ReleaseContent;
 use Plan2net\Typo3UpdateCheck\Release\ReleaseContentBatch;
+use Plan2net\Typo3UpdateCheck\UpdateScope;
 
 final class ConsoleFormatter
 {
@@ -24,7 +25,7 @@ final class ConsoleFormatter
     /**
      * @return string[]
      */
-    public function formatBatchReport(ReleaseContentBatch $batch, string $fromVersion, string $toVersion): array
+    public function formatBatchReport(ReleaseContentBatch $batch, UpdateScope $scope): array
     {
         if (!$batch->hasResults() && !$batch->hasFailures()) {
             return [
@@ -36,7 +37,7 @@ final class ConsoleFormatter
         $lines = [];
         foreach ($batch->results as $content) {
             if ($content->getBreakingChanges() || $content->getSecurityUpdates() || $content->advisories !== []) {
-                $lines[] = $this->format($content, $batch->advisoryStatus);
+                $lines[] = $this->format($content, $batch->advisoryStatus, $scope->isMajorBump());
             }
         }
 
@@ -50,8 +51,8 @@ final class ConsoleFormatter
             }
             $lines[] = sprintf(
                 '<comment>Retry later with: composer typo3:check-updates %s %s</comment>',
-                $fromVersion,
-                $toVersion,
+                $scope->fromVersion,
+                $scope->toVersion,
             );
 
             if (!$batch->hasResults()) {
@@ -65,14 +66,14 @@ final class ConsoleFormatter
         $releaseCount = count($batch->results) + count($batch->failures);
 
         if ($batch->hasImportantChanges()) {
-            $lines[] = $this->formatDigest($batch, $fromVersion, $toVersion, $releaseCount);
+            $lines[] = $this->formatDigest($batch, $scope->fromVersion, $scope->toVersion, $releaseCount);
         } elseif (!$batch->hasFailures()) {
             $lines[] = sprintf(
                 '✓ %d release%s (%s → %s), bugfixes only — no breaking changes or security updates',
                 $releaseCount,
                 $releaseCount === 1 ? '' : 's',
-                $fromVersion,
-                $toVersion,
+                $scope->fromVersion,
+                $scope->toVersion,
             );
         }
 

@@ -10,6 +10,7 @@ use Plan2net\Typo3UpdateCheck\Release\ApiFailureException;
 use Plan2net\Typo3UpdateCheck\Release\ReleaseProvider;
 use Plan2net\Typo3UpdateCheck\ReleaseProviderFactory;
 use Plan2net\Typo3UpdateCheck\UpdateChecker;
+use Plan2net\Typo3UpdateCheck\UpdateScope;
 use Plan2net\Typo3UpdateCheck\VersionParser;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Helper\QuestionHelper;
@@ -182,7 +183,7 @@ class CheckUpdatesCommand extends BaseCommand
         $batch = $provider->getReleaseContents($versions, $fromNormalized);
 
         $formatter = new ConsoleFormatter();
-        $lines = $formatter->formatBatchReport($batch, $fromNormalized, $toNormalized);
+        $lines = $formatter->formatBatchReport($batch, new UpdateScope($fromNormalized, $toNormalized));
         $lines = array_merge($lines, $formatter->formatSecurityGap(
             $toNormalized,
             $updateChecker->securityReleasesAbove($releases, $toNormalized),

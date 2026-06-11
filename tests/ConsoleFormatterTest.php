@@ -474,7 +474,7 @@ https://typo3.org/security/advisory/typo3-core-sa-2025-012',
         );
         $batch = new ReleaseContentBatch(results: ['12.4.31' => $advisoryOnly], failures: []);
 
-        $report = implode("\n", $this->formatter->formatBatchReport($batch, '12.4.30', '12.4.31'));
+        $report = implode("\n", $this->formatter->formatBatchReport($batch, new UpdateScope('12.4.30', '12.4.31')));
 
         $this->assertStringContainsString('Changes in version 12.4.31:', $report);
         $this->assertStringContainsString('Security updates found (1 vulnerability: <fg=red>1 high</>):', $report);
@@ -496,7 +496,7 @@ https://typo3.org/security/advisory/typo3-core-sa-2025-012',
             failures: [],
         );
 
-        $report = implode("\n", $this->formatter->formatBatchReport($batch, '12.4.19', '12.4.21'));
+        $report = implode("\n", $this->formatter->formatBatchReport($batch, new UpdateScope('12.4.19', '12.4.21')));
 
         $this->assertStringContainsString('Changes in version 12.4.21:', $report);
         $this->assertStringContainsString('Breaking changes found:', $report);
@@ -509,7 +509,7 @@ https://typo3.org/security/advisory/typo3-core-sa-2025-012',
         $quiet = new ReleaseContent(version: '12.4.20', changes: [], newsLink: null, news: null);
         $batch = new ReleaseContentBatch(results: ['12.4.20' => $quiet], failures: []);
 
-        $report = implode("\n", $this->formatter->formatBatchReport($batch, '12.4.19', '12.4.20'));
+        $report = implode("\n", $this->formatter->formatBatchReport($batch, new UpdateScope('12.4.19', '12.4.20')));
 
         $this->assertStringContainsString('bugfixes only', $report);
         $this->assertStringContainsString('no breaking changes or security updates', $report);
@@ -540,7 +540,7 @@ https://typo3.org/security/advisory/typo3-core-sa-2025-012',
             failures: [],
         );
 
-        $lines = $this->formatter->formatBatchReport($batch, '12.4.19', '12.4.21');
+        $lines = $this->formatter->formatBatchReport($batch, new UpdateScope('12.4.19', '12.4.21'));
         $digest = end($lines);
 
         $this->assertStringContainsString('2 releases (12.4.19 → 12.4.21)', $digest);
@@ -565,7 +565,7 @@ https://typo3.org/security/advisory/typo3-core-sa-2025-012',
         );
         $batch = new ReleaseContentBatch(results: ['12.4.21' => $security], failures: []);
 
-        $lines = $this->formatter->formatBatchReport($batch, '12.4.20', '12.4.21');
+        $lines = $this->formatter->formatBatchReport($batch, new UpdateScope('12.4.20', '12.4.21'));
         $digest = end($lines);
 
         $this->assertStringContainsString('(<fg=red;options=bold>1 critical</>, <fg=red>2 high</>, 1 low)', $digest);
@@ -586,7 +586,7 @@ https://typo3.org/security/advisory/typo3-core-sa-2025-012',
             advisoryStatus: AdvisoryStatus::Available,
         );
 
-        $report = implode("\n", $this->formatter->formatBatchReport($batch, '12.4.45', '12.4.46'));
+        $report = implode("\n", $this->formatter->formatBatchReport($batch, new UpdateScope('12.4.45', '12.4.46')));
 
         $this->assertStringContainsString(
             'CVE and severity details are not yet published on Packagist for this release.',
@@ -605,7 +605,7 @@ https://typo3.org/security/advisory/typo3-core-sa-2025-012',
         );
         $batch = new ReleaseContentBatch(results: ['12.4.46' => $security], failures: []);
 
-        $report = implode("\n", $this->formatter->formatBatchReport($batch, '12.4.45', '12.4.46'));
+        $report = implode("\n", $this->formatter->formatBatchReport($batch, new UpdateScope('12.4.45', '12.4.46')));
 
         $this->assertStringNotContainsString('Packagist', $report);
     }
@@ -638,7 +638,7 @@ https://typo3.org/security/advisory/typo3-core-sa-2025-012',
             advisoryStatus: AdvisoryStatus::Available,
         );
 
-        $lines = $this->formatter->formatBatchReport($batch, '12.4.40', '12.4.46');
+        $lines = $this->formatter->formatBatchReport($batch, new UpdateScope('12.4.40', '12.4.46'));
         $digest = end($lines);
 
         $this->assertStringContainsString('2 with security (<fg=red>1 high</> · 1 unrated)', $digest);
@@ -659,7 +659,7 @@ https://typo3.org/security/advisory/typo3-core-sa-2025-012',
             advisoryStatus: AdvisoryStatus::Unavailable,
         );
 
-        $report = implode("\n", $this->formatter->formatBatchReport($batch, '12.4.45', '12.4.46'));
+        $report = implode("\n", $this->formatter->formatBatchReport($batch, new UpdateScope('12.4.45', '12.4.46')));
 
         $this->assertStringContainsString(
             'Security advisory data from Packagist is unavailable — CVE and severity details are not shown.',
@@ -692,7 +692,7 @@ https://typo3.org/security/advisory/typo3-core-sa-2025-012',
             failures: ['12.4.21' => new ApiFailure(ApiFailureCategory::NotFound, 'HTTP 404', 404)],
         );
 
-        $report = implode("\n", $this->formatter->formatBatchReport($batch, '12.4.20', '12.4.21'));
+        $report = implode("\n", $this->formatter->formatBatchReport($batch, new UpdateScope('12.4.20', '12.4.21')));
 
         $this->assertStringContainsString('composer typo3:check-updates 12.4.20 12.4.21', $report);
         $this->assertStringContainsString('Proceeding with update (dominant failure: not_found)', $report);
@@ -703,7 +703,7 @@ https://typo3.org/security/advisory/typo3-core-sa-2025-012',
     {
         $batch = new ReleaseContentBatch(results: [], failures: []);
 
-        $report = implode("\n", $this->formatter->formatBatchReport($batch, '12.4.19', '12.4.20'));
+        $report = implode("\n", $this->formatter->formatBatchReport($batch, new UpdateScope('12.4.19', '12.4.20')));
 
         $this->assertStringContainsString('Failed to fetch release information.', $report);
     }
@@ -774,5 +774,47 @@ https://typo3.org/security/advisory/typo3-core-sa-2025-012',
     public function majorBumpHeaderIsEmptyWithinMajor(): void
     {
         $this->assertSame([], $this->formatter->formatMajorBumpHeader(new UpdateScope('12.4.10', '12.4.20')));
+    }
+
+    #[Test]
+    public function batchReportUsesCondensedRenderingOnMajorBump(): void
+    {
+        $content = new ReleaseContent(
+            version: '13.0.0',
+            changes: [new BreakingChange('[!!!][TASK] Remove feature A')],
+            newsLink: null,
+            news: null,
+        );
+        $batch = new ReleaseContentBatch(
+            results: ['13.0.0' => $content],
+            failures: [],
+            advisoryStatus: AdvisoryStatus::NotAttempted,
+        );
+
+        $lines = $this->formatter->formatBatchReport($batch, new UpdateScope('12.4.10', '13.0.0'));
+
+        $joined = implode("\n", $lines);
+        $this->assertStringContainsString('1 breaking change', $joined);
+        $this->assertStringNotContainsString('Remove feature A', $joined);
+    }
+
+    #[Test]
+    public function batchReportKeepsDetailedRenderingWithinMajor(): void
+    {
+        $content = new ReleaseContent(
+            version: '12.4.20',
+            changes: [new BreakingChange('[!!!][TASK] Remove feature A')],
+            newsLink: null,
+            news: null,
+        );
+        $batch = new ReleaseContentBatch(
+            results: ['12.4.20' => $content],
+            failures: [],
+            advisoryStatus: AdvisoryStatus::NotAttempted,
+        );
+
+        $lines = $this->formatter->formatBatchReport($batch, new UpdateScope('12.4.10', '12.4.20'));
+
+        $this->assertStringContainsString('Remove feature A', implode("\n", $lines));
     }
 }

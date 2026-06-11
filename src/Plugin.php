@@ -198,7 +198,7 @@ final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
     {
         $batch = $this->getReleaseProvider()->getReleaseContents($versions, $currentVersion);
 
-        $lines = $this->consoleFormatter->formatBatchReport($batch, $currentVersion, $targetVersion);
+        $lines = $this->consoleFormatter->formatBatchReport($batch, new UpdateScope($currentVersion, $targetVersion));
         $lines = array_merge($lines, $this->consoleFormatter->formatSecurityGap(
             $targetVersion,
             $this->updateChecker->securityReleasesAbove($releases, $targetVersion),
