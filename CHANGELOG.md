@@ -5,23 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.1.0] - unreleased
+## [2.1.0] - 2026-06-11
 
 ### Changed
-- Security severities and CVE numbers are now sourced from the Packagist
-  security-advisories API (the same data `composer audit` uses) instead of
-  scraping typo3.org bulletin pages: one bulk request, version-constraint
-  matching per release, and severity labels in lowercase. This also fixes
-  miscounted severities when a release-day announcement listed bulletins
-  of sibling release lines.
-- The report leads with the fixed vulnerabilities per release (CVE number,
-  right-aligned severity, title, link in aligned columns, with a total in
-  the heading) and lists the fixing changelog commits beneath a `Fixed by:`
-  label — one commit often fixes several CVEs; typo3.org bulletin URLs are
-  shown only when no advisory data is available.
+- Security advisories are matched through Packagist's
+  security-advisories API (the same data source as `composer audit`)
+  instead of scraping typo3.org bulletin pages. The plugin now does one
+  cached bulk lookup, matches advisories by Composer version constraints
+  for each release, and avoids over-counting advisories from sibling
+  TYPO3 release lines.
+- Security sections now lead with fixed vulnerabilities, including CVE
+  number, severity, title, and link where Packagist has that data,
+  followed by the changelog entries that fixed them under a `Fixed by:`
+  label. When advisory data is missing, typo3.org bulletin links remain
+  visible.
+- Reports now distinguish unavailable Packagist advisory data from
+  security releases whose CVE/severity details are not yet published, and
+  mark those releases as `unrated` in severity totals.
 
 ### Removed
-- typo3.org security-bulletin scraping (`SecurityBulletinFetcher`).
+- Direct typo3.org security-bulletin scraping (`SecurityBulletinFetcher`).
 
 ## [2.0.0] - 2026-06-10
 
