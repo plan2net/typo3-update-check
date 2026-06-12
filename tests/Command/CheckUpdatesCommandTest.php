@@ -221,12 +221,103 @@ final class CheckUpdatesCommandTest extends TestCase
         return $http;
     }
 
+    #[Test]
+    public function checksAcrossMajorsWithBannerAndCondensedReport(): void
+    {
+        $http = new FakeHttpClient();
+        $http->queueJson('https://get.typo3.org/api/v1/major/14/release/', $this->majorList());
+        $http->queueJson('https://get.typo3.org/api/v1/major/15/release/', $this->major15List());
+        $http->queueJson('https://get.typo3.org/api/v1/release/15.0.0/content', (string) json_encode([
+            'version' => '15.0.0',
+            'release_notes' => [
+                'version' => '15.0.0',
+                'changes' => " * 2026-09-01 abc123 [!!!][TASK] Remove old API (thanks to Alice)\n"
+                    . ' * 2026-09-01 aaa111 [SECURITY] Fix XSS (thanks to Carol)',
+            ],
+        ]));
+        $command = $this->commandWithFakeHttp($http);
+        $tester = new CommandTester($command);
+
+        $exit = $tester->execute(['from' => '14.3.0', 'to' => '15.0.0']);
+
+        $output = $tester->getDisplay();
+        $this->assertSame(0, $exit);
+        $this->assertStringContainsString('Major version upgrade: 14 → 15', $output);
+        $this->assertStringContainsString('1 breaking change', $output);
+        $this->assertStringNotContainsString('Remove old API', $output);
+        $this->assertStringContainsString('[SECURITY] Fix XSS', $output);
+    }
+
+    #[Test]
+    public function offersLatestInTargetLineForUnknownCrossMajorTarget(): void
+    {
+        $http = new FakeHttpClient();
+        $http->queueJson('https://get.typo3.org/api/v1/major/14/release/', $this->majorList());
+        $http->queueJson('https://get.typo3.org/api/v1/major/15/release/', $this->major15List());
+        $http->queueJson(
+            'https://get.typo3.org/api/v1/release/15.0.0/content',
+            $this->releaseContent('15.0.0'),
+        );
+        $command = $this->commandWithFakeHttp($http);
+        $tester = new CommandTester($command);
+        $tester->setInputs(['yes']);
+
+        $exit = $tester->execute(['from' => '14.3.0', 'to' => '15.9.9']);
+
+        $output = $tester->getDisplay();
+        $this->assertSame(0, $exit);
+        $this->assertStringContainsString('15.9.9 is not a released TYPO3 version in the 15.x line (latest is 15.0.0)', $output);
+        $this->assertStringContainsString('Use the latest (15.0.0)', $output);
+    }
+
+    #[Test]
+    public function failsWhenTargetMajorDoesNotExist(): void
+    {
+        $http = new FakeHttpClient();
+        $http->queueJson('https://get.typo3.org/api/v1/major/14/release/', $this->majorList());
+        $http->queueJson('https://get.typo3.org/api/v1/major/15/release/', $this->major15List());
+        $http->queue('https://get.typo3.org/api/v1/major/16/release/', HttpTransportException::forHttpError('not found', 404));
+        $command = $this->commandWithFakeHttp($http);
+        $tester = new CommandTester($command);
+
+        $exit = $tester->execute(['from' => '14.3.0', 'to' => '16.0.0']);
+
+        $this->assertSame(1, $exit);
+    }
+
+    #[Test]
+    public function rejectsCrossMajorDowngradeEvenAfterAcceptingLatestFallback(): void
+    {
+        $http = new FakeHttpClient();
+        $http->queueJson('https://get.typo3.org/api/v1/major/13/release/', (string) json_encode([
+            ['version' => '13.4.5', 'date' => '2025-03-10T08:00:00+01:00', 'type' => 'regular'],
+        ]));
+        $http->queueJson('https://get.typo3.org/api/v1/major/14/release/', $this->majorList());
+        $command = $this->commandWithFakeHttp($http);
+        $tester = new CommandTester($command);
+        $tester->setInputs(['yes']);
+
+        $exit = $tester->execute(['from' => '14.3.0', 'to' => '13.9.9']);
+
+        $output = $tester->getDisplay();
+        $this->assertSame(1, $exit);
+        $this->assertStringContainsString('Target version must be greater than current version', $output);
+        $this->assertStringNotContainsString('Already on the latest', $output);
+    }
+
     private function majorList(): string
     {
         return (string) json_encode([
             ['version' => '14.3.0', 'date' => '2026-04-21T09:30:20+02:00', 'type' => 'regular'],
             ['version' => '14.2.1', 'date' => '2026-02-20T09:25:10+01:00', 'type' => 'regular'],
             ['version' => '14.2.0', 'date' => '2026-03-31T07:38:51+02:00', 'type' => 'regular'],
+        ]);
+    }
+
+    private function major15List(): string
+    {
+        return (string) json_encode([
+            ['version' => '15.0.0', 'date' => '2026-09-01T08:00:00+02:00', 'type' => 'regular'],
         ]);
     }
 

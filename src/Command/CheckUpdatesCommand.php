@@ -72,60 +72,76 @@ class CheckUpdatesCommand extends BaseCommand
             return self::FAILURE;
         }
 
+        $toNormalized = null;
+        if ($to !== null) {
+            $toNormalized = $versionParser->normalize($to);
+            if ($toNormalized === null) {
+                $output->writeln('<error>Invalid version format</error>');
+
+                return self::FAILURE;
+            }
+        }
+
+        $fromMajor = (int) explode('.', $fromNormalized)[0];
+        $toMajor = $toNormalized !== null ? (int) explode('.', $toNormalized)[0] : $fromMajor;
+
         $provider = $this->createReleaseProvider();
         $updateChecker = new UpdateChecker($versionParser);
 
-        $majorVersion = (int) explode('.', $fromNormalized)[0];
-
         try {
-            $releases = $provider->getReleasesForMajorVersion($majorVersion);
+            $releases = $provider->getReleasesForMajorRange(min($fromMajor, $toMajor), max($fromMajor, $toMajor));
         } catch (ApiFailureException $exception) {
             $output->writeln(sprintf('<error>%s</error>', $exception->getMessage()));
 
             return self::FAILURE;
         }
 
+        /** @var array<int, array<string, string>> $versionsByMajor */
+        $versionsByMajor = [];
         $knownVersions = [];
         foreach ($releases as $release) {
             $normalized = $versionParser->normalize($release->version);
             if ($normalized !== null) {
+                $major = (int) explode('.', $normalized)[0];
                 $knownVersions[$normalized] = $release->version;
+                $versionsByMajor[$major][$normalized] = $release->version;
             }
         }
 
-        $latest = $this->latestVersion($knownVersions);
-        $latestNormalized = $versionParser->normalize($latest);
+        $latestInFromLine = $this->latestVersion($versionsByMajor[$fromMajor] ?? []);
 
-        if (!isset($knownVersions[$fromNormalized])) {
+        if (!isset($versionsByMajor[$fromMajor][$fromNormalized])) {
             $output->writeln(sprintf(
                 '<error>%s is not a released TYPO3 version in the %d.x line (latest is %s).</error>',
                 (string) $from,
-                $majorVersion,
-                $latest,
+                $fromMajor,
+                $latestInFromLine,
             ));
 
             return self::FAILURE;
         }
 
-        if ($to === null) {
-            $to = $latest;
-        }
-
-        $toNormalized = $versionParser->normalize($to);
         if ($toNormalized === null) {
-            $output->writeln('<error>Invalid version format</error>');
+            $to = $latestInFromLine;
+            $toNormalized = $versionParser->normalize($to);
+            if ($toNormalized === null) {
+                $output->writeln('<error>Invalid version format</error>');
 
-            return self::FAILURE;
+                return self::FAILURE;
+            }
         }
 
         $toResolvedToLatest = $toDefaulted;
 
-        if (!isset($knownVersions[$toNormalized])) {
+        if (!isset($versionsByMajor[$toMajor][$toNormalized])) {
+            $latestInTargetLine = $this->latestVersion($versionsByMajor[$toMajor] ?? []);
+            $latestInTargetLineNormalized = $versionParser->normalize($latestInTargetLine);
+
             $output->writeln(sprintf(
                 '<error>%s is not a released TYPO3 version in the %d.x line (latest is %s).</error>',
                 (string) $to,
-                $majorVersion,
-                $latest,
+                $toMajor,
+                $latestInTargetLine,
             ));
 
             if (!$input->isInteractive()) {
@@ -135,24 +151,24 @@ class CheckUpdatesCommand extends BaseCommand
             $helper = $this->getHelper('question');
             \assert($helper instanceof QuestionHelper);
             $useLatest = $helper->ask($input, $output, new ConfirmationQuestion(
-                sprintf('Use the latest (%s) instead? [Y/n] ', $latest),
+                sprintf('Use the latest (%s) instead? [Y/n] ', $latestInTargetLine),
                 true,
             ));
-            if ($useLatest !== true || $latestNormalized === null) {
+            if ($useLatest !== true || $latestInTargetLineNormalized === null) {
                 return self::FAILURE;
             }
 
-            $to = $latest;
-            $toNormalized = $latestNormalized;
+            $to = $latestInTargetLine;
+            $toNormalized = $latestInTargetLineNormalized;
             $toResolvedToLatest = true;
         }
 
         if (version_compare($toNormalized, $fromNormalized, '<=')) {
-            if ($autoDetect || $toResolvedToLatest) {
+            if (($autoDetect || $toResolvedToLatest) && $toMajor === $fromMajor) {
                 $output->writeln(sprintf(
                     '<comment>Already on the latest release (%s) in the %d.x line.</comment>',
                     (string) $from,
-                    $majorVersion,
+                    $fromMajor,
                 ));
 
                 return self::SUCCESS;
@@ -178,12 +194,17 @@ class CheckUpdatesCommand extends BaseCommand
             }
         }
 
+        $scope = new UpdateScope($fromNormalized, $toNormalized);
+
         $versions = $updateChecker->filterVersionsBetween(array_keys($knownVersions), $fromNormalized, $toNormalized);
 
         $batch = $provider->getReleaseContents($versions, $fromNormalized);
 
         $formatter = new ConsoleFormatter();
-        $lines = $formatter->formatBatchReport($batch, new UpdateScope($fromNormalized, $toNormalized));
+        foreach ($formatter->formatMajorBumpHeader($scope) as $line) {
+            $output->writeln($line);
+        }
+        $lines = $formatter->formatBatchReport($batch, $scope);
         $lines = array_merge($lines, $formatter->formatSecurityGap(
             $toNormalized,
             $updateChecker->securityReleasesAbove($releases, $toNormalized),
