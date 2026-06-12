@@ -38,6 +38,16 @@ The plugin automatically activates during `composer update` and:
 
 In non-interactive environments (CI/CD), the plugin displays information but proceeds automatically. If the TYPO3 API is temporarily unavailable, the update continues without interruption.
 
+## Major version upgrades
+
+Cross-major updates (e.g. 12.4 → 13.4) are fully supported. Since a major upgrade path contains hundreds of breaking changes, the report switches to a condensed format:
+
+- A banner announces the upgrade with links to the official upgrade guide and the changelog of every crossed major
+- Breaking changes appear as a per-release count (e.g. `13.0.0: ⚠️ 207 breaking changes`) instead of a full list — security updates keep their complete detail (CVEs, severities, bulletins)
+- Updates within a major line keep the detailed format as before
+- A major upgrade always asks for confirmation in interactive shells, even when release information could not be fetched
+- Jumping more than one major at once (e.g. 12 → 14) prints an additional warning, since TYPO3 officially supports upgrading one major version at a time
+
 ## Example output
 
 ![Demo](documentation/demo-89177017.gif)
@@ -55,7 +65,11 @@ Both arguments are optional. With no arguments it uses your installed `typo3/cms
 ```bash
 composer typo3:check-updates             # installed version → latest release
 composer typo3:check-updates 13.4.10     # 13.4.10 → latest release
+composer typo3:check-updates 12.4.10 13.4.5   # across major versions
 ```
+
+> [!NOTE]
+> Defaults always stay within the installed major line — a cross-major check happens only when you pass the target explicitly. For an unknown cross-major target, the command offers the latest release of the requested major's line.
 
 When a version is auto-detected or defaulted, the command asks for confirmation before checking. If you pass a target that doesn't exist, it offers the latest instead; an unknown current version (or missing versions in a non-interactive shell) is rejected with a hint.
 
