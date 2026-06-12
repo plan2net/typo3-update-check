@@ -50,7 +50,13 @@ Cross-major updates (e.g. 12.4 → 13.4) are fully supported. Since a major upgr
 
 ## Example output
 
+A regular update within a major version:
+
 ![Demo](documentation/demo-89177017.gif)
+
+A major version upgrade — the report condenses breaking changes to a count and leads with an upgrade banner:
+
+![Major version upgrade](documentation/demo-major.gif)
 
 ## Manual check
 
