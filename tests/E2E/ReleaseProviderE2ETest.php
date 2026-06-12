@@ -10,6 +10,7 @@ use Plan2net\Typo3UpdateCheck\Change\ChangeFactory;
 use Plan2net\Typo3UpdateCheck\Change\ChangeParser;
 use Plan2net\Typo3UpdateCheck\Release\ApiFailureCategory;
 use Plan2net\Typo3UpdateCheck\Release\ApiFailureException;
+use Plan2net\Typo3UpdateCheck\Release\Release;
 use Plan2net\Typo3UpdateCheck\Release\ReleaseContent;
 use Plan2net\Typo3UpdateCheck\Release\ReleaseProvider;
 
@@ -161,6 +162,27 @@ final class ReleaseProviderE2ETest extends BaseE2ETestCase
         $this->assertSame([], $batch->results['14.3.0']->advisories);
         $this->assertSame([], $batch->failures);
         $this->assertSame(AdvisoryStatus::Unavailable, $batch->advisoryStatus);
+    }
+
+    #[Test]
+    public function mergesReleaseListsAcrossMajors(): void
+    {
+        $provider = self::makeProvider();
+
+        $releases = $provider->getReleasesForMajorRange(14, 15);
+
+        $versions = array_map(static fn (Release $release): string => $release->version, $releases);
+        $this->assertSame(['14.2.0', '14.3.0', '15.0.0', '15.1.0'], $versions);
+    }
+
+    #[Test]
+    public function failsRangeWhenOneMajorListFails(): void
+    {
+        $provider = self::makeProvider();
+
+        $this->expectException(ApiFailureException::class);
+
+        $provider->getReleasesForMajorRange(15, 16);
     }
 
     private static function composerSupportsTransientRetries(): bool

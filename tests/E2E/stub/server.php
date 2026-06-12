@@ -44,8 +44,17 @@ if (str_starts_with($path, '/packagist/api/security-advisories/')) {
 
 if (preg_match('#^/api/v1/major/(\d+)/release/?$#', $path, $matches)) {
     header('Content-Type: application/json');
-    if ((int) $matches[1] === 503) {
+    $major = (int) $matches[1];
+    if ($major === 503 || $major === 16) {
         http_response_code(503);
+
+        return;
+    }
+    if ($major === 15) {
+        echo json_encode([
+            ['version' => '15.1.0', 'date' => '2026-10-06T08:00:00+02:00', 'type' => 'regular'],
+            ['version' => '15.0.0', 'date' => '2026-09-01T08:00:00+02:00', 'type' => 'regular'],
+        ]);
 
         return;
     }
