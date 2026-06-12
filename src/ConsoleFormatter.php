@@ -10,7 +10,6 @@ use Plan2net\Typo3UpdateCheck\Change\BreakingChange;
 use Plan2net\Typo3UpdateCheck\Release\FailureMessageFormatter;
 use Plan2net\Typo3UpdateCheck\Release\ReleaseContent;
 use Plan2net\Typo3UpdateCheck\Release\ReleaseContentBatch;
-use Plan2net\Typo3UpdateCheck\UpdateScope;
 
 final class ConsoleFormatter
 {
