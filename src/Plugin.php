@@ -74,6 +74,7 @@ final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
         }
 
         $this->announceUpdate($scope);
+        $this->hasChecked = true;
 
         $releases = $this->fetchReleases($scope);
         if ($releases === null) {
@@ -99,8 +100,6 @@ final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
         $hasImportantChanges = $this->processVersions($versions, $releases, $scope);
         $this->writeFooter();
         $this->handleUserConfirmation($hasImportantChanges, $scope);
-
-        $this->hasChecked = true;
     }
 
     public function deactivate(Composer $composer, IOInterface $io): void

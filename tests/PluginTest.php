@@ -255,6 +255,28 @@ final class PluginTest extends TestCase
         $this->plugin->checkForBreakingChanges($this->event);
     }
 
+    #[Test]
+    public function promptsOnlyOnceWhenEventFiresTwiceOnDegradedMajorBump(): void
+    {
+        $this->setupCurrentTypo3('14.3.0');
+        $this->setupUpdatePackages(['typo3/cms-core' => '15.0.0']);
+
+        $http = new FakeHttpClient();
+        $http->queueJson('https://get.typo3.org/api/v1/major/14/release/', (string) json_encode([
+            ['version' => '14.3.0', 'date' => '2026-04-21T09:30:20+02:00', 'type' => 'regular'],
+        ]));
+        $http->queue('https://get.typo3.org/api/v1/major/15/release/', HttpTransportException::forHttpError('server error', 503));
+        $this->plugin->setReleaseProvider(new ReleaseProvider($http, new ChangeParser(new ChangeFactory())));
+
+        $this->io->method('isInteractive')->willReturn(true);
+        $this->io->expects($this->once())
+            ->method('askConfirmation')
+            ->willReturn(true);
+
+        $this->plugin->checkForBreakingChanges($this->event);
+        $this->plugin->checkForBreakingChanges($this->event);
+    }
+
     private function setupCurrentTypo3(string $version): void
     {
         $package = $this->createMock(PackageInterface::class);
