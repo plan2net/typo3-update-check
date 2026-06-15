@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2026-06-15
+
+### Added
+- Support for cross-major TYPO3 core updates (e.g. 12.4 → 13.4). The
+  report leads with an upgrade banner linking the official upgrade guide
+  and the changelog of every crossed major, and collapses breaking
+  changes to a per-release count while keeping full security detail
+  (CVEs, severities, bulletins). Updates within a major line keep the
+  detailed format.
+- A major upgrade always asks for confirmation in interactive shells,
+  even when release information could not be fetched.
+- Jumping more than one major at once (e.g. 12 → 14) prints a warning,
+  since TYPO3 supports upgrading one major version at a time.
+- The `typo3:check-updates` command accepts cross-major version ranges;
+  for an unknown cross-major target it offers the latest release of the
+  requested major's line.
+
 ## [2.1.0] - 2026-06-11
 
 ### Changed
