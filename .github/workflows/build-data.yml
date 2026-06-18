@@ -1,0 +1,83 @@
+name: Build data & deploy
+
+on:
+  schedule:
+    - cron: '17 4 * * *' # daily
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+
+      - name: Install build deps
+        run: composer install --no-interaction --no-progress
+        working-directory: web/build
+
+      - name: Run build tests (gate)
+        run: vendor/bin/phpunit
+        working-directory: web/build
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install web deps
+        run: npm ci
+        working-directory: web
+
+      - name: Run web tests (gate)
+        run: npm test
+        working-directory: web
+
+      - name: Generate data
+        run: php build.php
+        working-directory: web/build
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+      - name: Validate generated data contract
+        run: php validate.php
+        working-directory: web/build
+
+      - name: Build site
+        run: npm run build
+        working-directory: web
+        env:
+          PAGES_BASE: /${{ github.event.repository.name }}/
+
+      - name: Commit refreshed data (persists the explanation cache) — only after validate + build pass
+        run: |
+          if [ -n "$(git status --porcelain web/public/data)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add web/public/data
+            git commit -m "chore(data): refresh TYPO3 release/advisory data"
+            git push
+          else
+            echo "No data changes."
+          fi
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: web/dist
+      - id: deploy
+        uses: actions/deploy-pages@v4
