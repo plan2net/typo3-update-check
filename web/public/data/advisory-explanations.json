@@ -1,0 +1,16 @@
+{
+  "TYPO3-CORE-SA-2026-019": {
+    "contentHash": "seed",
+    "promptVersion": 0,
+    "langs": {
+      "en": {
+        "plainImpact": "A logged-in visitor could reach data they should not, via the Form Framework.",
+        "urgency": "If the site uses forms, treat this as urgent."
+      },
+      "de": {
+        "plainImpact": "Ein angemeldeter Besucher könnte über das Formular-Framework auf Daten zugreifen, die nicht für ihn bestimmt sind.",
+        "urgency": "Wenn die Website Formulare nutzt, ist das dringend."
+      }
+    }
+  }
+}

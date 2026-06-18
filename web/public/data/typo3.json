@@ -1,0 +1,49 @@
+{
+  "generatedAt": "2026-06-16T00:00:00Z",
+  "majors": {
+    "12": {
+      "maintainedUntil": "2026-04-30T00:00:00+02:00",
+      "eltsUntil": "2030-04-30T00:00:00+02:00",
+      "latestFree": "12.4.45",
+      "latestElts": "12.4.47",
+      "releases": [
+        { "version": "12.4.10", "date": "2024-09-10T00:00:00+02:00", "type": "regular", "elts": false },
+        { "version": "12.4.45", "date": "2026-04-14T00:00:00+02:00", "type": "regular", "elts": false },
+        { "version": "12.4.46", "date": "2026-06-09T00:00:00+02:00", "type": "security", "elts": true },
+        { "version": "12.4.47", "date": "2026-06-16T00:00:00+02:00", "type": "regular", "elts": true }
+      ]
+    },
+    "13": {
+      "maintainedUntil": "2027-12-31T00:00:00+01:00",
+      "eltsUntil": "2030-12-31T00:00:00+01:00",
+      "latestFree": "13.4.31",
+      "latestElts": "13.4.31",
+      "releases": [
+        { "version": "13.4.31", "date": "2026-06-09T00:00:00+02:00", "type": "security", "elts": false }
+      ]
+    }
+  },
+  "advisories": [
+    {
+      "id": "TYPO3-CORE-SA-2026-019",
+      "cve": "CVE-2026-11607",
+      "package": "typo3/cms-core",
+      "optional": false,
+      "severity": "high",
+      "title": "Broken Access Control in Form Framework",
+      "affectedVersions": ">=12.0.0,<12.4.46",
+      "link": "https://typo3.org/security/advisory/typo3-core-sa-2026-019",
+      "affected": { "12": { "from": "12.4.0", "fixedIn": "12.4.46", "fixedInElts": true } },
+      "explanation": {
+        "en": {
+          "plainImpact": "A logged-in visitor could reach data they should not, via the Form Framework.",
+          "urgency": "If the site uses forms, treat this as urgent."
+        },
+        "de": {
+          "plainImpact": "Ein angemeldeter Besucher könnte über das Formular-Framework auf Daten zugreifen, die nicht für ihn bestimmt sind.",
+          "urgency": "Wenn die Website Formulare nutzt, ist das dringend."
+        }
+      }
+    }
+  ]
+}
