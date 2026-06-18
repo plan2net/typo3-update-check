@@ -26,8 +26,12 @@ export interface UiLabels {
   copied: string;
   shareHint: string;
   officialAdvisory: string;
+  opensNewTab: string;
   onlyIfUses: string;
   loadError: string;
+  langNavLabel: string;
+  resultLabel: string;
+  resourcesLabel: string;
 }
 
 export interface Strings {
@@ -130,8 +134,12 @@ const EN: Strings = {
     copied: 'Link copied',
     shareHint: 'Send it to your client, or schedule your team to perform the update.',
     officialAdvisory: 'Official advisory',
+    opensNewTab: 'opens in a new tab',
     onlyIfUses: 'Only relevant if the site uses',
     loadError: 'Sorry — could not load update data.',
+    langNavLabel: 'Language',
+    resultLabel: 'Result',
+    resourcesLabel: 'Resources',
   },
 };
 
@@ -216,8 +224,12 @@ const DE: Strings = {
     copied: 'Link kopiert',
     shareHint: 'Senden Sie ihn an Ihren Kunden oder planen Sie das Update mit Ihrem Team.',
     officialAdvisory: 'Offizieller Hinweis',
+    opensNewTab: 'öffnet in einem neuen Tab',
     onlyIfUses: 'Nur relevant, wenn die Website nutzt:',
     loadError: 'Entschuldigung — die Update-Daten konnten nicht geladen werden.',
+    langNavLabel: 'Sprache',
+    resultLabel: 'Ergebnis',
+    resourcesLabel: 'Ressourcen',
   },
 };
 

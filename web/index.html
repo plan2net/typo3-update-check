@@ -19,7 +19,7 @@
           <h1 id="app-title">Is your TYPO3 up to date?</h1>
           <p id="app-tagline" class="tagline">Check any client's TYPO3 and share the result.</p>
         </div>
-        <nav id="lang-toggle" class="lang-toggle" aria-label="Language">
+        <nav id="lang-toggle" class="lang-toggle" aria-label="Language" data-i18n-label="langNavLabel">
           <button type="button" data-lang="en">EN</button>
           <button type="button" data-lang="de">DE</button>
         </nav>
@@ -54,19 +54,19 @@
 
             <button id="check-button" type="submit">Check</button>
           </form>
-
-          <footer class="t3-footer">
-            <nav class="footer-links" aria-label="Resources">
-              <a href="https://github.com/plan2net/typo3-update-check" target="_blank" rel="noopener">GitHub</a>
-              <a href="https://docs.typo3.org" target="_blank" rel="noopener">Docs</a>
-              <a href="https://packagist.org/packages/typo3/cms-core" target="_blank" rel="noopener">Packagist</a>
-            </nav>
-          </footer>
         </div>
 
         <!-- RIGHT: result -->
-        <section id="result" class="t3-result" aria-live="polite" aria-label="Result"></section>
+        <section id="result" class="t3-result" aria-live="polite" aria-label="Result" data-i18n-label="resultLabel"></section>
       </main>
+
+      <footer class="t3-footer">
+        <nav class="footer-links" aria-label="Resources" data-i18n-label="resourcesLabel">
+          <a href="https://github.com/plan2net/typo3-update-check" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://docs.typo3.org" target="_blank" rel="noopener">Docs</a>
+          <a href="https://packagist.org/packages/typo3/cms-core" target="_blank" rel="noopener">Packagist</a>
+        </nav>
+      </footer>
     </div>
     <script type="module" src="/src/main.ts"></script>
   </body>

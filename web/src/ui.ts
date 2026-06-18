@@ -24,7 +24,7 @@ function advisoryItem(a: AffectingAdvisory, lang: Lang, m: Strings): string {
     : '';
   // External link: accessible name conveys purpose + "opens in a new tab" (§11a).
   const cveLabel = a.advisory.cve ?? a.advisory.id;
-  const linkName = `${m.ui.officialAdvisory} (${cveLabel})`;
+  const linkName = `${m.ui.officialAdvisory} (${cveLabel}), ${m.ui.opensNewTab}`;
   return `<li class="advisory" data-severity="${sev}">
       <strong>${title}</strong> <span class="badge">${sev}</span>
       ${impact ? `<p>${impact}</p>` : ''}
@@ -101,6 +101,12 @@ function localiseChrome(root: Document, lang: Lang): void {
   set('not-sure-body', m.ui.notSureBody);
   set('elts-label', m.ui.eltsLabel);
   set('check-button', m.ui.check);
+  // Landmark aria-labels are read by screen readers, so localise them too (data-i18n-label -> UiLabels key).
+  root.querySelectorAll<HTMLElement>('[data-i18n-label]').forEach((el) => {
+    const key = el.dataset.i18nLabel as keyof typeof m.ui | undefined;
+    const value = key ? m.ui[key] : undefined;
+    if (typeof value === 'string') el.setAttribute('aria-label', value);
+  });
   root.querySelectorAll('#lang-toggle button').forEach((b) => {
     const el = b as HTMLButtonElement;
     const active = el.dataset.lang === lang;
