@@ -10,7 +10,7 @@ final class Typo3Releases
 {
     private const MAJORS_URL = 'https://get.typo3.org/api/v1/major/';
     private const RELEASES_URL = 'https://get.typo3.org/api/v1/major/%d/release/';
-    private const MIN_MAJOR = 9; // composer-era TYPO3 only
+    private const MIN_MAJOR = 12; // this tool's supported range: TYPO3 12+
 
     public function __construct(private readonly Http $http) {}
 
