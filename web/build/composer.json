@@ -1,0 +1,28 @@
+{
+  "name": "plan2net/typo3-update-check-web-build",
+  "description": "CI-only data generator for the TYPO3 update-check web tool",
+  "type": "project",
+  "require": {
+    "php": ">=8.1",
+    "composer/semver": "^3.0",
+    "guzzlehttp/guzzle": "^7.0",
+    "anthropic-ai/sdk": "^0.29"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^10.5 || ^11.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Typo3UpdateCheckWeb\\Build\\": "src/",
+      "Plan2net\\Typo3UpdateCheck\\": "../../src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": { "Typo3UpdateCheckWeb\\Build\\Tests\\": "tests/" }
+  },
+  "config": {
+    "sort-packages": true,
+    "allow-plugins": { "php-http/discovery": true }
+  },
+  "minimum-stability": "stable"
+}
