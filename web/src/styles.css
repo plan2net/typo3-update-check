@@ -1,0 +1,802 @@
+/*
+ * TYPO3 Update Check — web tool styling.
+ *
+ * Recreates the visual language of docs/design-reference/mockup-v2.dc.html
+ * (warm editorial calm, one orange accent, a single soft-shadowed split card),
+ * styling the markup that index.html / ui.ts already emit. Markup structure and
+ * logic are NOT changed here.
+ *
+ * Accessibility (WCAG 2.2 AA): brand orange #FF8700 is identity/decoration only
+ * (white-on-it = 2.41:1, fails as text); interactive fills carrying white text use
+ * --accent-strong (#A85800, white-on-it = 5.17:1) and text links use --link
+ * (#9A5400, 5.77:1 on card). Every interactive element keeps a visible focus ring.
+ */
+
+:root {
+  /* Palette (from the mockup) */
+  --paper: #f4f1ea;
+  --card: #ffffff;
+  --rail: #fbfaf7;
+  --text: #1a1a1a;
+  --text-soft: #2a2a2a;
+  --muted: #6b6b6b;
+  --hairline: #e5e0d5;
+  --hairline-soft: #ece7dc;
+
+  /* Orange: decorative identity vs. accessible interactive vs. link text */
+  --accent: #ff8700; /* decorative fills / identity only (aria-hidden chips) */
+  --accent-strong: #a85800; /* interactive fill behind WHITE text (AA: 5.17:1) */
+  --accent-hover: #8f5000; /* hover for the above (AA: 6.33:1) */
+  --link: #9a5400; /* text-link orange (AA: 5.77:1 on white) */
+
+  /* Dark command/pill surface */
+  --dark: #1c1c1c;
+  --dark-text: #ededed;
+
+  /* Verdict tier tints (colour is always paired with the .tier word + an icon) */
+  --crit-fg: #c8102e;
+  --crit-bg: #fdecec;
+  --crit-bd: #f1c7cd;
+  --soon-fg: #b45309;
+  --soon-bg: #fef3c7;
+  --soon-bd: #efdda0;
+  --minor-fg: #1d4ed8;
+  --minor-bg: #e8eefc;
+  --minor-bd: #cbd9f6;
+  --good-fg: #1e7b34;
+  --good-bg: #e7f4ea;
+  --good-bd: #c2e2cb;
+  --neutral-fg: #6b6b6b;
+  --neutral-bg: #f4f1ea;
+  --neutral-bd: #e5e0d5;
+
+  --radius-card: 16px;
+  --radius-panel: 13px;
+  --radius-control: 9px;
+  --shadow-card: 0 1px 2px rgba(26, 26, 26, 0.04), 0 18px 40px -20px rgba(26, 26, 26, 0.18);
+
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --sans: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ---- Shared focus indicator (2.4.7 / 2.4.11) ---------------------------- */
+:focus-visible {
+  outline: 3px solid var(--accent-strong);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+/* Keep a visible ring on dark / tinted surfaces too. */
+.copy-link:focus-visible {
+  outline-color: var(--accent-strong);
+}
+
+/* ---- Page shell --------------------------------------------------------- */
+.t3-page {
+  min-height: 100vh;
+  padding: 40px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+.t3-page > * {
+  width: 100%;
+  max-width: 1060px;
+}
+
+/* ---- Header ------------------------------------------------------------- */
+.t3-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.brand {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 13px;
+  background: var(--accent); /* decorative; chip is aria-hidden */
+  box-shadow: 0 8px 18px -8px rgba(255, 135, 0, 0.6);
+}
+
+.brand svg {
+  display: block;
+}
+
+.brand-text {
+  min-width: 0;
+}
+
+.brand-text h1,
+#app-title {
+  font-size: clamp(22px, 5vw, 27px);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-weight: 800;
+  margin: 0;
+}
+
+.tagline {
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--muted);
+  margin: 3px 0 0;
+}
+
+/* ---- Language toggle (EN/DE pill) --------------------------------------- */
+.lang-toggle {
+  margin-left: auto;
+  flex: none;
+  align-self: flex-start;
+  display: flex;
+  gap: 3px;
+  background: var(--rail);
+  border: 1px solid var(--hairline);
+  border-radius: 10px;
+  padding: 3px;
+}
+
+.lang-toggle button {
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  border: none;
+  border-radius: 7px;
+  /* Target size >= 24x24 px (2.5.8): 12px text + 2x9 padding + 2x3 line ~ 30px tall. */
+  min-width: 36px;
+  min-height: 28px;
+  padding: 6px 11px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background 0.14s ease, color 0.14s ease, box-shadow 0.14s ease;
+}
+
+.lang-toggle button:hover {
+  color: var(--text);
+}
+
+.lang-toggle button[aria-pressed="true"] {
+  background: var(--accent-strong); /* white text needs >=4.5:1 */
+  color: #ffffff;
+  box-shadow: 0 4px 10px -5px rgba(168, 88, 0, 0.7);
+}
+
+/* ---- Split card --------------------------------------------------------- */
+.t3-card {
+  display: grid;
+  grid-template-columns: 344px 1fr;
+  min-height: 472px;
+  background: var(--card);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+/* ---- Left rail (input) -------------------------------------------------- */
+.t3-rail {
+  background: var(--rail);
+  border-right: 1px solid var(--hairline);
+  padding: 24px 22px;
+  display: flex;
+  flex-direction: column;
+}
+
+.t3-rail form {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.rail-label {
+  display: block;
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0 0 2px;
+}
+
+.hint {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0 0 14px;
+  line-height: 1.4;
+}
+
+.field {
+  margin-bottom: 13px;
+}
+
+.field label {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 5px;
+}
+
+/* Native select styled in the mockup idiom, with a custom chevron. */
+.field select {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  padding: 11px 36px 11px 13px;
+  font-size: 14px;
+  font-family: var(--mono);
+  color: var(--text);
+  background-color: var(--card);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='15' viewBox='0 0 24 24' fill='none' stroke='%236B6B6B' stroke-width='2.4'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  border: 1.5px solid var(--hairline);
+  border-radius: var(--radius-control);
+  cursor: pointer;
+  line-height: 1.2;
+}
+
+.field select:hover {
+  border-color: #d9d2c4;
+}
+
+/* "Not sure which version?" expander */
+.not-sure {
+  margin: 4px 0 13px;
+  font-size: 13px;
+}
+
+.not-sure summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--link);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  list-style: none;
+  padding: 4px 0;
+  min-height: 24px;
+}
+
+.not-sure summary::-webkit-details-marker {
+  display: none;
+}
+
+.not-sure summary::before {
+  content: "›";
+  display: inline-block;
+  margin-right: 7px;
+  transition: transform 0.15s ease;
+  color: var(--muted);
+}
+
+.not-sure[open] summary::before {
+  transform: rotate(90deg);
+}
+
+.not-sure p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+/* ELTS checkbox */
+.elts-field {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  font-size: 13.5px;
+  line-height: 1.4;
+  color: var(--text);
+  cursor: pointer;
+  margin: 2px 0 16px;
+  padding: 4px 0;
+}
+
+.elts-field input[type="checkbox"] {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin: 1px 0 0;
+  accent-color: var(--accent-strong);
+  cursor: pointer;
+}
+
+/* Primary "Check" button — white text on accent needs --accent-strong (AA). */
+#check-button {
+  font-family: var(--sans);
+  font-size: 14.5px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: #ffffff;
+  background: var(--accent-strong);
+  border: none;
+  border-radius: var(--radius-control);
+  padding: 12px 18px;
+  cursor: pointer;
+  transition: background 0.14s ease, box-shadow 0.14s ease, transform 0.05s ease;
+  box-shadow: 0 8px 18px -10px rgba(168, 88, 0, 0.8);
+}
+
+#check-button:hover {
+  background: var(--accent-hover);
+}
+
+#check-button:active {
+  transform: translateY(1px);
+}
+
+/* Rail footer links pushed to the bottom */
+.t3-footer {
+  margin-top: auto;
+  padding-top: 20px;
+}
+
+.footer-links {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.footer-links a {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text);
+  text-decoration: none;
+  padding: 2px 0;
+}
+
+.footer-links a:hover {
+  color: var(--link);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ---- Right result pane -------------------------------------------------- */
+.t3-result {
+  padding: 26px 28px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Empty state: before any verdict is rendered the pane is empty. */
+.t3-result:empty::before {
+  content: "";
+  flex: 1;
+  min-height: 220px;
+  display: block;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 24 24' fill='none' stroke='%23C9C2B2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* ---- Verdict ------------------------------------------------------------ */
+.verdict {
+  animation: t3rise 0.32s ease both;
+}
+
+@keyframes t3rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .verdict {
+    animation: none;
+  }
+}
+
+/*
+ * The banner: our markup emits .tier (eyebrow) + h2 (headline) + .detail as
+ * siblings, then .concerns. We tint that leading run as one contiguous panel
+ * (rounded top on .tier, the concerns/detail closing it), and float a
+ * decorative tier icon as a chip via .tier::before.
+ */
+.verdict .tier,
+.verdict h2,
+.verdict .detail,
+.verdict .concerns {
+  background: var(--tier-bg, var(--neutral-bg));
+  border-left: 1px solid var(--tier-bd, var(--neutral-bd));
+  border-right: 1px solid var(--tier-bd, var(--neutral-bd));
+  margin: 0;
+  padding-left: 70px; /* room for the icon chip */
+  padding-right: 22px;
+}
+
+.verdict .tier {
+  border-top: 1px solid var(--tier-bd, var(--neutral-bd));
+  border-top-left-radius: var(--radius-panel);
+  border-top-right-radius: var(--radius-panel);
+  padding-top: 22px;
+  padding-bottom: 4px;
+  position: relative;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--tier-fg, var(--neutral-fg));
+}
+
+/* Decorative tier icon chip (aria-hidden by being a CSS pseudo-element). */
+.verdict .tier::before {
+  content: "";
+  position: absolute;
+  left: 22px;
+  top: 20px;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.75);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 23px 23px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  background-image: var(--tier-icon);
+}
+
+.verdict h2 {
+  font-size: 20px;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  font-weight: 800;
+  color: var(--text);
+  padding-top: 4px;
+  padding-bottom: 8px;
+}
+
+.verdict .detail {
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--text-soft);
+  padding-bottom: 20px;
+}
+
+/* When there are no concerns, .detail closes the banner. */
+.verdict .detail:last-child {
+  border-bottom: 1px solid var(--tier-bd, var(--neutral-bd));
+  border-bottom-left-radius: var(--radius-panel);
+  border-bottom-right-radius: var(--radius-panel);
+}
+
+/* Secondary "concerns" list inside the banner, with a hairline divider. */
+.verdict .concerns {
+  list-style: none;
+  padding-top: 12px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--tier-bd, var(--neutral-bd));
+  border-bottom-left-radius: var(--radius-panel);
+  border-bottom-right-radius: var(--radius-panel);
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  position: relative;
+}
+
+.verdict .detail:has(+ .concerns) {
+  padding-bottom: 14px;
+}
+
+/* Divider line above concerns (drawn inside the tinted panel). */
+.verdict .concerns::before {
+  content: "";
+  position: absolute;
+  left: 70px;
+  right: 22px;
+  top: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.verdict .concerns li {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #3a3a3a;
+  padding-left: 18px;
+  position: relative;
+}
+
+.verdict .concerns li::before {
+  content: "•";
+  position: absolute;
+  left: 2px;
+  color: var(--tier-fg, var(--neutral-fg));
+  font-weight: 700;
+}
+
+/* ---- Tier → tint + icon map -------------------------------------------- */
+.verdict[data-tier="critical-missing-fix"],
+.verdict[data-tier="critical-unfixed"],
+.verdict[data-tier="critical-elts-only"],
+.verdict[data-tier="critical-eol"] {
+  --tier-fg: var(--crit-fg);
+  --tier-bg: var(--crit-bg);
+  --tier-bd: var(--crit-bd);
+  --tier-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='23' height='23' viewBox='0 0 24 24' fill='none' stroke='%23C8102E' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z'/%3E%3Cpath d='M12 9v4'/%3E%3Cpath d='M12 17h.01'/%3E%3C/svg%3E");
+}
+
+/* eol / elts-only lean on the clock (support-window framing). */
+.verdict[data-tier="critical-eol"],
+.verdict[data-tier="critical-elts-only"] {
+  --tier-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='23' height='23' viewBox='0 0 24 24' fill='none' stroke='%23C8102E' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 7v5l3 2'/%3E%3C/svg%3E");
+}
+
+.verdict[data-tier="soon-support-ending"] {
+  --tier-fg: var(--soon-fg);
+  --tier-bg: var(--soon-bg);
+  --tier-bd: var(--soon-bd);
+  --tier-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='23' height='23' viewBox='0 0 24 24' fill='none' stroke='%23B45309' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 7v5l3 2'/%3E%3C/svg%3E");
+}
+
+.verdict[data-tier="review-optional"] {
+  --tier-fg: var(--soon-fg);
+  --tier-bg: var(--soon-bg);
+  --tier-bd: var(--soon-bd);
+  --tier-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='23' height='23' viewBox='0 0 24 24' fill='none' stroke='%23B45309' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 11v5'/%3E%3Cpath d='M12 8h.01'/%3E%3C/svg%3E");
+}
+
+.verdict[data-tier="behind-maintenance"] {
+  --tier-fg: var(--minor-fg);
+  --tier-bg: var(--minor-bg);
+  --tier-bd: var(--minor-bd);
+  --tier-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='23' height='23' viewBox='0 0 24 24' fill='none' stroke='%231D4ED8' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 11v5'/%3E%3Cpath d='M12 8h.01'/%3E%3C/svg%3E");
+}
+
+.verdict[data-tier="all-good"] {
+  --tier-fg: var(--good-fg);
+  --tier-bg: var(--good-bg);
+  --tier-bd: var(--good-bd);
+  --tier-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='23' height='23' viewBox='0 0 24 24' fill='none' stroke='%231E7B34' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='m8.5 12.5 2.5 2.5 4.5-5'/%3E%3C/svg%3E");
+}
+
+.verdict[data-tier="unknown-version"] {
+  --tier-fg: var(--neutral-fg);
+  --tier-bg: var(--neutral-bg);
+  --tier-bd: var(--neutral-bd);
+  --tier-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='23' height='23' viewBox='0 0 24 24' fill='none' stroke='%236B6B6B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E");
+}
+
+/* ---- Advisory groups ---------------------------------------------------- */
+.group {
+  margin-top: 22px;
+}
+
+.group h3 {
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0 0 12px;
+  color: var(--text);
+}
+
+/* The optional group is visually quieter — never over-alarming. */
+.group.may-apply {
+  margin-top: 18px;
+}
+
+.group.may-apply h3 {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.advisories {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.advisory {
+  border: 1px solid #e8e3d8;
+  border-radius: 11px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  background: var(--card);
+}
+
+.group.may-apply .advisory {
+  background: var(--rail);
+}
+
+.advisory strong {
+  font-weight: 700;
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--text);
+}
+
+.advisory > p {
+  font-size: 13.5px;
+  line-height: 1.45;
+  margin: 6px 0 0;
+  color: var(--text);
+}
+
+/* Severity badge — text-carrying (colour is never the only signal). */
+.badge {
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 4px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  border-radius: 5px;
+  padding: 2px 7px;
+  color: var(--soon-fg);
+  background: var(--soon-bg);
+}
+
+.advisory[data-severity="critical"] .badge,
+.advisory[data-severity="high"] .badge {
+  color: var(--crit-fg);
+  background: var(--crit-bg);
+}
+
+.advisory[data-severity="medium"] .badge {
+  color: var(--soon-fg);
+  background: var(--soon-bg);
+}
+
+.advisory[data-severity="low"] .badge {
+  color: var(--minor-fg);
+  background: var(--minor-bg);
+}
+
+/* "How soon" urgency line */
+.advisory .urgency {
+  font-size: 12.5px;
+  line-height: 1.45;
+  margin: 8px 0 10px;
+  color: var(--muted);
+}
+
+.advisory .caveat {
+  font-size: 12px;
+  line-height: 1.4;
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-style: italic;
+}
+
+.advisory a {
+  margin-top: auto;
+  padding-top: 8px;
+  border-top: 1px solid #f0ece2;
+  color: var(--link); /* darker orange clears 4.5:1 (5.77:1 on white) */
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 12px;
+}
+
+.advisory a:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.advisory a::after {
+  content: " \2197"; /* ↗ opens-in-new-tab affordance */
+}
+
+/* ---- Share / copy-link -------------------------------------------------- */
+.share {
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px solid var(--hairline);
+}
+
+.copy-link {
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--dark-text);
+  background: var(--dark);
+  border: none;
+  border-radius: 8px;
+  padding: 9px 15px;
+  cursor: pointer;
+  min-height: 24px;
+  transition: background 0.14s ease;
+}
+
+.copy-link:hover {
+  background: #2c2c2c;
+}
+
+.share .status {
+  margin: 8px 0 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--good-fg);
+  min-height: 1em;
+}
+
+.share .hint {
+  margin: 6px 0 0;
+}
+
+/* ---- Responsive reflow (1.4.10) ---------------------------------------- */
+@media (max-width: 780px) {
+  .t3-page {
+    padding: 22px 14px;
+  }
+  .t3-card {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+  .t3-rail {
+    border-right: none;
+    border-bottom: 1px solid var(--hairline);
+  }
+  .t3-result {
+    padding: 22px 18px;
+  }
+}
+
+@media (max-width: 520px) {
+  .advisories {
+    grid-template-columns: 1fr;
+  }
+  .t3-result {
+    padding: 18px 15px;
+  }
+  .t3-rail {
+    padding: 20px 16px;
+  }
+  /* Keep the verdict banner readable when the icon chip would crowd it. */
+  .verdict .tier,
+  .verdict h2,
+  .verdict .detail,
+  .verdict .concerns {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .verdict .tier {
+    padding-top: 64px; /* icon chip sits above the eyebrow on narrow screens */
+  }
+  .verdict .tier::before {
+    left: 16px;
+    top: 16px;
+  }
+  .verdict .concerns::before {
+    left: 16px;
+    right: 16px;
+  }
+  .verdict .concerns li::before {
+    left: 0;
+  }
+}
