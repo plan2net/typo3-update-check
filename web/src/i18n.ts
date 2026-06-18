@@ -11,6 +11,11 @@ export interface UiLabels {
   tagline: string;
   versionLabel: string;
   versionHint: string;
+  majorLabel: string;
+  yourVersion: string;
+  tagLatest: string;
+  tagSecurity: string;
+  tagElts: string;
   notSureSummary: string;
   notSureBody: string;
   eltsLabel: string;
@@ -110,6 +115,11 @@ const EN: Strings = {
     tagline: "Check any client's TYPO3 and share the result.",
     versionLabel: 'Which TYPO3 version is the site on?',
     versionHint: "You'll find the exact version in the TYPO3 backend top bar.",
+    majorLabel: 'TYPO3 version line',
+    yourVersion: 'Your version',
+    tagLatest: 'latest',
+    tagSecurity: 'security release',
+    tagElts: 'ELTS',
     notSureSummary: 'Not sure which version?',
     notSureBody: 'Log in to the TYPO3 backend — the exact version is in the top bar and on the About / Maintenance screen.',
     eltsLabel: 'This site has an ELTS subscription',
@@ -191,6 +201,11 @@ const DE: Strings = {
     tagline: 'Prüfen Sie das TYPO3 eines Kunden und teilen Sie das Ergebnis.',
     versionLabel: 'Welche TYPO3-Version läuft auf der Website?',
     versionHint: 'Die genaue Version steht in der TYPO3-Backend-Kopfzeile.',
+    majorLabel: 'TYPO3-Versionslinie',
+    yourVersion: 'Ihre Version',
+    tagLatest: 'neueste',
+    tagSecurity: 'Sicherheitsrelease',
+    tagElts: 'ELTS',
     notSureSummary: 'Version unbekannt?',
     notSureBody: 'Melden Sie sich im TYPO3-Backend an — die genaue Version steht in der Kopfzeile und im Bereich Über / Wartung.',
     eltsLabel: 'Diese Website hat ein ELTS-Abo',
