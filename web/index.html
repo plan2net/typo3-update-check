@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Is your TYPO3 up to date?</title>
+  </head>
+  <body>
+    <main id="app">
+      <!-- Static text is English by default; ui.ts localises it from the catalog on load. -->
+      <nav id="lang-toggle" aria-label="Language">
+        <button type="button" data-lang="en">EN</button>
+        <button type="button" data-lang="de">DE</button>
+      </nav>
+      <h1 id="app-title">Is your TYPO3 up to date?</h1>
+      <p id="app-tagline" class="tagline">Check any client's TYPO3 and share the result.</p>
+      <form id="check-form">
+        <label id="version-label" for="version">Which TYPO3 version is the site on?</label>
+        <input id="version" name="version" inputmode="decimal" placeholder="e.g. 12.4.10" autocomplete="off" />
+        <p id="version-hint" class="hint">You'll find the exact version in the TYPO3 backend top bar.</p>
+        <details class="not-sure">
+          <summary id="not-sure-summary">Not sure which version?</summary>
+          <p id="not-sure-body">Log in to the TYPO3 backend — the exact version is shown in the top bar and on the About / Maintenance screen.</p>
+        </details>
+        <label><input type="checkbox" id="has-elts" /> <span id="elts-label">This site has an ELTS subscription</span></label>
+        <button id="check-button" type="submit">Check</button>
+      </form>
+      <section id="result" aria-live="polite"></section>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
