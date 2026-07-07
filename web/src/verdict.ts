@@ -1,6 +1,6 @@
 import type { Typo3Data, Verdict, Tier, AffectingAdvisory, SupportPhase, Lang } from './types';
 import { parseVersion, compareVersions } from './version';
-import { topSeverity } from './format';
+import { severityRank, topSeverity } from './format';
 import { strings } from './i18n';
 
 const SIX_MONTHS_MS = 1000 * 60 * 60 * 24 * 183;
@@ -83,6 +83,8 @@ export function computeVerdict(
       optional: a.optional,
     });
   }
+  // Most severe first, so readers see the shape of the risk; stable sort keeps id order within a severity.
+  affecting.sort((a, b) => severityRank(a.advisory.severity) - severityRank(b.advisory.severity));
 
   // Only core (always-present) advisories drive the headline + count. Optional ones are
   // surfaced separately so the tool can't over-alarm about extensions that may not be installed.

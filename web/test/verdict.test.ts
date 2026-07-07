@@ -56,6 +56,12 @@ describe('computeVerdict', () => {
     expect(v.affecting.length).toBe(2); // both advisories still affect 12.4.10
   });
 
+  it('orders affecting advisories by severity, highest first', () => {
+    const v = computeVerdict('12.4.10', false, data, NOW);
+    // Data order is SA-FREE-FIX (high) before SA-ELTS-FIX (critical); display order must flip that.
+    expect(v.affecting.map((a) => a.advisory.severity)).toEqual(['critical', 'high']);
+  });
+
   it('warns a free user that an ELTS-only core fix is NOT resolved by the free update', () => {
     const v = computeVerdict('12.4.10', false, data, NOW);
     expect(v.tier).toBe('critical-missing-fix');

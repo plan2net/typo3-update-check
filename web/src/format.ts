@@ -20,3 +20,9 @@ export function topSeverity(severities: string[]): string | null {
   }
   return null;
 }
+
+/** Sort rank: 0 = most severe; unknown severities sort last. */
+export function severityRank(severity: string): number {
+  const rank = SEVERITY_ORDER.indexOf(severity);
+  return rank === -1 ? SEVERITY_ORDER.length : rank;
+}
