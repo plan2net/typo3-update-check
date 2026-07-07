@@ -4,6 +4,9 @@ import { topSeverity } from './format';
 import { strings } from './i18n';
 
 const SIX_MONTHS_MS = 1000 * 60 * 60 * 24 * 183;
+// The pipeline re-verifies (and re-stamps checkedAt) daily; older than this means it has likely
+// stopped, so we can no longer vouch that a clean result reflects the latest advisories.
+const STALE_AFTER_MS = 1000 * 60 * 60 * 24 * 10;
 
 export function computeVerdict(
   version: string,
@@ -74,13 +77,15 @@ export function computeVerdict(
   let text: { headline: string; detail: string };
   let recommendedVersion: string | null = null;
 
-  if (coreReachableFix.length > 0) {
+  if (supportPhase === 'eol') {
+    // End-of-life dominates: any "update to X" within a dead line is only a stopgap — a major
+    // upgrade is required — so we must never let a reachable intra-line fix hide the EOL status.
+    tier = 'critical-eol';
+    text = m.eol(mk, major.eltsUntil);
+  } else if (coreReachableFix.length > 0) {
     tier = 'critical-missing-fix';
     recommendedVersion = target;
     text = m.missingFix(canonical, target, coreReachableFix.length, topSeverity(coreReachableFix.map((x) => x.advisory.severity)), hasElts);
-  } else if (supportPhase === 'eol') {
-    tier = 'critical-eol';
-    text = m.eol(mk, major.eltsUntil);
   } else if (coreUnfixed.length > 0) {
     tier = 'critical-unfixed';
     text = m.unfixed(canonical, mk, coreUnfixed.length, topSeverity(coreUnfixed.map((x) => x.advisory.severity)));
@@ -112,11 +117,43 @@ export function computeVerdict(
   if (tier === 'critical-missing-fix' && coreUnfixed.length > 0) {
     concerns.push(m.concernSeparateUnfixed());
   }
+  // A free user updating to the free target is still exposed to any core fix gated behind ELTS.
+  if (tier === 'critical-missing-fix' && !hasElts && coreEltsGatedFix.length > 0) {
+    concerns.push(m.concernEltsGatedRemain(coreEltsGatedFix.length));
+  }
   if (freeBehind > 0 && tier !== 'behind-maintenance' && tier !== 'critical-missing-fix' && tier !== 'all-good') {
     concerns.push(m.concernAlsoBehind(freeBehind));
   }
   if (data.majors[String(Number(mk) + 1)]) {
     concerns.push(m.concernNewerMajor(Number(mk) + 1));
+  }
+
+  // Fail closed against a stalled pipeline: the deploy stamps checkedAt every run, so an old checkedAt
+  // means CI stopped and we can't vouch for a reassuring result (a newer advisory may exist). generatedAt
+  // only moves on a data change, so it is NOT a freshness signal — dev/preview/self-host without the
+  // stamp simply get no staleness assertion (avoids false "Unconfirmed" alarms). A malformed checkedAt
+  // is treated as stale. Critical findings over-report (the safe direction), so they stand.
+  const checkedMs = data.checkedAt ? Date.parse(data.checkedAt) : null;
+  const stale = checkedMs !== null && (Number.isNaN(checkedMs) || nowMs - checkedMs > STALE_AFTER_MS);
+  const freshnessIso = data.checkedAt ?? data.generatedAt;
+  const reassuring: Tier[] = ['all-good', 'behind-maintenance', 'review-optional', 'soon-support-ending'];
+  if (stale) {
+    if (reassuring.includes(tier)) {
+      tier = 'stale-data';
+      recommendedVersion = null;
+      text = m.stale(freshnessIso);
+      concerns.length = 0; // the underlying findings are disclaimed — don't surface them under "can't confirm"
+    } else {
+      // Critical tier stands (over-reporting is the safe direction), but a stale dataset's "latest"
+      // may itself be obsolete — drop the structured recommendation and flag the staleness up front.
+      recommendedVersion = null;
+      concerns.unshift(m.concernStale(freshnessIso));
+      // critical-missing-fix is the only critical tier whose headline names a target version; swap it
+      // for target-neutral wording so the visible guidance can't point at a possibly-obsolete release.
+      if (tier === 'critical-missing-fix') {
+        text = m.missingFixStale(canonical, coreReachableFix.length, topSeverity(coreReachableFix.map((x) => x.advisory.severity)));
+      }
+    }
   }
 
   return { tier, supportPhase, recommendedVersion, headline: text.headline, detail: text.detail, affecting, concerns };

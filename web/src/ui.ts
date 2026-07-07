@@ -97,8 +97,6 @@ function localiseChrome(root: Document, lang: Lang): void {
   set('version-hint', m.ui.versionHint);
   set('major-label', m.ui.majorLabel);
   set('version-select-label', m.ui.yourVersion);
-  set('not-sure-summary', m.ui.notSureSummary);
-  set('not-sure-body', m.ui.notSureBody);
   set('elts-label', m.ui.eltsLabel);
   set('check-button', m.ui.check);
   // Landmark aria-labels are read by screen readers, so localise them too (data-i18n-label -> UiLabels key).

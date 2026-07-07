@@ -63,6 +63,20 @@ jobs:
         env:
           PAGES_BASE: /${{ github.event.repository.name }}/
 
+      # Stamp the DEPLOYED data (not the committed source) with a freshness heartbeat every run, so
+      # the frontend can fail closed if the pipeline ever stops. generatedAt only moves on a real data
+      # change, so it can't serve as the heartbeat; this writes only into the gitignored dist artifact.
+      # Guard the decode: a missing/malformed file must fail the run, not auto-vivify a 1-key wreck.
+      - name: Stamp deploy freshness (checkedAt)
+        run: |
+          php -r '$f="web/dist/data/typo3.json"; $d=json_decode((string) @file_get_contents($f), true); if (!is_array($d) || !isset($d["majors"], $d["advisories"])) { fwrite(STDERR, "stamp: $f is missing or malformed\n"); exit(1); } $d["checkedAt"]=gmdate("c"); file_put_contents($f, json_encode($d, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE)."\n");'
+
+      # Re-validate the ACTUAL artifact that gets deployed (validate above ran on the source, before the
+      # stamp mutation) — this is the gate that catches a stamp that damaged the file.
+      - name: Re-validate the stamped deploy artifact
+        run: php validate.php ../dist/data/typo3.json
+        working-directory: web/build
+
       - name: Commit refreshed data (persists the explanation cache) — only after validate + build pass
         run: |
           if [ -n "$(git status --porcelain web/public/data)" ]; then

@@ -56,6 +56,19 @@ describe('computeVerdict', () => {
     expect(v.affecting.length).toBe(2); // both advisories still affect 12.4.10
   });
 
+  it('warns a free user that an ELTS-only core fix is NOT resolved by the free update', () => {
+    const v = computeVerdict('12.4.10', false, data, NOW);
+    expect(v.tier).toBe('critical-missing-fix');
+    // SA-ELTS-FIX is fixed only in ELTS 12.4.46 — updating to the free 12.4.45 leaves it open.
+    expect(v.concerns.some((c) => /ELTS/i.test(c))).toBe(true);
+  });
+
+  it('does not raise the ELTS-gap warning for an ELTS subscriber (the gated fix is reachable)', () => {
+    const v = computeVerdict('12.4.10', true, data, NOW);
+    expect(v.tier).toBe('critical-missing-fix');
+    expect(v.concerns.some((c) => /fixed only in ELTS/i.test(c))).toBe(false);
+  });
+
   it('on the latest free release, surfaces the ELTS-only gap (free user)', () => {
     const v = computeVerdict('12.4.45', false, data, NOW);
     expect(v.tier).toBe('critical-elts-only');
@@ -88,6 +101,12 @@ describe('computeVerdict', () => {
     const v = computeVerdict('12.4.45', false, data, future);
     expect(v.tier).toBe('critical-eol');
     expect(v.supportPhase).toBe('eol');
+  });
+
+  it('reports end-of-life even when an intra-line fix is still reachable', () => {
+    const future = new Date('2031-01-01T00:00:00Z'); // past major 12 eltsUntil (2030-04-30)
+    const v = computeVerdict('12.4.10', false, data, future); // SA-FREE-FIX reaches a free patch at 12.4.45…
+    expect(v.tier).toBe('critical-eol'); // …but EOL dominates: the whole line is unsupported
   });
 
   it('returns unknown-version for an unparseable input', () => {
@@ -171,5 +190,63 @@ describe('computeVerdict — core/optional split, unfixed, concerns', () => {
     expect(de.tier).toBe(en.tier);              // logic is language-neutral
     expect(de.headline).toMatch(/aktualisieren/i); // but prose is German
     expect(de.headline).not.toBe(en.headline);
+  });
+});
+
+describe('computeVerdict — data freshness (fail closed on a stalled pipeline)', () => {
+  const later = new Date('2027-06-01T00:00:00Z');
+  const staleData = { ...data, checkedAt: '2026-01-01T00:00:00Z' }; // last verified ~17 months before `later`
+
+  it('downgrades a reassuring verdict to stale-data when checkedAt is old', () => {
+    const v = computeVerdict('13.4.31', false, staleData, later); // would be all-good
+    expect(v.tier).toBe('stale-data');
+    expect(v.recommendedVersion).toBeNull();
+  });
+
+  it('trusts a recent checkedAt', () => {
+    const fresh = { ...data, checkedAt: '2027-05-30T00:00:00Z' };
+    const v = computeVerdict('13.4.31', false, fresh, later);
+    expect(v.tier).toBe('all-good');
+  });
+
+  it('does not treat an old generatedAt as stale when there is no checkedAt heartbeat', () => {
+    // dev/preview/self-host without the CI stamp: generatedAt only moves on a data change, so it is
+    // not a freshness signal and must not raise a false "Unconfirmed".
+    const v = computeVerdict('13.4.31', false, data, later); // generatedAt 2026-06-16, no checkedAt
+    expect(v.tier).toBe('all-good');
+  });
+
+  it('clears the disclaimed data’s concerns when downgrading to stale-data', () => {
+    const withNewerMajor: Typo3Data = {
+      ...staleData,
+      majors: {
+        ...staleData.majors,
+        '14': {
+          maintainedUntil: '2029-12-31T00:00:00+01:00', eltsUntil: '2032-12-31T00:00:00+01:00',
+          latestFree: '14.0.0', latestElts: '14.0.0',
+          releases: [{ version: '14.0.0', date: null, type: 'regular', elts: false }],
+        },
+      },
+    };
+    // 13.4.31 would be all-good with a "TYPO3 14 available" concern; the stale banner must not carry it.
+    const v = computeVerdict('13.4.31', false, withNewerMajor, later);
+    expect(v.tier).toBe('stale-data');
+    expect(v.concerns).toHaveLength(0);
+  });
+
+  it('keeps a critical verdict under staleness but drops its (possibly obsolete) recommendation', () => {
+    const v = computeVerdict('12.4.10', false, staleData, later); // stale, but live criticals affect 12.4.10
+    expect(v.tier).toBe('critical-missing-fix');           // criticality stands (over-reporting is safe)
+    expect(v.recommendedVersion).toBeNull();               // stale dataset's "latest" may be obsolete
+    expect(v.headline).not.toContain('12.4.45');           // headline must not name the stale target
+    expect(v.detail).not.toContain('12.4.45');
+    expect(v.concerns.some((c) => /out of date|current release/i.test(c))).toBe(true);
+  });
+
+  it('a fresh critical verdict still names the target in the headline', () => {
+    const v = computeVerdict('12.4.10', false, data, NOW); // no checkedAt → not stale
+    expect(v.tier).toBe('critical-missing-fix');
+    expect(v.recommendedVersion).toBe('12.4.45');
+    expect(v.headline).toContain('12.4.45');
   });
 });

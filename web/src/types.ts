@@ -41,7 +41,8 @@ export interface AdvisoryInfo {
 }
 
 export interface Typo3Data {
-  generatedAt: string;
+  generatedAt: string;        // when the data body last CHANGED (only bumped on a real change)
+  checkedAt?: string;         // when the pipeline last verified the data (stamped into the deployed copy every run)
   majors: Record<string, MajorInfo>; // keyed by integer major, e.g. "12"
   advisories: AdvisoryInfo[];
 }
@@ -57,6 +58,7 @@ export type Tier =
   | 'review-optional'
   | 'behind-maintenance'
   | 'all-good'
+  | 'stale-data'
   | 'unknown-version';
 
 export interface AffectingAdvisory {

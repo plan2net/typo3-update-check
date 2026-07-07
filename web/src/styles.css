@@ -6,9 +6,9 @@
  * styling the markup that index.html / ui.ts already emit. Markup structure and
  * logic are NOT changed here.
  *
- * Accessibility (WCAG 2.2 AA): brand orange #FF8700 is identity/decoration only
- * (white-on-it = 2.41:1, fails as text); interactive fills carrying white text use
- * --accent-strong (#A85800, white-on-it = 5.17:1) and text links use --link
+ * Accessibility (WCAG 2.2 AA): brand orange #FF8700 fails with WHITE text (2.41:1) but is great
+ * with DARK text — #1A1A1A on #FF8700 = 7.2:1 — so primary fills use brand orange + dark text.
+ * --accent-strong (#A85800) is kept for the focus ring + checkbox tick; text links use --link
  * (#9A5400, 5.77:1 on card). Every interactive element keeps a visible focus ring.
  */
 
@@ -23,9 +23,10 @@
   --hairline: #e5e0d5;
   --hairline-soft: #ece7dc;
 
-  /* Orange: decorative identity vs. accessible interactive vs. link text */
-  --accent: #ff8700; /* decorative fills / identity only (aria-hidden chips) */
-  --accent-strong: #a85800; /* interactive fill behind WHITE text (AA: 5.17:1) */
+  /* Orange: brand fill (dark text) vs. accessible white-text fill vs. link text */
+  --accent: #ff8700; /* TYPO3 brand orange — primary fills, paired with DARK text (AA: 7.2:1) */
+  --accent-press: #ef7d00; /* hover/press shade for brand fills; dark text stays >7:1 */
+  --accent-strong: #a85800; /* focus ring + checkbox tick (AA: 5.17:1) */
   --accent-hover: #8f5000; /* hover for the above (AA: 6.33:1) */
   --link: #9a5400; /* text-link orange (AA: 5.77:1 on white) */
 
@@ -186,9 +187,9 @@ body {
 }
 
 .lang-toggle button[aria-pressed="true"] {
-  background: var(--accent-strong); /* white text needs >=4.5:1 */
-  color: #ffffff;
-  box-shadow: 0 4px 10px -5px rgba(168, 88, 0, 0.7);
+  background: var(--accent); /* brand orange + dark text (AA: 7.2:1) — matches the Check button */
+  color: var(--text);
+  box-shadow: 0 4px 10px -5px rgba(255, 135, 0, 0.7);
 }
 
 /* ---- Split card --------------------------------------------------------- */
@@ -267,45 +268,6 @@ body {
   border-color: #d9d2c4;
 }
 
-/* "Not sure which version?" expander */
-.not-sure {
-  margin: 4px 0 13px;
-  font-size: 13px;
-}
-
-.not-sure summary {
-  cursor: pointer;
-  font-weight: 600;
-  color: var(--link);
-  text-decoration: underline;
-  text-underline-offset: 2px;
-  list-style: none;
-  padding: 4px 0;
-  min-height: 24px;
-}
-
-.not-sure summary::-webkit-details-marker {
-  display: none;
-}
-
-.not-sure summary::before {
-  content: "›";
-  display: inline-block;
-  margin-right: 7px;
-  transition: transform 0.15s ease;
-  color: var(--muted);
-}
-
-.not-sure[open] summary::before {
-  transform: rotate(90deg);
-}
-
-.not-sure p {
-  margin: 6px 0 0;
-  color: var(--muted);
-  line-height: 1.5;
-}
-
 /* ELTS checkbox */
 .elts-field {
   display: flex;
@@ -328,24 +290,24 @@ body {
   cursor: pointer;
 }
 
-/* Primary "Check" button — white text on accent needs --accent-strong (AA). */
+/* Primary "Check" button — TYPO3 brand orange with DARK text (AA: 7.2:1). */
 #check-button {
   font-family: var(--sans);
   font-size: 14.5px;
   font-weight: 700;
   letter-spacing: 0.01em;
-  color: #ffffff;
-  background: var(--accent-strong);
+  color: var(--text);
+  background: var(--accent);
   border: none;
   border-radius: var(--radius-control);
   padding: 12px 18px;
   cursor: pointer;
   transition: background 0.14s ease, box-shadow 0.14s ease, transform 0.05s ease;
-  box-shadow: 0 8px 18px -10px rgba(168, 88, 0, 0.8);
+  box-shadow: 0 8px 18px -10px rgba(255, 135, 0, 0.85);
 }
 
 #check-button:hover {
-  background: var(--accent-hover);
+  background: var(--accent-press);
 }
 
 #check-button:active {
@@ -484,8 +446,9 @@ body {
   padding-bottom: 20px;
 }
 
-/* When there are no concerns, .detail closes the banner. */
-.verdict .detail:last-child {
+/* When there are no concerns, .detail closes the banner — even when advisory groups or the share
+ * row follow it (so it is not the element's :last-child). The concerns block closes it otherwise. */
+.verdict .detail:not(:has(+ .concerns)) {
   border-bottom: 1px solid var(--tier-bd, var(--neutral-bd));
   border-bottom-left-radius: var(--radius-panel);
   border-bottom-right-radius: var(--radius-panel);
@@ -578,6 +541,14 @@ body {
   --tier-bg: var(--good-bg);
   --tier-bd: var(--good-bd);
   --tier-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='23' height='23' viewBox='0 0 24 24' fill='none' stroke='%231E7B34' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='m8.5 12.5 2.5 2.5 4.5-5'/%3E%3C/svg%3E");
+}
+
+/* stale-data: not a verdict about the site but about our own freshness — amber caution + a refresh mark. */
+.verdict[data-tier="stale-data"] {
+  --tier-fg: var(--soon-fg);
+  --tier-bg: var(--soon-bg);
+  --tier-bd: var(--soon-bd);
+  --tier-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='23' height='23' viewBox='0 0 24 24' fill='none' stroke='%23B45309' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8'/%3E%3Cpath d='M21 3v5h-5'/%3E%3Cpath d='M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16'/%3E%3Cpath d='M3 21v-5h5'/%3E%3C/svg%3E");
 }
 
 .verdict[data-tier="unknown-version"] {
