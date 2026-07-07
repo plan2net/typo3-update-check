@@ -783,6 +783,17 @@ body {
   .t3-page {
     padding: 22px 14px;
   }
+  /* Give the title its full width back: the toggle + attribution drop to their own row. */
+  .t3-header {
+    flex-wrap: wrap;
+  }
+  .header-side {
+    margin-left: 0;
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
   .t3-card {
     grid-template-columns: 1fr;
     min-height: 0;
