@@ -49,6 +49,7 @@ export interface Strings {
   concernOptional(count: number, packages: string[]): string;
   concernSeparateUnfixed(): string;
   concernStale(updatedIso: string): string;
+  concernMaybeNewer(updatedIso: string): string;
   concernEltsGatedRemain(count: number): string;
   concernAlsoBehind(count: number): string;
   concernNewerMajor(major: number): string;
@@ -127,6 +128,8 @@ const EN: Strings = {
   concernSeparateUnfixed: () => "A separate known issue has no released fix yet — updating won't resolve it.",
   concernStale: (updatedIso) =>
     `Based on security data from ${fmtDate(updatedIso, 'en')}, which may be out of date — confirm the current release before updating.`,
+  concernMaybeNewer: (updatedIso) =>
+    `Our release data was last verified on ${fmtDate(updatedIso, 'en')} — your version may be newer than our data. Please check again later.`,
   concernEltsGatedRemain: (count) =>
     `${count} core ${plural(count, 'issue is', 'issues are')} fixed only in ELTS releases — a free update won't resolve ` +
     `${plural(count, 'it', 'them')}; an ELTS subscription (or a newer major) is required.`,
@@ -231,6 +234,8 @@ const DE: Strings = {
   concernSeparateUnfixed: () => 'Ein weiteres bekanntes Problem hat noch keinen Fix — das Update behebt es nicht.',
   concernStale: (updatedIso) =>
     `Basiert auf Sicherheitsdaten vom ${fmtDate(updatedIso, 'de')} und ist möglicherweise nicht mehr aktuell — prüfen Sie vor dem Update das aktuelle Release.`,
+  concernMaybeNewer: (updatedIso) =>
+    `Unsere Release-Daten wurden zuletzt am ${fmtDate(updatedIso, 'de')} geprüft — Ihre Version könnte neuer sein als unsere Daten. Bitte später erneut prüfen.`,
   concernEltsGatedRemain: (count) =>
     `${count} ${plural(count, 'Kernproblem ist', 'Kernprobleme sind')} nur in ELTS-Releases behoben — ein kostenloses Update beseitigt ` +
     `${plural(count, 'es', 'sie')} nicht; dafür ist ein ELTS-Abo (oder eine neuere Hauptversion) nötig.`,

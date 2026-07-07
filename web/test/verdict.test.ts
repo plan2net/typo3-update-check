@@ -267,4 +267,30 @@ describe('computeVerdict — data freshness (fail closed on a stalled pipeline)'
     expect(v.recommendedVersion).toBe('12.4.45');
     expect(v.headline).toContain('12.4.45');
   });
+
+  it('treats an empty checkedAt as malformed (stale), not as a missing heartbeat', () => {
+    const emptyStamp = { ...data, checkedAt: '' };
+    const v = computeVerdict('13.4.31', false, emptyStamp, later); // would be all-good
+    expect(v.tier).toBe('stale-data');
+  });
+
+  it('cautions that an unknown version may be newer than stale release data', () => {
+    // Pipeline stalled; a genuinely new release is missing from the list — the data is the
+    // problem, not the user's input, so the unknown-version verdict must say so.
+    const v = computeVerdict('13.4.35', false, staleData, later);
+    expect(v.tier).toBe('unknown-version');
+    expect(v.concerns.some((c) => /newer than our data/i.test(c))).toBe(true);
+  });
+
+  it('cautions that an unknown major may be newer than stale release data', () => {
+    const v = computeVerdict('14.0.0', false, staleData, later);
+    expect(v.tier).toBe('unknown-version');
+    expect(v.concerns.some((c) => /newer than our data/i.test(c))).toBe(true);
+  });
+
+  it('does not caution about unknown versions when the data is fresh', () => {
+    const v = computeVerdict('13.4.35', false, data, NOW); // no heartbeat → no staleness assertion
+    expect(v.tier).toBe('unknown-version');
+    expect(v.concerns).toHaveLength(0);
+  });
 });

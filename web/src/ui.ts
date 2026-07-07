@@ -1,5 +1,5 @@
 import type { Typo3Data, Verdict, AffectingAdvisory, Lang } from './types';
-import { computeVerdict } from './verdict';
+import { computeVerdict, staleCheckedAt } from './verdict';
 import { parseVersion, majorKey, compareVersions } from './version';
 import { strings, type Strings } from './i18n';
 
@@ -71,10 +71,17 @@ function renderFor(raw: string, hasElts: boolean, data: Typo3Data, lang: Lang): 
     const mk = majorKey(raw.replace(/^v/i, ''));
     const major = data.majors[mk];
     const t = major ? m.unknownMajor(mk, major.maintainedUntil, major.eltsUntil) : m.unknownVersion();
+    // Support dates come straight from the dataset, so they need the same staleness disclaimer
+    // an exact-version verdict would carry.
+    const staleSince = staleCheckedAt(data, new Date());
+    const concerns = staleSince !== null
+      ? `<ul class="concerns"><li>${escapeHtml(m.concernMaybeNewer(staleSince))}</li></ul>`
+      : '';
     return `<div class="verdict" data-tier="unknown-version">
         <p class="tier">${escapeHtml(m.tierLabel['unknown-version'])}</p>
         <h2>${escapeHtml(t.headline)}</h2>
         <p class="detail">${escapeHtml(t.detail)}</p>
+        ${concerns}
       </div>`;
   }
   return renderVerdict(computeVerdict(raw, hasElts, data, new Date(), lang), lang, m);

@@ -8,6 +8,19 @@ const SIX_MONTHS_MS = 1000 * 60 * 60 * 24 * 183;
 // stopped, so we can no longer vouch that a clean result reflects the latest advisories.
 const STALE_AFTER_MS = 1000 * 60 * 60 * 24 * 10;
 
+/**
+ * The checkedAt heartbeat's ISO value when the data can no longer be vouched for, else null.
+ * No heartbeat (dev/preview/self-host) means no staleness assertion; a malformed value —
+ * including an empty string — is treated as stale (fail closed). Exported for ui.ts's
+ * major.minor path, which renders support info without computeVerdict.
+ */
+export function staleCheckedAt(data: Typo3Data, now: Date): string | null {
+  if (data.checkedAt === undefined) return null;
+  const checkedMs = Date.parse(data.checkedAt);
+  const stale = Number.isNaN(checkedMs) || now.getTime() - checkedMs > STALE_AFTER_MS;
+  return stale ? data.checkedAt : null;
+}
+
 export function computeVerdict(
   version: string,
   hasElts: boolean,
@@ -21,22 +34,31 @@ export function computeVerdict(
     headline: t.headline, detail: t.detail, affecting: [], concerns: [],
   });
 
+  const staleSince = staleCheckedAt(data, now);
+  // A version we don't know may exist BECAUSE the data is stale (a release newer than the
+  // stalled pipeline's last run) — say so, instead of only blaming the user's input.
+  const unknownVersion = (): Verdict => {
+    const verdict = base('unknown-version', m.unknownVersion());
+    if (staleSince !== null) verdict.concerns.push(m.concernMaybeNewer(staleSince));
+    return verdict;
+  };
+
   const parsed = parseVersion(version);
   if (!parsed) {
-    return base('unknown-version', m.unknownVersion());
+    return base('unknown-version', m.unknownVersion()); // unparseable input — not a data problem
   }
   // Canonicalise once ("v12.4.10" / " 12.4.10 " -> "12.4.10") and use that everywhere below.
   const canonical = `${parsed[0]}.${parsed[1]}.${parsed[2]}`;
   const mk = String(parsed[0]);
   const major = data.majors[mk];
   if (!major) {
-    return base('unknown-version', m.unknownVersion());
+    return unknownVersion();
   }
   // Require a REAL released version. Otherwise a bogus "13.99.99" would fall through to
   // "all good" and falsely reassure. The release list includes ELTS releases, so any genuine
-  // version is present (data is at most ~a day stale).
+  // version is present while the pipeline runs (checkedAt vouches for that above).
   if (!major.releases.some((r) => r.version === canonical)) {
-    return base('unknown-version', m.unknownVersion());
+    return unknownVersion();
   }
 
   const nowMs = now.getTime();
@@ -71,6 +93,7 @@ export function computeVerdict(
   );
   const coreUnfixed = core.filter((x) => x.fixVersion === null);
   const coreEltsGatedFix = core.filter((x) => x.fixVersion !== null && !x.fixIsFree);
+  const coreReachableTopSeverity = topSeverity(coreReachableFix.map((x) => x.advisory.severity));
   const freeBehind = major.releases.filter((r) => !r.elts && compareVersions(r.version, canonical) > 0).length;
 
   let tier: Tier;
@@ -85,7 +108,7 @@ export function computeVerdict(
   } else if (coreReachableFix.length > 0) {
     tier = 'critical-missing-fix';
     recommendedVersion = target;
-    text = m.missingFix(canonical, target, coreReachableFix.length, topSeverity(coreReachableFix.map((x) => x.advisory.severity)), hasElts);
+    text = m.missingFix(canonical, target, coreReachableFix.length, coreReachableTopSeverity, hasElts);
   } else if (coreUnfixed.length > 0) {
     tier = 'critical-unfixed';
     text = m.unfixed(canonical, mk, coreUnfixed.length, topSeverity(coreUnfixed.map((x) => x.advisory.severity)));
@@ -128,33 +151,27 @@ export function computeVerdict(
     concerns.push(m.concernNewerMajor(Number(mk) + 1));
   }
 
-  // Fail closed against a stalled pipeline: the deploy stamps checkedAt every run, so an old checkedAt
-  // means CI stopped and we can't vouch for a reassuring result (a newer advisory may exist). generatedAt
-  // only moves on a data change, so it is NOT a freshness signal — dev/preview/self-host without the
-  // stamp simply get no staleness assertion (avoids false "Unconfirmed" alarms). A malformed checkedAt
-  // is treated as stale. Critical findings over-report (the safe direction), so they stand.
-  const checkedMs = data.checkedAt ? Date.parse(data.checkedAt) : null;
-  const stale = checkedMs !== null && (Number.isNaN(checkedMs) || nowMs - checkedMs > STALE_AFTER_MS);
-  const freshnessIso = data.checkedAt ?? data.generatedAt;
+  // Fail closed against a stalled pipeline (see staleCheckedAt). Critical findings over-report
+  // (the safe direction), so they stand; reassuring verdicts can't be vouched for and downgrade.
   const reassuring: Tier[] = ['all-good', 'behind-maintenance', 'review-optional', 'soon-support-ending'];
-  if (stale) {
+  if (staleSince !== null) {
     if (reassuring.includes(tier)) {
       tier = 'stale-data';
       recommendedVersion = null;
-      text = m.stale(freshnessIso);
+      text = m.stale(staleSince);
       // The underlying findings are disclaimed — surface neither the concerns nor the advisory
       // lists under "can't confirm"; the UI renders `affecting` unconditionally.
       concerns.length = 0;
       affecting.length = 0;
     } else {
-      // Critical tier stands (over-reporting is the safe direction), but a stale dataset's "latest"
-      // may itself be obsolete — drop the structured recommendation and flag the staleness up front.
+      // Critical tier stands, but a stale dataset's "latest" may itself be obsolete — drop the
+      // structured recommendation and flag the staleness up front.
       recommendedVersion = null;
-      concerns.unshift(m.concernStale(freshnessIso));
+      concerns.unshift(m.concernStale(staleSince));
       // critical-missing-fix is the only critical tier whose headline names a target version; swap it
       // for target-neutral wording so the visible guidance can't point at a possibly-obsolete release.
       if (tier === 'critical-missing-fix') {
-        text = m.missingFixStale(canonical, coreReachableFix.length, topSeverity(coreReachableFix.map((x) => x.advisory.severity)));
+        text = m.missingFixStale(canonical, coreReachableFix.length, coreReachableTopSeverity);
       }
     }
   }
