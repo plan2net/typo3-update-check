@@ -53,6 +53,8 @@ export interface Strings {
   concernEltsGatedRemain(count: number): string;
   concernAlsoBehind(count: number): string;
   concernNewerMajor(major: number): string;
+  severityLabel(severity: string): string;
+  showAllAdvisories(total: number): string;
   ui: UiLabels;
 }
 
@@ -135,6 +137,8 @@ const EN: Strings = {
     `${plural(count, 'it', 'them')}; an ELTS subscription (or a newer major) is required.`,
   concernAlsoBehind: (count) => `You're also ${count} free ${plural(count, 'release', 'releases')} behind on this line.`,
   concernNewerMajor: (major) => `TYPO3 ${major} is available as a newer major version.`,
+  severityLabel: (severity) => severity, // the data's severity values are already plain English
+  showAllAdvisories: (total) => `Show all ${total}`,
   ui: {
     title: 'Is your TYPO3 up to date?',
     tagline: "Check any client's TYPO3 and share the result.",
@@ -241,6 +245,9 @@ const DE: Strings = {
     `${plural(count, 'es', 'sie')} nicht; dafür ist ein ELTS-Abo (oder eine neuere Hauptversion) nötig.`,
   concernAlsoBehind: (count) => `Sie sind außerdem ${count} ${plural(count, 'kostenloses Release', 'kostenlose Releases')} im Rückstand.`,
   concernNewerMajor: (major) => `TYPO3 ${major} ist als neuere Hauptversion verfügbar.`,
+  severityLabel: (severity) =>
+    ({ critical: 'kritisch', high: 'hoch', medium: 'mittel', low: 'niedrig', unknown: 'unbekannt' })[severity] ?? severity,
+  showAllAdvisories: (total) => `Alle ${total} anzeigen`,
   ui: {
     title: 'Ist Ihre TYPO3-Installation aktuell?',
     tagline: 'Prüfen Sie die TYPO3-Installation eines Kunden und teilen Sie das Ergebnis.',

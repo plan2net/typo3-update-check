@@ -1,7 +1,12 @@
 import type { Typo3Data, Verdict, AffectingAdvisory, Lang } from './types';
 import { computeVerdict, staleCheckedAt } from './verdict';
 import { parseVersion, majorKey, compareVersions } from './version';
+import { severityRank } from './format';
 import { strings, type Strings } from './i18n';
+
+// Long advisory lists collapse to the most severe entries; the rest reveal on demand.
+const COLLAPSE_ABOVE = 10;
+const VISIBLE_WHEN_COLLAPSED = 8;
 
 function escapeHtml(s: string): string {
   return s.replace(/[&<>"']/g, (c) =>
@@ -13,7 +18,7 @@ function safeUrl(url: string): string {
   return /^https?:\/\//i.test(url) ? url : '#';
 }
 
-function advisoryItem(a: AffectingAdvisory, lang: Lang, m: Strings): string {
+function advisoryItem(a: AffectingAdvisory, lang: Lang, m: Strings, hidden: boolean): string {
   const exp = a.advisory.explanation?.[lang];
   const sev = escapeHtml(a.advisory.severity);
   const title = escapeHtml(a.advisory.title);
@@ -25,8 +30,8 @@ function advisoryItem(a: AffectingAdvisory, lang: Lang, m: Strings): string {
   // External link: accessible name conveys purpose + "opens in a new tab" (§11a).
   const cveLabel = a.advisory.cve ?? a.advisory.id;
   const linkName = `${m.ui.officialAdvisory} (${cveLabel}), ${m.ui.opensNewTab}`;
-  return `<li class="advisory" data-severity="${sev}">
-      <strong>${title}</strong> <span class="badge">${sev}</span>
+  return `<li class="advisory" data-severity="${sev}"${hidden ? ' hidden' : ''}>
+      <strong>${title}</strong> <span class="badge">${escapeHtml(m.severityLabel(a.advisory.severity))}</span>
       ${impact ? `<p>${impact}</p>` : ''}
       ${urgency ? `<p class="urgency">${urgency}</p>` : ''}
       ${caveat}
@@ -40,11 +45,27 @@ function renderVerdict(v: Verdict, lang: Lang, m: Strings): string {
   const concerns = v.concerns.length
     ? `<ul class="concerns">${v.concerns.map((c) => `<li>${escapeHtml(c)}</li>`).join('')}</ul>`
     : '';
-  const group = (items: AffectingAdvisory[], cls: string, heading: string): string =>
-    items.length
-      ? `<section class="group ${cls}"><h3>${escapeHtml(heading)}</h3>` +
-        `<ul class="advisories">${items.map((a) => advisoryItem(a, lang, m)).join('')}</ul></section>`
+  // "4 high · 17 medium" — the shape of the risk at a glance, most severe first.
+  const severitySummary = (items: AffectingAdvisory[]): string => {
+    const counts = new Map<string, number>();
+    for (const a of items) counts.set(a.advisory.severity, (counts.get(a.advisory.severity) ?? 0) + 1);
+    return [...counts.entries()]
+      .sort(([a], [b]) => severityRank(a) - severityRank(b))
+      .map(([severity, count]) => `${count} ${m.severityLabel(severity)}`)
+      .join(' · ');
+  };
+  const group = (items: AffectingAdvisory[], cls: string, heading: string): string => {
+    if (!items.length) return '';
+    const collapsed = items.length > COLLAPSE_ABOVE;
+    const showAll = collapsed
+      ? `<button type="button" class="show-all">${escapeHtml(m.showAllAdvisories(items.length))}</button>`
       : '';
+    return `<section class="group ${cls}">
+        <h3>${escapeHtml(heading)} <span class="severity-summary">${escapeHtml(severitySummary(items))}</span></h3>
+        <ul class="advisories">${items.map((a, i) => advisoryItem(a, lang, m, collapsed && i >= VISIBLE_WHEN_COLLAPSED)).join('')}</ul>
+        ${showAll}
+      </section>`;
+  };
   const share = v.tier !== 'unknown-version'
     ? `<div class="share">
          <button type="button" class="copy-link">${escapeHtml(m.ui.copyLink)}</button>
@@ -94,6 +115,7 @@ function readLang(): Lang {
 function localiseChrome(root: Document, lang: Lang): void {
   const m = strings(lang);
   root.documentElement.lang = lang;
+  root.title = m.ui.title;
   const set = (id: string, text: string): void => {
     const el = root.getElementById(id);
     if (el) el.textContent = text;
@@ -184,13 +206,20 @@ export function initUi(root: Document, data: Typo3Data): void {
     show(currentVersion(), elts.checked);
   });
 
-  // Copy-link button (event delegation — re-rendered with every verdict).
+  // Copy-link + show-all buttons (event delegation — re-rendered with every verdict).
   result.addEventListener('click', (e) => {
     const target = e.target as HTMLElement;
     if (target.classList.contains('copy-link')) {
       void navigator.clipboard?.writeText(location.href);
       const status = target.parentElement?.querySelector('.status');
       if (status) status.textContent = strings(lang).ui.copied;
+    }
+    if (target.classList.contains('show-all')) {
+      const advisoryGroup = target.closest('.group');
+      const firstRevealedLink = advisoryGroup?.querySelector<HTMLElement>('li[hidden] a');
+      advisoryGroup?.querySelectorAll('li[hidden]').forEach((item) => item.removeAttribute('hidden'));
+      firstRevealedLink?.focus(); // keep keyboard focus in the list once the button disappears
+      target.remove();
     }
   });
 
