@@ -44,7 +44,15 @@ final class ExplanationCache
             }
         }
 
-        return ['explanations' => $existing, 'newlyExplained' => $newlyExplained];
+        // Prune entries no current advisory owns (aged-out advisories, unmigratable legacy keys) —
+        // they can never be served, and the file is committed back on every CI run. Trade-off: an
+        // advisory that transiently disappears loses its cache and is re-explained when it returns.
+        $currentKeys = [];
+        foreach ($advisories as $advisory) {
+            $currentKeys[self::cacheKey($advisory)] = true;
+        }
+
+        return ['explanations' => array_intersect_key($existing, $currentKeys), 'newlyExplained' => $newlyExplained];
     }
 
     /**

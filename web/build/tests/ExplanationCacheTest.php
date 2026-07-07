@@ -85,6 +85,28 @@ final class ExplanationCacheTest extends TestCase
     }
 
     #[Test]
+    public function prunesEntriesThatNoLongerBelongToAnyCurrentAdvisory(): void
+    {
+        // Orphans — an aged-out advisory's entry, or a stale legacy id-keyed entry that could not be
+        // migrated — must not be re-committed forever; only current advisories' keys survive.
+        $advisory = $this->advisory('SA-1');
+        $langs = [
+            'en' => ['plainImpact' => 'p', 'urgency' => 'u'],
+            'de' => ['plainImpact' => 'd', 'urgency' => 'u'],
+        ];
+        $existing = [
+            ExplanationCache::cacheKey($advisory) => ['contentHash' => ExplanationCache::contentHash($advisory), 'promptVersion' => 1, 'langs' => $langs],
+            'SA-GONE|core|typo3/cms-core' => ['contentHash' => 'x', 'promptVersion' => 1, 'langs' => $langs],
+            'SA-1' => ['contentHash' => 'stale-hash', 'promptVersion' => 1, 'langs' => $langs],
+        ];
+        $explain = static fn (array $currentAdvisory): ?array => null;
+
+        $result = (new ExplanationCache())->merge([$advisory], $existing, 1, ['en', 'de'], $explain);
+
+        $this->assertSame([ExplanationCache::cacheKey($advisory)], array_keys($result['explanations']));
+    }
+
+    #[Test]
     public function coreAndOptionalRecordsSharingAnIdGetSeparateCacheEntries(): void
     {
         // The core/optional split can emit two advisories with the SAME id (one core, one optional).
