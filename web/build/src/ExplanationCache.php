@@ -49,11 +49,12 @@ final class ExplanationCache
 
     /**
      * A cache entry is reusable only if it matches the advisory's current content hash + prompt version
-     * and is complete in every required language.
+     * and is complete in every required language. Used both here (reuse gate) and by the orchestrator
+     * (publish gate) — the two gates must never drift apart.
      *
      * @param list<string> $requiredLangs
      */
-    private static function isFresh(mixed $entry, string $hash, int $promptVersion, array $requiredLangs): bool
+    public static function isFresh(mixed $entry, string $hash, int $promptVersion, array $requiredLangs): bool
     {
         return is_array($entry)
             && ($entry['contentHash'] ?? null) === $hash

@@ -56,10 +56,7 @@ foreach ($advisories as &$advisory) {
     // prompt version AND is complete in every required language — never serve a stale entry
     // (left behind when regeneration failed) or a partial one.
     $entry = $explanations[ExplanationCache::cacheKey($advisory)] ?? null;
-    $fresh = is_array($entry)
-        && ($entry['contentHash'] ?? null) === ExplanationCache::contentHash($advisory)
-        && ($entry['promptVersion'] ?? null) === Explainer::PROMPT_VERSION
-        && ExplanationCache::hasAllLangs($entry, $wantLangs);
+    $fresh = ExplanationCache::isFresh($entry, ExplanationCache::contentHash($advisory), Explainer::PROMPT_VERSION, $wantLangs);
     $advisory['explanation'] = $fresh ? $entry['langs'] : null;
 }
 unset($advisory);

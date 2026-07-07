@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+use Typo3UpdateCheckWeb\Build\ExplanationCache;
+
+require __DIR__ . '/vendor/autoload.php';
+
 // Validates the generated typo3.json against the full contract. Exits non-zero listing every
 // violation. Run in CI after build.php and before the site build / commit / deploy.
 
@@ -67,9 +71,9 @@ foreach (($data['advisories'] ?? []) as $i => $a) {
     $p = "advisory[{$i}]";
     if (!is_array($a)) { $fail("{$p} not an object"); continue; }
     if (!$str($a['id'] ?? null)) $fail("{$p}.id");
-    // Must stay unique per published record (matches ExplanationCache::cacheKey) or one advisory's
-    // explanation would overwrite another's in the cache.
-    $key = (string) ($a['id'] ?? '') . '|' . (($a['optional'] ?? false) ? 'optional' : 'core') . '|' . (string) ($a['package'] ?? '');
+    // Must stay unique per published record or one advisory's explanation would overwrite
+    // another's in the cache — enforced with the REAL cache key so the two can't drift.
+    $key = ExplanationCache::cacheKey($a);
     if (isset($seenKeys[$key])) $fail("{$p} duplicate id/optional/package key '{$key}'");
     $seenKeys[$key] = true;
     if (($a['optional'] ?? null) === false) $coreCount++;
