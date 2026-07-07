@@ -9,6 +9,7 @@ use Typo3UpdateCheckWeb\Build\ExplanationCache;
 use Typo3UpdateCheckWeb\Build\ExplanationJudge;
 use Typo3UpdateCheckWeb\Build\Explainer;
 use Typo3UpdateCheckWeb\Build\Http;
+use Typo3UpdateCheckWeb\Build\Overrides;
 use Typo3UpdateCheckWeb\Build\Typo3Releases;
 
 require __DIR__ . '/vendor/autoload.php';
@@ -25,6 +26,11 @@ $explanations = is_file($cachePath)
 $http = new Http();
 $majors = (new Typo3Releases($http))->build();
 $advisories = (new Advisories($http, new AffectedResolver()))->build($majors);
+
+// Curated corrections for known upstream data bugs — applied before explanations so the
+// added/changed records are explained and validated like everything else.
+$overrides = json_decode((string) file_get_contents(__DIR__ . '/data-overrides.json'), true);
+$advisories = Overrides::apply($advisories, is_array($overrides) ? $overrides : []);
 
 // Explain new/changed advisories only, in EN + DE; with no API key, the explainer is a no-op (fail-soft).
 // Each candidate (writer, medium effort) must pass the judge (reviewer, high effort) to be kept.

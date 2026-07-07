@@ -1,0 +1,37 @@
+{
+  "corrections": [
+    {
+      "match": { "cve": "CVE-2024-34537", "optional": false },
+      "reason": "Upstream GHSA/Packagist ranges end at <12.4.20 and =13.0.0, contradicting both the official advisory and GHSA's own first_patched_version (12.4.21 / 13.3.1). Confirmed by bin/diff-ghsa-fixed.php on 2026-07-07.",
+      "source": "https://typo3.org/security/advisory/typo3-core-sa-2024-011",
+      "set": {
+        "affectedVersions": ">=12.0.0,<12.4.21|>=13.0.0,<13.3.1",
+        "affected": {
+          "12": { "from": "12.0.0", "fixedIn": "12.4.21", "fixedInElts": false },
+          "13": { "from": "13.0.0", "fixedIn": "13.3.1", "fixedInElts": false }
+        }
+      }
+    }
+  ],
+  "additions": [
+    {
+      "reason": "Filed on Packagist under typo3/html-sanitizer with constraints in sanitizer versions (<2.3.2), outside the typo3/cms* pool and unresolvable against TYPO3 version numbers. Mapped to TYPO3 versions from the official bulletin. The sanitizer ships with every TYPO3 install, so this is a core advisory. Covers CVE-2026-47344 (low) and CVE-2026-47345 (medium); recorded once under the dominant CVE.",
+      "source": "https://typo3.org/security/advisory/typo3-core-sa-2026-006",
+      "advisory": {
+        "id": "TYPO3-CORE-SA-2026-006",
+        "cve": "CVE-2026-47345",
+        "package": "typo3/html-sanitizer",
+        "optional": false,
+        "severity": "medium",
+        "title": "By-passing Cross-Site Scripting Protection in HTML Sanitizer",
+        "affectedVersions": ">=12.0.0,<12.4.46|>=13.0.0,<13.4.31|>=14.0.0,<14.3.3",
+        "link": "https://typo3.org/security/advisory/typo3-core-sa-2026-006",
+        "affected": {
+          "12": { "from": "12.0.0", "fixedIn": "12.4.46", "fixedInElts": true },
+          "13": { "from": "13.0.0", "fixedIn": "13.4.31", "fixedInElts": false },
+          "14": { "from": "14.0.0", "fixedIn": "14.3.3", "fixedInElts": false }
+        }
+      }
+    }
+  ]
+}
