@@ -20,25 +20,45 @@ final class ExplanationCache
     {
         $newlyExplained = 0;
         foreach ($advisories as $advisory) {
-            $id = (string) $advisory['id'];
+            $key = self::cacheKey($advisory);
             $hash = self::contentHash($advisory);
 
-            $cached = $existing[$id] ?? null;
-            if (is_array($cached)
-                && ($cached['contentHash'] ?? null) === $hash
-                && ($cached['promptVersion'] ?? null) === $promptVersion
-                && self::hasAllLangs($cached, $requiredLangs)) {
-                continue; // fresh, same prompt, AND complete in every required language -> reuse
+            if (self::isFresh($existing[$key] ?? null, $hash, $promptVersion, $requiredLangs)) {
+                continue; // fresh under the current composite key -> reuse
+            }
+
+            // Migration: older caches were keyed by the advisory id alone. Re-home a legacy entry only
+            // if it still matches THIS advisory's content + prompt + languages — so a split id can never
+            // migrate the wrong package's text — then drop the legacy key so it is not left orphaned.
+            $legacyKey = (string) ($advisory['id'] ?? '');
+            if ($legacyKey !== $key && self::isFresh($existing[$legacyKey] ?? null, $hash, $promptVersion, $requiredLangs)) {
+                $existing[$key] = $existing[$legacyKey];
+                unset($existing[$legacyKey]);
+                continue;
             }
 
             $langs = $explain($advisory);
             if ($langs !== null) {
-                $existing[$id] = ['contentHash' => $hash, 'promptVersion' => $promptVersion, 'langs' => $langs];
+                $existing[$key] = ['contentHash' => $hash, 'promptVersion' => $promptVersion, 'langs' => $langs];
                 ++$newlyExplained;
             }
         }
 
         return ['explanations' => $existing, 'newlyExplained' => $newlyExplained];
+    }
+
+    /**
+     * A cache entry is reusable only if it matches the advisory's current content hash + prompt version
+     * and is complete in every required language.
+     *
+     * @param list<string> $requiredLangs
+     */
+    private static function isFresh(mixed $entry, string $hash, int $promptVersion, array $requiredLangs): bool
+    {
+        return is_array($entry)
+            && ($entry['contentHash'] ?? null) === $hash
+            && ($entry['promptVersion'] ?? null) === $promptVersion
+            && self::hasAllLangs($entry, $requiredLangs);
     }
 
     /**
@@ -60,6 +80,22 @@ final class ExplanationCache
         }
 
         return true;
+    }
+
+    /**
+     * Unique cache key per PUBLISHED advisory. The core/optional split (Advisories::aggregate) can emit
+     * two advisories with the same id — one core, one optional — so the id alone is not unique; keying
+     * by id would let one overwrite the other's explanation. Include the core/optional flag + package.
+     *
+     * @param array<string,mixed> $advisory
+     */
+    public static function cacheKey(array $advisory): string
+    {
+        return implode('|', [
+            (string) ($advisory['id'] ?? ''),
+            ($advisory['optional'] ?? false) ? 'optional' : 'core',
+            (string) ($advisory['package'] ?? ''),
+        ]);
     }
 
     /**

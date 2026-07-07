@@ -54,7 +54,7 @@ foreach ($advisories as &$advisory) {
     // Publish an explanation ONLY if the cached entry matches the CURRENT advisory content +
     // prompt version AND is complete in every required language — never serve a stale entry
     // (left behind when regeneration failed) or a partial one.
-    $entry = $explanations[$advisory['id']] ?? null;
+    $entry = $explanations[ExplanationCache::cacheKey($advisory)] ?? null;
     $fresh = is_array($entry)
         && ($entry['contentHash'] ?? null) === ExplanationCache::contentHash($advisory)
         && ($entry['promptVersion'] ?? null) === Explainer::PROMPT_VERSION

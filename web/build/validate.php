@@ -21,7 +21,11 @@ $strOrNull = static fn ($v): bool => $v === null || is_string($v);
 
 if (!$str($data['generatedAt'] ?? null)) $fail('generatedAt');
 if (!is_array($data['majors'] ?? null)) $fail('majors');
-if (!is_array($data['advisories'] ?? null)) $fail('advisories');
+if (!is_array($data['advisories'] ?? null)) {
+    $fail('advisories');
+} elseif ($data['advisories'] === []) {
+    $fail('advisories list is empty — refusing to publish an all-clear dataset');
+}
 
 foreach (($data['majors'] ?? []) as $mk => $major) {
     $p = "major {$mk}";
@@ -46,10 +50,18 @@ foreach (($data['majors'] ?? []) as $mk => $major) {
     }
 }
 
+$seenKeys = [];
+$coreCount = 0;
 foreach (($data['advisories'] ?? []) as $i => $a) {
     $p = "advisory[{$i}]";
     if (!is_array($a)) { $fail("{$p} not an object"); continue; }
     if (!$str($a['id'] ?? null)) $fail("{$p}.id");
+    // Must stay unique per published record (matches ExplanationCache::cacheKey) or one advisory's
+    // explanation would overwrite another's in the cache.
+    $key = (string) ($a['id'] ?? '') . '|' . (($a['optional'] ?? false) ? 'optional' : 'core') . '|' . (string) ($a['package'] ?? '');
+    if (isset($seenKeys[$key])) $fail("{$p} duplicate id/optional/package key '{$key}'");
+    $seenKeys[$key] = true;
+    if (($a['optional'] ?? null) === false) $coreCount++;
     if (!$strOrNull($a['cve'] ?? null)) $fail("{$p}.cve");
     if (!$str($a['package'] ?? null)) $fail("{$p}.package");
     if (!is_bool($a['optional'] ?? null)) $fail("{$p}.optional");
@@ -80,6 +92,12 @@ foreach (($data['advisories'] ?? []) as $i => $a) {
             }
         }
     }
+}
+
+// A healthy dataset always has core (non-optional) advisories; their absence means partial/broken
+// advisory data that could publish core releases as a false "all clear".
+if (is_array($data['advisories'] ?? null) && $data['advisories'] !== [] && $coreCount === 0) {
+    $fail('no core (non-optional) advisory — advisory data looks partial or broken');
 }
 
 if ($errors !== []) {
