@@ -56,7 +56,7 @@ function renderVerdict(v: Verdict, lang: Lang, m: Strings): string {
     <div class="verdict" data-tier="${v.tier}">
       <p class="tier">${escapeHtml(m.tierLabel[v.tier])}</p>
       <h2>${escapeHtml(v.headline)}</h2>
-      <p class="detail">${escapeHtml(v.detail)}</p>
+      <p class="detail${concerns ? ' has-concerns' : ''}">${escapeHtml(v.detail)}</p>
       ${concerns}
       ${group(core, 'affects', m.ui.affects)}
       ${group(optional, 'may-apply', m.ui.mayApply)}
@@ -80,7 +80,7 @@ function renderFor(raw: string, hasElts: boolean, data: Typo3Data, lang: Lang): 
     return `<div class="verdict" data-tier="unknown-version">
         <p class="tier">${escapeHtml(m.tierLabel['unknown-version'])}</p>
         <h2>${escapeHtml(t.headline)}</h2>
-        <p class="detail">${escapeHtml(t.detail)}</p>
+        <p class="detail${concerns ? ' has-concerns' : ''}">${escapeHtml(t.detail)}</p>
         ${concerns}
       </div>`;
   }

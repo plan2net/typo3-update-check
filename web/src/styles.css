@@ -447,8 +447,9 @@ body {
 }
 
 /* When there are no concerns, .detail closes the banner — even when advisory groups or the share
- * row follow it (so it is not the element's :last-child). The concerns block closes it otherwise. */
-.verdict .detail:not(:has(+ .concerns)) {
+ * row follow it. The renderer stamps .has-concerns on .detail when a concerns block follows
+ * (a plain class keeps this working in browsers without :has()). */
+.verdict .detail:not(.has-concerns) {
   border-bottom: 1px solid var(--tier-bd, var(--neutral-bd));
   border-bottom-left-radius: var(--radius-panel);
   border-bottom-right-radius: var(--radius-panel);
@@ -468,7 +469,7 @@ body {
   position: relative;
 }
 
-.verdict .detail:has(+ .concerns) {
+.verdict .detail.has-concerns {
   padding-bottom: 14px;
 }
 
