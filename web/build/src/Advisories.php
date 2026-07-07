@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Typo3UpdateCheckWeb\Build;
 
+use Composer\Semver\Comparator;
 use Plan2net\Typo3UpdateCheck\Advisory\PackagistAdvisoryProvider;
 
 final class Advisories
@@ -41,7 +42,20 @@ final class Advisories
         // Reuse the plugin's public query builder (single source of truth, caught by static analysis).
         $response = $this->http->get(self::ADVISORY_URL . '?' . PackagistAdvisoryProvider::packagesQueryString());
         /** @var array<string, list<array<string,mixed>>> $pool */
-        return $this->aggregate($response['advisories'] ?? [], $majors);
+        $pool = is_array($response['advisories'] ?? null) ? $response['advisories'] : [];
+
+        // TYPO3's always-present core packages always carry advisories. A partial response that drops
+        // the core package keys (but keeps an optional one) would otherwise pass and publish core
+        // releases as a fresh "all clear" — so require advisories from at least one core package.
+        $coreRecords = 0;
+        foreach (self::ALWAYS_PRESENT as $package) {
+            $coreRecords += isset($pool[$package]) && is_array($pool[$package]) ? count($pool[$package]) : 0;
+        }
+        if ($coreRecords === 0) {
+            throw new \RuntimeException('Packagist returned no core (typo3/cms*) advisories — refusing to publish an "all clear" dataset.');
+        }
+
+        return $this->aggregate($pool, $majors);
     }
 
     /**
@@ -54,10 +68,13 @@ final class Advisories
     public function aggregate(array $pool, array $majors): array
     {
         // Pass 1 — group by dedup key (CVE-first), AGGREGATING across duplicate records.
-        // The same CVE can be filed under several packages with DIFFERENT constraints, so we union
-        // the constraints and remember whether any package is core. The displayed id/title/link/package
-        // come from a canonical "primary" record (core first, then advisoryId asc, then package asc) —
-        // so selection is independent of pool order. Mirrors PackagistAdvisoryProvider.php:134.
+        // The key is split by core-ness, so a CVE filed under both a core and an optional package
+        // becomes two groups: unioning their ranges would let an optional package's later fix mask
+        // the core fix (falsely reporting the core-fixed release as still vulnerable). Within a group
+        // (all core, or all optional) the constraints ARE unioned — a site runs all its core packages,
+        // so it stays vulnerable until the last of them is fixed. The displayed id/title/link/package
+        // come from a canonical "primary" record (advisoryId asc, then package asc), so selection is
+        // independent of pool order. Mirrors PackagistAdvisoryProvider.php:134.
         $groups = [];
         foreach ($pool as $list) {
             foreach ($list as $advisory) {
@@ -67,17 +84,18 @@ final class Advisories
                 }
                 $cve = is_string($advisory['cve'] ?? null) ? $advisory['cve'] : null;
                 $id = (string) ($advisory['advisoryId'] ?? '');
-                $key = $cve ?? ($id !== '' ? $id : '__keyless-' . count($groups));
                 $package = (string) ($advisory['packageName'] ?? '');
                 $isCore = in_array($package, self::ALWAYS_PRESENT, true);
-                $rank = [$isCore ? 0 : 1, $id, $package]; // smaller = preferred primary
+                $base = $cve ?? ($id !== '' ? $id : '__keyless-' . count($groups));
+                $key = $base . ($isCore ? '|core' : '|optional'); // never conflate core and optional ranges
+                $rank = [$id, $package]; // smaller = preferred primary (core-ness is constant per group)
 
                 if (!isset($groups[$key])) {
                     $groups[$key] = [
                         'rank' => $rank, 'id' => $id, 'cve' => $cve, 'package' => $package,
                         'title' => (string) ($advisory['title'] ?? ''), 'link' => (string) ($advisory['link'] ?? ''),
                         'severity' => (string) ($advisory['severity'] ?? 'unknown'),
-                        'anyCore' => $isCore, 'constraints' => [$constraint => true],
+                        'core' => $isCore, 'constraints' => [$constraint => true],
                     ];
                     continue;
                 }
@@ -85,7 +103,6 @@ final class Advisories
                 $g = &$groups[$key];
                 $g['constraints'][$constraint] = true; // set => de-dupes identical constraints
                 $g['severity'] = $this->higherSeverity($g['severity'], (string) ($advisory['severity'] ?? 'unknown'));
-                $g['anyCore'] = $g['anyCore'] || $isCore;
                 if ($rank < $g['rank']) { // element-wise tuple comparison -> deterministic primary
                     $g['rank'] = $rank;
                     $g['id'] = $id;
@@ -96,6 +113,7 @@ final class Advisories
                 unset($g);
             }
         }
+        ksort($groups); // deterministic output order, independent of pool order
 
         // Pass 2 — resolve each group's UNION of SORTED constraints (Composer '|' = OR) per major.
         $advisories = [];
@@ -123,7 +141,7 @@ final class Advisories
                 'id' => $g['id'],
                 'cve' => $g['cve'],
                 'package' => $g['package'],
-                'optional' => !$g['anyCore'], // core if ANY package it's filed under is core
+                'optional' => !$g['core'], // core and optional records are now separate groups
                 'severity' => $g['severity'],
                 'title' => $g['title'],
                 'affectedVersions' => $combined,
@@ -132,7 +150,64 @@ final class Advisories
             ];
         }
 
-        return $advisories;
+        return $this->dropOptionalDuplicatesCoveredByCore($advisories);
+    }
+
+    /**
+     * Pass 3 — drop an optional advisory when a core advisory for the SAME CVE already covers its
+     * entire exposure (core affected no later, and fixed no earlier, in every major it touches). Core
+     * packages are always installed, so such an optional entry is a redundant duplicate. An optional
+     * entry that stays vulnerable LONGER than core, or touches a major core does not, is kept — that
+     * is real residual exposure the free/core fix would not resolve.
+     *
+     * @param list<array<string,mixed>> $advisories
+     * @return list<array<string,mixed>>
+     */
+    private function dropOptionalDuplicatesCoveredByCore(array $advisories): array
+    {
+        $coreIndexByCve = [];
+        foreach ($advisories as $i => $a) {
+            if ($a['optional'] === false && is_string($a['cve'])) {
+                $coreIndexByCve[$a['cve']] = $i;
+            }
+        }
+
+        $drop = [];
+        foreach ($advisories as $i => $a) {
+            if ($a['optional'] === false || !is_string($a['cve']) || !isset($coreIndexByCve[$a['cve']])) {
+                continue; // core, keyless, or no matching core entry → keep
+            }
+            $core = $advisories[$coreIndexByCve[$a['cve']]]['affected'];
+            $covered = true;
+            foreach ($a['affected'] as $majorKey => $optional) {
+                $coreEntry = $core[$majorKey] ?? null;
+                if ($coreEntry === null || Comparator::greaterThan($coreEntry['from'], $optional['from'])) {
+                    $covered = false; // optional adds exposure (a major core misses, or an earlier window)
+                    break;
+                }
+                $coreFix = $coreEntry['fixedIn'];
+                if ($coreFix === null) {
+                    continue; // core never fixed → it dominates this major
+                }
+                if ($optional['fixedIn'] === null || Comparator::greaterThan($optional['fixedIn'], $coreFix)) {
+                    $covered = false; // optional stays vulnerable past the core fix
+                    break;
+                }
+            }
+            if ($covered) {
+                // Carry the dropped record's severity onto the surviving core entry, so a
+                // "core low + optional critical" duplicate is never silently downgraded.
+                $coreIndex = $coreIndexByCve[$a['cve']];
+                $advisories[$coreIndex]['severity'] = $this->higherSeverity($advisories[$coreIndex]['severity'], $a['severity']);
+                $drop[$i] = true;
+            }
+        }
+
+        return array_values(array_filter(
+            $advisories,
+            static fn (int $key): bool => !isset($drop[$key]),
+            ARRAY_FILTER_USE_KEY,
+        ));
     }
 
     private function higherSeverity(string $a, string $b): string
