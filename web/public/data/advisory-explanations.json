@@ -322,16 +322,16 @@
         }
     },
     "PKSA-9vjc-5m3y-9mrq|core|typo3/cms-backend": {
-        "contentHash": "56c2b968d04b0483f9bd160ee5988b1fc71502c5cd928ee854a9a43c47f4655e",
+        "contentHash": "d40ca6f50ef13e72050ec17b8e05914ed929f25355be0570ccc70791c1e5ca80",
         "promptVersion": 2,
         "langs": {
             "en": {
-                "plainImpact": "This is a minor weakness in a tool inside the website's admin area. In some cases it could cause part of that admin tool to stop working properly for the people who manage the site.",
-                "urgency": "This is low priority and only affects staff using the site's admin area, not regular visitors; schedule the fix as part of routine maintenance."
+                "plainImpact": "This is a minor weakness in a tool inside the site's admin area. In the worst case, it could briefly disrupt how that admin tool works for the people managing the website, but it doesn't affect visitors or your website content.",
+                "urgency": "This is a low-priority fix that only matters for the staff who log in to manage the site, so it can be handled as part of routine maintenance."
             },
             "de": {
-                "plainImpact": "Diese Schwäche betrifft nur den internen Verwaltungsbereich der Website. Ein angemeldeter Mitarbeiter könnte unter Umständen einen Fehler auslösen, der die Bedienung dieses Bereichs kurzzeitig stört.",
-                "urgency": "Da es sich um ein geringes Risiko handelt und nur den internen Verwaltungsbereich betrifft, reicht es, das Update bei nächster Gelegenheit einzuspielen."
+                "plainImpact": "Es gibt eine kleine Schwäche im Verwaltungsbereich der Website (im Lesezeichen-Menü, das nur angemeldete Redakteure sehen). Im ungünstigsten Fall könnte dadurch die Bedienung des Verwaltungsbereichs kurzzeitig gestört werden.",
+                "urgency": "Das Risiko ist gering und betrifft nur den internen Verwaltungsbereich; ein Update kann bei Gelegenheit im Rahmen der normalen Wartung eingespielt werden."
             }
         }
     },
@@ -836,6 +836,20 @@
             "de": {
                 "plainImpact": "Durch eine Sicherheitslücke im Umgang mit Dateien und Ordnern könnte jemand möglicherweise auf Dateien zugreifen, die eigentlich nicht öffentlich sein sollten. Dadurch könnten Inhalte sichtbar werden, die geschützt bleiben sollten.",
                 "urgency": "Das Update sollte zeitnah eingespielt werden, besonders wenn auf der Website mit Dateien oder Datei-Uploads gearbeitet wird."
+            }
+        }
+    },
+    "TYPO3-CORE-SA-2026-006|core|typo3/html-sanitizer": {
+        "contentHash": "a85f423861a6456376d006edcbd3fba6eb14562c0c790b34255e13788af45807",
+        "promptVersion": 2,
+        "langs": {
+            "en": {
+                "plainImpact": "There is a weakness in the part of the system that is meant to filter out harmful code from content. In some cases harmful code could slip through this filter and run in a visitor's browser, which could be used to affect their session or trick them.",
+                "urgency": "This is worth updating fairly soon as a precaution, since the safeguard that normally blocks harmful content may not fully do its job."
+            },
+            "de": {
+                "plainImpact": "Der Schutzmechanismus, der schädlichen Code aus Inhalten herausfiltern soll, lässt sich unter bestimmten Umständen umgehen. Dadurch könnte schädlicher Code auf einer Seite landen und im Browser eines Besuchers ausgeführt werden.",
+                "urgency": "Diese Aktualisierung sollte zeitnah eingespielt werden, da der Schutz eine grundlegende Sicherheitsfunktion der Website betrifft."
             }
         }
     }
