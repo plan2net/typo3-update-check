@@ -7,3 +7,6 @@
 /.vscode/
 .DS_Store
 /.phpunit.result.cache
+/.claude/
+/.ddev/
+/.playwright-mcp/
