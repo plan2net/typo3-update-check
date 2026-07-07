@@ -54,8 +54,8 @@ final class AdvisoriesTest extends TestCase
         $this->assertCount(2, $result);
 
         $byPackage = [];
-        foreach ($result as $r) {
-            $byPackage[$r['package']] = $r;
+        foreach ($result as $record) {
+            $byPackage[$record['package']] = $record;
         }
 
         $core = $byPackage['typo3/cms-core'];
@@ -78,10 +78,10 @@ final class AdvisoriesTest extends TestCase
         // Same CVE, SAME range under a core and an optional package. The site always runs core
         // packages, so the optional entry adds no exposure (same fix) — it is a duplicate and dropped.
         $core = ['advisoryId' => 'SA-9', 'cve' => 'CVE-Y', 'packageName' => 'typo3/cms-core', 'severity' => 'high', 'title' => 'Core', 'link' => 'https://c', 'affectedVersions' => '>=12.0.0,<12.4.45'];
-        $opt = ['advisoryId' => 'SA-8', 'cve' => 'CVE-Y', 'packageName' => 'typo3/cms-recycler', 'severity' => 'high', 'title' => 'Opt', 'link' => 'https://o', 'affectedVersions' => '>=12.0.0,<12.4.45'];
+        $optionalAdvisory = ['advisoryId' => 'SA-8', 'cve' => 'CVE-Y', 'packageName' => 'typo3/cms-recycler', 'severity' => 'high', 'title' => 'Opt', 'link' => 'https://o', 'affectedVersions' => '>=12.0.0,<12.4.45'];
 
         $advisories = new Advisories(new Http(), new AffectedResolver());
-        $result = $advisories->aggregate(['typo3/cms-core' => [$core], 'typo3/cms-recycler' => [$opt]], $this->majors());
+        $result = $advisories->aggregate(['typo3/cms-core' => [$core], 'typo3/cms-recycler' => [$optionalAdvisory]], $this->majors());
 
         $this->assertCount(1, $result);
         $this->assertFalse($result[0]['optional']);
@@ -94,10 +94,10 @@ final class AdvisoriesTest extends TestCase
         // Core LOW + optional CRITICAL, identical range → the optional is dropped as covered, but its
         // severity must carry over to the surviving core record (never silently downgrade to low).
         $core = ['advisoryId' => 'SA-C', 'cve' => 'CVE-Z', 'packageName' => 'typo3/cms-core', 'severity' => 'low', 'title' => 'C', 'link' => 'https://c', 'affectedVersions' => '>=12.0.0,<12.4.45'];
-        $opt = ['advisoryId' => 'SA-O', 'cve' => 'CVE-Z', 'packageName' => 'typo3/cms-form', 'severity' => 'critical', 'title' => 'O', 'link' => 'https://o', 'affectedVersions' => '>=12.0.0,<12.4.45'];
+        $optionalAdvisory = ['advisoryId' => 'SA-O', 'cve' => 'CVE-Z', 'packageName' => 'typo3/cms-form', 'severity' => 'critical', 'title' => 'O', 'link' => 'https://o', 'affectedVersions' => '>=12.0.0,<12.4.45'];
 
         $advisories = new Advisories(new Http(), new AffectedResolver());
-        $result = $advisories->aggregate(['typo3/cms-core' => [$core], 'typo3/cms-form' => [$opt]], $this->majors());
+        $result = $advisories->aggregate(['typo3/cms-core' => [$core], 'typo3/cms-form' => [$optionalAdvisory]], $this->majors());
 
         $this->assertCount(1, $result);
         $this->assertFalse($result[0]['optional']);

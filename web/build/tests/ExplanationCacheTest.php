@@ -112,15 +112,15 @@ final class ExplanationCacheTest extends TestCase
         // The core/optional split can emit two advisories with the SAME id (one core, one optional).
         // Keying by id alone would let one overwrite the other's explanation — key per published record.
         $core = ['id' => 'SAME', 'title' => 't', 'severity' => 'high', 'package' => 'typo3/cms-core', 'affectedVersions' => '>=1.0.0', 'optional' => false];
-        $opt = ['id' => 'SAME', 'title' => 't', 'severity' => 'high', 'package' => 'typo3/cms-form', 'affectedVersions' => '>=1.0.0', 'optional' => true];
-        $explain = static fn (array $a): array => ['en' => ['plainImpact' => $a['package'], 'urgency' => 'u'], 'de' => ['plainImpact' => $a['package'], 'urgency' => 'u']];
+        $optionalAdvisory = ['id' => 'SAME', 'title' => 't', 'severity' => 'high', 'package' => 'typo3/cms-form', 'affectedVersions' => '>=1.0.0', 'optional' => true];
+        $explain = static fn (array $explained): array => ['en' => ['plainImpact' => $explained['package'], 'urgency' => 'u'], 'de' => ['plainImpact' => $explained['package'], 'urgency' => 'u']];
 
-        $result = (new ExplanationCache())->merge([$core, $opt], [], 1, ['en', 'de'], $explain);
+        $result = (new ExplanationCache())->merge([$core, $optionalAdvisory], [], 1, ['en', 'de'], $explain);
 
         $this->assertSame(2, $result['newlyExplained']); // both explained — neither overwrote the other
-        $this->assertNotSame(ExplanationCache::cacheKey($core), ExplanationCache::cacheKey($opt));
+        $this->assertNotSame(ExplanationCache::cacheKey($core), ExplanationCache::cacheKey($optionalAdvisory));
         $this->assertArrayHasKey(ExplanationCache::cacheKey($core), $result['explanations']);
-        $this->assertArrayHasKey(ExplanationCache::cacheKey($opt), $result['explanations']);
+        $this->assertArrayHasKey(ExplanationCache::cacheKey($optionalAdvisory), $result['explanations']);
     }
 
     #[Test]
@@ -135,7 +135,7 @@ final class ExplanationCacheTest extends TestCase
             'de' => ['plainImpact' => 'd', 'urgency' => 'u'],
         ]]];
         $calls = 0;
-        $explain = function (array $a) use (&$calls): array {
+        $explain = function (array $advisoryToExplain) use (&$calls): array {
             ++$calls;
             return ['en' => ['plainImpact' => 'x', 'urgency' => 'u'], 'de' => ['plainImpact' => 'y', 'urgency' => 'u']];
         };
@@ -160,7 +160,7 @@ final class ExplanationCacheTest extends TestCase
             'en' => ['plainImpact' => 'p', 'urgency' => 'u'],
             'de' => ['plainImpact' => 'd', 'urgency' => 'u'],
         ]]];
-        $explain = static fn (array $a): ?array => null; // regeneration fails
+        $explain = static fn (array $staleAdvisory): ?array => null; // regeneration fails
 
         $result = (new ExplanationCache())->merge([$advisory], $legacy, 1, ['en', 'de'], $explain);
 

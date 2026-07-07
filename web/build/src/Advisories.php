@@ -100,32 +100,32 @@ final class Advisories
                     continue;
                 }
 
-                $g = &$groups[$key];
-                $g['constraints'][$constraint] = true; // set => de-dupes identical constraints
-                $g['severity'] = $this->higherSeverity($g['severity'], (string) ($advisory['severity'] ?? 'unknown'));
-                if ($rank < $g['rank']) { // element-wise tuple comparison -> deterministic primary
-                    $g['rank'] = $rank;
-                    $g['id'] = $id;
-                    $g['package'] = $package;
-                    $g['title'] = (string) ($advisory['title'] ?? '');
-                    $g['link'] = (string) ($advisory['link'] ?? '');
+                $group = &$groups[$key];
+                $group['constraints'][$constraint] = true; // set => de-dupes identical constraints
+                $group['severity'] = $this->higherSeverity($group['severity'], (string) ($advisory['severity'] ?? 'unknown'));
+                if ($rank < $group['rank']) { // element-wise tuple comparison -> deterministic primary
+                    $group['rank'] = $rank;
+                    $group['id'] = $id;
+                    $group['package'] = $package;
+                    $group['title'] = (string) ($advisory['title'] ?? '');
+                    $group['link'] = (string) ($advisory['link'] ?? '');
                 }
-                unset($g);
+                unset($group);
             }
         }
         ksort($groups); // deterministic output order, independent of pool order
 
         // Pass 2 — resolve each group's UNION of SORTED constraints (Composer '|' = OR) per major.
         $advisories = [];
-        foreach ($groups as $g) {
-            $constraints = array_keys($g['constraints']);
+        foreach ($groups as $group) {
+            $constraints = array_keys($group['constraints']);
             sort($constraints); // sort before join -> combined string is order-independent
             $combined = implode('|', $constraints);
 
             $affected = [];
             foreach ($majors as $majorKey => $major) {
                 $releases = array_map(
-                    static fn (array $r): array => ['version' => $r['version'], 'elts' => $r['elts']],
+                    static fn (array $release): array => ['version' => $release['version'], 'elts' => $release['elts']],
                     $major['releases'],
                 );
                 $entry = $this->resolver->resolve($combined, $releases); // null on malformed/no-match; conservative on gaps
@@ -138,14 +138,14 @@ final class Advisories
             }
 
             $advisories[] = [
-                'id' => $g['id'],
-                'cve' => $g['cve'],
-                'package' => $g['package'],
-                'optional' => !$g['core'], // core and optional records are now separate groups
-                'severity' => $g['severity'],
-                'title' => $g['title'],
+                'id' => $group['id'],
+                'cve' => $group['cve'],
+                'package' => $group['package'],
+                'optional' => !$group['core'], // core and optional records are now separate groups
+                'severity' => $group['severity'],
+                'title' => $group['title'],
                 'affectedVersions' => $combined,
-                'link' => $g['link'],
+                'link' => $group['link'],
                 'affected' => $affected,
             ];
         }
@@ -166,21 +166,21 @@ final class Advisories
     private function dropOptionalDuplicatesCoveredByCore(array $advisories): array
     {
         $coreIndexByCve = [];
-        foreach ($advisories as $i => $a) {
-            if ($a['optional'] === false && is_string($a['cve'])) {
-                $coreIndexByCve[$a['cve']] = $i;
+        foreach ($advisories as $index => $advisory) {
+            if ($advisory['optional'] === false && is_string($advisory['cve'])) {
+                $coreIndexByCve[$advisory['cve']] = $index;
             }
         }
 
         $drop = [];
-        foreach ($advisories as $i => $a) {
-            if ($a['optional'] === false || !is_string($a['cve']) || !isset($coreIndexByCve[$a['cve']])) {
+        foreach ($advisories as $index => $advisory) {
+            if ($advisory['optional'] === false || !is_string($advisory['cve']) || !isset($coreIndexByCve[$advisory['cve']])) {
                 continue; // core, keyless, or no matching core entry → keep
             }
-            $core = $advisories[$coreIndexByCve[$a['cve']]]['affected'];
+            $coreAffected = $advisories[$coreIndexByCve[$advisory['cve']]]['affected'];
             $covered = true;
-            foreach ($a['affected'] as $majorKey => $optional) {
-                $coreEntry = $core[$majorKey] ?? null;
+            foreach ($advisory['affected'] as $majorKey => $optional) {
+                $coreEntry = $coreAffected[$majorKey] ?? null;
                 if ($coreEntry === null || Comparator::greaterThan($coreEntry['from'], $optional['from'])) {
                     $covered = false; // optional adds exposure (a major core misses, or an earlier window)
                     break;
@@ -197,17 +197,13 @@ final class Advisories
             if ($covered) {
                 // Carry the dropped record's severity onto the surviving core entry, so a
                 // "core low + optional critical" duplicate is never silently downgraded.
-                $coreIndex = $coreIndexByCve[$a['cve']];
-                $advisories[$coreIndex]['severity'] = $this->higherSeverity($advisories[$coreIndex]['severity'], $a['severity']);
-                $drop[$i] = true;
+                $coreIndex = $coreIndexByCve[$advisory['cve']];
+                $advisories[$coreIndex]['severity'] = $this->higherSeverity($advisories[$coreIndex]['severity'], $advisory['severity']);
+                $drop[$index] = true;
             }
         }
 
-        return array_values(array_filter(
-            $advisories,
-            static fn (int $key): bool => !isset($drop[$key]),
-            ARRAY_FILTER_USE_KEY,
-        ));
+        return array_values(array_diff_key($advisories, $drop));
     }
 
     private function higherSeverity(string $a, string $b): string

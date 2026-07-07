@@ -27,7 +27,6 @@
   --accent: #ff8700; /* TYPO3 brand orange — primary fills, paired with DARK text (AA: 7.2:1) */
   --accent-press: #ef7d00; /* hover/press shade for brand fills; dark text stays >7:1 */
   --accent-strong: #a85800; /* focus ring + checkbox tick (AA: 5.17:1) */
-  --accent-hover: #8f5000; /* hover for the above (AA: 6.33:1) */
   --link: #9a5400; /* text-link orange (AA: 5.77:1 on white) */
 
   /* Dark command/pill surface */

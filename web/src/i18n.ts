@@ -191,7 +191,7 @@ const DE: Strings = {
   eltsOnly: (major, gated) => ({
     headline: `Der kostenlose Sicherheitssupport für TYPO3 ${major} ist beendet.`,
     detail: 'Neuere Sicherheitsfixes gibt es nur über ELTS. ' +
-      `${gated > 0 ? `Ihre Version ist ${gated === 1 ? 'einem Sicherheitsproblem ausgesetzt, das nur in ELTS-Releases behoben ist' : `${gated} Sicherheitsproblemen ausgesetzt, die nur in ELTS-Releases behoben sind`}. ` : ''}` +
+      `${gated > 0 ? `Ihre Version ist ${plural(gated, 'einem Sicherheitsproblem ausgesetzt, das nur in ELTS-Releases behoben ist', `${gated} Sicherheitsproblemen ausgesetzt, die nur in ELTS-Releases behoben sind`)}. ` : ''}` +
       'Für weitere Sicherheitsupdates brauchen Sie ein ELTS-Abo oder ein Upgrade auf eine neuere TYPO3-Version.',
   }),
   eol: (major, eltsUntilIso) => ({
@@ -239,7 +239,7 @@ const DE: Strings = {
   concernEltsGatedRemain: (count) =>
     `${count} ${plural(count, 'Kernproblem ist', 'Kernprobleme sind')} nur in ELTS-Releases behoben — ein kostenloses Update beseitigt ` +
     `${plural(count, 'es', 'sie')} nicht; dafür ist ein ELTS-Abo (oder eine neuere Hauptversion) nötig.`,
-  concernAlsoBehind: (count) => `Sie sind außerdem ${count} ${count === 1 ? 'kostenloses Release' : 'kostenlose Releases'} im Rückstand.`,
+  concernAlsoBehind: (count) => `Sie sind außerdem ${count} ${plural(count, 'kostenloses Release', 'kostenlose Releases')} im Rückstand.`,
   concernNewerMajor: (major) => `TYPO3 ${major} ist als neuere Hauptversion verfügbar.`,
   ui: {
     title: 'Ist Ihre TYPO3-Installation aktuell?',

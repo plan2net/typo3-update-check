@@ -30,6 +30,7 @@ final class ExplanationCache
             // Migration: older caches were keyed by the advisory id alone. Re-home a legacy entry only
             // if it still matches THIS advisory's content + prompt + languages — so a split id can never
             // migrate the wrong package's text — then drop the legacy key so it is not left orphaned.
+            // One-shot: the committed cache self-heals on the first CI run; delete this block afterwards.
             $legacyKey = (string) ($advisory['id'] ?? '');
             if ($legacyKey !== $key && self::isFresh($existing[$legacyKey] ?? null, $hash, $promptVersion, $requiredLangs)) {
                 $existing[$key] = $existing[$legacyKey];
