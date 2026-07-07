@@ -5,7 +5,10 @@ declare(strict_types=1);
 // Validates the generated typo3.json against the full contract. Exits non-zero listing every
 // violation. Run in CI after build.php and before the site build / commit / deploy.
 
-$path = $argv[1] ?? (__DIR__ . '/../public/data/typo3.json');
+$arguments = array_slice($argv, 1);
+$requireCheckedAt = in_array('--require-checked-at', $arguments, true);
+$paths = array_values(array_filter($arguments, static fn (string $argument): bool => !str_starts_with($argument, '--')));
+$path = $paths[0] ?? (__DIR__ . '/../public/data/typo3.json');
 $raw = is_file($path) ? file_get_contents($path) : false;
 $data = is_string($raw) ? json_decode($raw, true) : null;
 
@@ -20,6 +23,14 @@ $str = static fn ($v): bool => is_string($v) && $v !== '';
 $strOrNull = static fn ($v): bool => $v === null || is_string($v);
 
 if (!$str($data['generatedAt'] ?? null)) $fail('generatedAt');
+// The deploy artifact must carry the checkedAt heartbeat (the frontend fails open without it,
+// silently disabling its staleness guard); when present it must be a parseable date either way.
+if ($requireCheckedAt && !array_key_exists('checkedAt', $data)) {
+    $fail('checkedAt missing — the deploy artifact was not stamped');
+}
+if (array_key_exists('checkedAt', $data) && (!$str($data['checkedAt']) || strtotime((string) $data['checkedAt']) === false)) {
+    $fail('checkedAt is not a parseable date');
+}
 if (!is_array($data['majors'] ?? null)) $fail('majors');
 if (!is_array($data['advisories'] ?? null)) {
     $fail('advisories');

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Typo3UpdateCheckWeb\Build\Advisories;
 use Typo3UpdateCheckWeb\Build\AffectedResolver;
+use Typo3UpdateCheckWeb\Build\DataFile;
 use Typo3UpdateCheckWeb\Build\ExplanationCache;
 use Typo3UpdateCheckWeb\Build\ExplanationJudge;
 use Typo3UpdateCheckWeb\Build\Explainer;
@@ -68,8 +69,6 @@ ksort($majors);
 usort($advisories, static fn (array $a, array $b): int => strcmp((string) $a['id'], (string) $b['id']));
 ksort($explanations);
 
-$flags = JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE;
-
 // Only rewrite typo3.json (with a fresh timestamp) when the meaningful body changed — a new
 // generatedAt every run would otherwise produce an empty daily commit.
 $body = ['majors' => $majors, 'advisories' => $advisories];
@@ -79,9 +78,9 @@ $existingBody = is_array($existing)
     : null;
 $changed = $body != $existingBody; // loose: ignore key order, compare values
 if ($changed) {
-    file_put_contents($typoPath, json_encode(['generatedAt' => gmdate('c')] + $body, $flags) . "\n");
+    DataFile::write($typoPath, ['generatedAt' => gmdate('c')] + $body);
 }
-file_put_contents($cachePath, json_encode($explanations, $flags) . "\n");
+DataFile::write($cachePath, $explanations);
 
 fwrite(STDOUT, sprintf(
     "Wrote %d majors, %d advisories (%d newly explained); data %s.\n",
