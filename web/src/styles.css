@@ -613,6 +613,11 @@ body {
   gap: 12px;
 }
 
+/* The flex display above would defeat the [hidden] attribute the collapsed tail relies on. */
+.advisory[hidden] {
+  display: none;
+}
+
 .advisory {
   border: 1px solid #e8e3d8;
   border-radius: 11px;
