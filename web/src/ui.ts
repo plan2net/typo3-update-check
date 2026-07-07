@@ -128,6 +128,7 @@ function localiseChrome(root: Document, lang: Lang): void {
   set('version-select-label', m.ui.yourVersion);
   set('elts-label', m.ui.eltsLabel);
   set('check-button', m.ui.check);
+  set('made-by-text', m.ui.madeBy);
   // Landmark aria-labels are read by screen readers, so localise them too (data-i18n-label -> UiLabels key).
   root.querySelectorAll<HTMLElement>('[data-i18n-label]').forEach((el) => {
     const key = el.dataset.i18nLabel as keyof typeof m.ui | undefined;

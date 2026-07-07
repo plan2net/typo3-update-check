@@ -30,6 +30,7 @@ export interface UiLabels {
   langNavLabel: string;
   resultLabel: string;
   resourcesLabel: string;
+  madeBy: string;
 }
 
 export interface Strings {
@@ -163,6 +164,7 @@ const EN: Strings = {
     langNavLabel: 'Language',
     resultLabel: 'Result',
     resourcesLabel: 'Resources',
+    madeBy: 'Made with ♥ by',
   },
 };
 
@@ -272,6 +274,7 @@ const DE: Strings = {
     langNavLabel: 'Sprache',
     resultLabel: 'Ergebnis',
     resourcesLabel: 'Ressourcen',
+    madeBy: 'Mit ♥ gemacht von',
   },
 };
 
