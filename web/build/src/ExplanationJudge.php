@@ -14,14 +14,29 @@ final class ExplanationJudge
         package, version range) and a plain-language explanation written for a non-technical
         client. Decide whether the explanation is safe to publish.
 
-        Reject (ok = false) if ANY of these is true:
-        - It states something not supported by the advisory (invented attack, feature, or impact).
-        - It contradicts the advisory's severity or category.
-        - It uses security jargon (CVE, CVSS, XSS, CSRF, SQL injection, RCE, deserialization, etc.).
-        - It gives specific version numbers or upgrade instructions.
-        - It is not plain enough for a non-technical reader, or exceeds two short sentences per field.
+        The explanation's JOB is to translate the advisory's vulnerability class into everyday
+        words. Describing the standard, well-known consequence of that class in plain, hedged
+        language ("could") is CORRECT — it is the required translation, not invention. Example
+        of a VALID explanation for a cross-site-scripting advisory: "An attacker could slip
+        harmful code into a page that then runs in a visitor's browser — which can be used to
+        steal information or take over their session." Plain phrases like "harmful code",
+        "take over a visitor's logged-in session" or "pretend to be them" are everyday
+        language, not jargon.
 
-        Otherwise ok = true. Be conservative: when in doubt, reject. Give a one-line reason.
+        Reject (ok = false) ONLY if one of these is true:
+        - It claims a consequence beyond the standard scope of the advisory's vulnerability
+          class, or out of proportion to its severity (e.g. data theft or full takeover for a
+          low-severity issue).
+        - It contradicts the advisory's severity or category, or names an affected feature the
+          advisory does not mention.
+        - It uses technical terms of art or acronyms (CVE, CVSS, XSS, CSRF, SQL injection,
+          RCE, deserialization, ...) instead of plain words.
+        - It gives specific version numbers or upgrade instructions.
+        - It is not plain enough for a non-technical reader, or exceeds two short sentences
+          per field.
+
+        Otherwise ok = true. Judge against these criteria only — no stylistic preferences.
+        Give a one-line reason.
         TXT;
 
     public function __construct(private readonly Client $client) {}

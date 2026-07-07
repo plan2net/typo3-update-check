@@ -9,7 +9,7 @@ use Anthropic\Client;
 final class Explainer
 {
     /** Bump when the writer SYSTEM prompt OR the judge criteria change — regenerates every explanation (§5). */
-    public const PROMPT_VERSION = 1;
+    public const PROMPT_VERSION = 2;
 
     private const MODEL = 'claude-opus-4-8';
     private const SYSTEM = <<<TXT
@@ -23,6 +23,9 @@ final class Explainer
           If a detail isn't given, don't claim it — stay general ("a security weakness")
           rather than inventing specifics.
         - Write for someone with no technical or security background. Short, everyday sentences.
+        - Keep the described consequences proportionate to the severity: a low-severity issue
+          gets a nuisance-level description (e.g. altered page content), never data theft or
+          account takeover.
         - No jargon. Never use terms like CVE, CVSS, XSS, CSRF, SQL injection, RCE,
           deserialization, "authentication bypass", "sanitisation" — translate them to plain words.
         - Do not state version numbers or upgrade steps; the tool shows those separately.
