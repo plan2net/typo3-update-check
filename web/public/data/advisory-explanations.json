@@ -1,16 +1,772 @@
 {
-  "TYPO3-CORE-SA-2026-019": {
-    "contentHash": "seed",
-    "promptVersion": 0,
-    "langs": {
-      "en": {
-        "plainImpact": "A logged-in visitor could reach data they should not, via the Form Framework.",
-        "urgency": "If the site uses forms, treat this as urgent."
-      },
-      "de": {
-        "plainImpact": "Ein angemeldeter Besucher könnte über das Formular-Framework auf Daten zugreifen, die nicht für ihn bestimmt sind.",
-        "urgency": "Wenn die Website Formulare nutzt, ist das dringend."
-      }
+    "PKSA-1ccf-rwwt-88n5|optional|typo3/cms-redirects": {
+        "contentHash": "2cfe5b7873321a57129aeedd95262782b81a8247a2ce1a492c36733030c890ea",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "There is a weakness in the part of the website that manages web address redirects. A logged-in staff member could gain access to redirect settings they were not meant to see or change.",
+                "urgency": "This mostly matters if your site has multiple back-office users with limited permissions and uses the redirects feature; it's worth updating in the near term."
+            },
+            "de": {
+                "plainImpact": "Es gibt eine Schwäche im Bereich für Weiterleitungen. Dadurch könnten Personen auf Funktionen oder Einstellungen zugreifen, die eigentlich nur berechtigten Redakteuren vorbehalten sein sollten.",
+                "urgency": "Zeitnah handeln, wenn im Backend mehrere Nutzer mit unterschiedlichen Rechten arbeiten; bei nur einem Administrator ist das Risiko gering."
+            }
+        }
+    },
+    "PKSA-1xq1-yw5z-ygvg|optional|typo3/cms-extensionmanager": {
+        "contentHash": "75b5e886d65dac1ed193cd2450f9be0f3d3aead7d83e7459d6967fafca83f0d6",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "This weakness is in the part of the website used to manage add-on features. An attacker could trick a logged-in staff member into carrying out an unwanted action without realising it, which could change settings on the site.",
+                "urgency": "Update fairly soon, since this affects the site's administration area; the main risk is when staff are logged in while browsing other sites."
+            },
+            "de": {
+                "plainImpact": "Diese Schwachstelle betrifft den Bereich, in dem Zusatzfunktionen der Website verwaltet werden. Ein Angreifer könnte einen angemeldeten Verwalter dazu bringen, unbemerkt Aktionen auszuführen, die dieser gar nicht beabsichtigt hat.",
+                "urgency": "Sie sollten die Aktualisierung zeitnah einplanen, besonders wenn Personen mit Verwaltungsrechten regelmäßig im hinteren Bereich der Website arbeiten."
+            }
+        }
+    },
+    "PKSA-27mn-p368-8rxc|core|typo3/cms-backend": {
+        "contentHash": "2301f09ae3736bdbd19b3bf57e63f125fc6e63eca101a0159be0410c53069f0c",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "A weakness in the website's admin area could let a logged-in user reach parts of the control panel they shouldn't be allowed to use. This could give someone more access than they were meant to have.",
+                "urgency": "This mainly matters if several people log in to manage the site with different permission levels, so it's worth updating in good time."
+            },
+            "de": {
+                "plainImpact": "Im Verwaltungsbereich der Website (dort, wo Inhalte gepflegt werden) könnten angemeldete Personen auf Bereiche oder Funktionen zugreifen, für die sie eigentlich keine Berechtigung haben. Dadurch könnten Einstellungen oder Inhalte eingesehen oder verändert werden, die eigentlich geschützt sein sollten.",
+                "urgency": "Das Update sollte zeitnah eingespielt werden, ist aber vor allem dann wichtig, wenn mehrere Personen mit unterschiedlichen Rechten Zugang zum Verwaltungsbereich haben."
+            }
+        }
+    },
+    "PKSA-2ssc-6m7w-s9xh|core|typo3/cms-core": {
+        "contentHash": "117dd35da149a949ba1a55cc41d9f385e8ecdee5d95361ac67b10531d00872fa",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "There is a security weakness that could let a website user gain higher-level control over the site than they should have. Someone with limited access could end up with top-level management rights, letting them change settings or content across the site.",
+                "urgency": "Act soon, especially if people other than the main owner have login accounts to manage the site."
+            },
+            "de": {
+                "plainImpact": "Ein Nutzer mit eingeschränkten Rechten im Verwaltungsbereich der Website könnte sich selbst höhere Rechte verschaffen und so die volle Kontrolle über die Website erlangen. Damit könnte er Einstellungen ändern, Inhalte manipulieren oder weitere Schäden anrichten.",
+                "urgency": "Sie sollten zeitnah handeln, besonders wenn mehrere Personen mit unterschiedlichen Rechten Zugriff auf den Verwaltungsbereich haben."
+            }
+        }
+    },
+    "PKSA-2yr3-by9d-r1gh|core|typo3/cms-core": {
+        "contentHash": "6ce97e4b5457d9c5c3631f91511c346f352ffa23a3c21125efca6e069491eade",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "If the site uses forms, someone could get to parts or actions they should not be allowed to access. This could let them view or use things that were meant to be restricted.",
+                "urgency": "Act soon if the site uses forms; if it doesn't, the risk is low."
+            },
+            "de": {
+                "plainImpact": "Wenn auf der Website Formulare genutzt werden, könnte jemand auf Bereiche oder Daten zugreifen, die eigentlich geschützt sein sollten. Dadurch könnten vertrauliche Informationen sichtbar oder Aktionen ausgeführt werden, die nur berechtigten Personen erlaubt sein sollten.",
+                "urgency": "Bald handeln, wenn auf der Website Formulare eingesetzt werden; ist das nicht der Fall, ist das Risiko gering."
+            }
+        }
+    },
+    "PKSA-32mm-z25f-2ysj|core|typo3/cms-core": {
+        "contentHash": "472134aacd24303c5d6f3af98114a8bc4e0bb041019c7d0bdc8fca28573a566e",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "There is a weakness in a part of the website's editing tools that lets people see or reach content they shouldn't be allowed to. A logged-in editor could end up with access to items beyond what their permissions are meant to allow.",
+                "urgency": "This mainly matters if several people log in to manage the site with different permission levels; it's worth updating in the near future but is not an emergency."
+            },
+            "de": {
+                "plainImpact": "Es gibt eine Sicherheitslücke im Verwaltungsbereich der Website, die mit einer Zwischenablage-Funktion zusammenhängt. Dadurch könnte jemand auf Inhalte oder Aktionen zugreifen, für die er eigentlich keine Berechtigung haben sollte.",
+                "urgency": "Diese Lücke betrifft nur den Redaktionsbereich, in dem angemeldete Mitarbeiter die Website pflegen; ein Update sollte bei Gelegenheit zeitnah eingespielt werden, ist aber nicht hochdringend."
+            }
+        }
+    },
+    "PKSA-3gg2-48j5-46ky|core|typo3/cms-core": {
+        "contentHash": "8f377f56c81e1bde963ca654acdfc4a59fdb2fa3995cc1d4925a97775686398f",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "There is a security weakness that could let an attacker use a link on your site to quietly send visitors to a different, untrusted website. This can be used to trick people into thinking a scam page is really yours.",
+                "urgency": "This is worth fixing at a normal, planned pace, as the risk is moderate."
+            },
+            "de": {
+                "plainImpact": "Angreifer könnten einen Link zu Ihrer Website so präparieren, dass Besucher unbemerkt auf eine fremde, möglicherweise betrügerische Seite weitergeleitet werden. Das kann genutzt werden, um Besucher zu täuschen oder in eine Falle zu locken.",
+                "urgency": "Es empfiehlt sich, die Aktualisierung zeitnah einzuplanen, auch wenn das Risiko als mittel eingestuft ist."
+            }
+        }
+    },
+    "PKSA-3p3s-8w1v-x6b3|core|typo3/cms-core": {
+        "contentHash": "3c383dae3cd6df18ea4fbff6e830417ed76b3103a09b5bd05f0b33da5793805f",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "When someone changes their password, older login sessions may not be properly ended. This means a person who already had access could stay logged in even after the password was reset, so the reset doesn't fully lock them out.",
+                "urgency": "This mostly matters if people log in to manage the site; it's worth fixing in your normal update schedule, and sooner if you've recently changed a password to remove someone's access."
+            },
+            "de": {
+                "plainImpact": "Wenn jemand sein Passwort zurücksetzt, bleiben alte Anmeldungen möglicherweise weiter aktiv, statt beendet zu werden. Das bedeutet: Wer sich vorher unbefugt Zugang verschafft hatte, könnte trotz neuem Passwort weiterhin eingeloggt bleiben.",
+                "urgency": "Sollte bald behoben werden, ist aber vor allem dann wichtig, wenn Personen sich an der Website anmelden und Passwörter zurücksetzen können."
+            }
+        }
+    },
+    "PKSA-4w8t-ddwx-n1z6|core|typo3/cms-backend": {
+        "contentHash": "d9b2324cb082550aca21ed1787a2b18dcb88972a4fec80fa71f7366add3d663c",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "A weakness in the website's admin area could let someone see information they shouldn't be able to view. The exposed details are limited, so the impact is minor.",
+                "urgency": "This is low risk, but it's still worth updating in a normal maintenance cycle; it mainly concerns people who can log in to the site's admin area."
+            },
+            "de": {
+                "plainImpact": "In der Verwaltung der Website könnte jemand Informationen zu sehen bekommen, die eigentlich nicht für ihn bestimmt sind. Es handelt sich um ein geringes Risiko, bei dem vor allem interne Angaben ungewollt sichtbar werden könnten.",
+                "urgency": "Da das Risiko gering ist, reicht es, die Aktualisierung bei nächster Gelegenheit einzuplanen; betroffen ist nur der interne Verwaltungsbereich der Website."
+            }
+        }
+    },
+    "PKSA-54yn-xn5g-k3j9|core|typo3/cms-backend": {
+        "contentHash": "71de4b6ee5445b61cc0811e39558a9a2a59c2269bbba6ed08d01ae81fc416e6a",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "This weakness is in the area of the site where staff log in to edit content. A logged-in user might be able to reach or change things they normally shouldn't have permission to.",
+                "urgency": "Worth fixing soon, but the risk mainly applies if several people with different permission levels log in to manage the site."
+            },
+            "de": {
+                "plainImpact": "Diese Schwäche betrifft den internen Verwaltungsbereich der Website. Personen mit Zugang könnten dort auf Bereiche oder Aktionen zugreifen, die eigentlich nicht für sie vorgesehen sind.",
+                "urgency": "Das Problem hat mittlere Dringlichkeit; die Aktualisierung sollte zeitnah erfolgen, besonders wenn mehrere Personen mit unterschiedlichen Rechten im Verwaltungsbereich arbeiten."
+            }
+        }
+    },
+    "PKSA-6d7x-2gs8-wr59|core|typo3/cms-core": {
+        "contentHash": "f8f839747df774be2aaa58e92d37ab320533dfa39bf305c956dc94f5feba32c5",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "There is a security weakness in how the website handles password changes for staff accounts (the people who log in to manage the site). In certain situations, a password change might go through without the proper check, which could put a staff account at risk.",
+                "urgency": "The risk is rated low, but it's still worth applying the fix in your normal maintenance; it mainly matters if people log in to manage the site."
+            },
+            "de": {
+                "plainImpact": "Es gibt eine Sicherheitslücke bei der Änderung von Passwörtern für Personen, die die Website verwalten (den internen Verwaltungsbereich nutzen). Unter bestimmten Umständen könnte ein Passwort geändert werden, ohne dass dies ausreichend geprüft wird, was den Schutz dieser Verwaltungskonten schwächen kann.",
+                "urgency": "Das Risiko ist gering, dennoch sollten Sie das Update bei Gelegenheit einspielen; besonders relevant ist es, wenn mehrere Personen Zugang zum Verwaltungsbereich der Website haben."
+            }
+        }
+    },
+    "PKSA-6jfs-jhtj-72x7|core|typo3/cms-core": {
+        "contentHash": "832135de01e5732f2c6137bb95c69213b28af7712514c68647d9ae4f75a7811f",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "If the site uses forms, someone could gain access to something they should not be allowed to see or use. This could expose information or actions that were meant to be restricted.",
+                "urgency": "Act soon if the site uses forms; if it doesn't use any forms, the risk is low."
+            },
+            "de": {
+                "plainImpact": "Wenn die Website Formulare nutzt, könnten Personen auf Bereiche oder Daten zugreifen, die eigentlich nicht für sie bestimmt sind. Dadurch könnten geschützte Informationen sichtbar oder unbefugte Aktionen möglich werden.",
+                "urgency": "Bald handeln, wenn die Website Formulare verwendet; falls keine Formulare eingesetzt werden, ist das Risiko gering."
+            }
+        }
+    },
+    "PKSA-6m93-gtx3-1dnm|optional|typo3/cms-dashboard": {
+        "contentHash": "98951c5a7ceaf32bd97adaa9a7c15c3495304f89a8d8e82a60a057a29bbe8b78",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "This affects the admin dashboard where site managers work. A weakness could let an attacker trick a logged-in administrator into performing actions they didn't mean to, simply by getting them to visit a bad web page while signed in.",
+                "urgency": "Update in the near future; the risk mainly applies to people who log in to manage the website through the dashboard."
+            },
+            "de": {
+                "plainImpact": "Diese Schwäche betrifft den internen Verwaltungsbereich Ihrer Website (das sogenannte Dashboard). Ein Angreifer könnte einen angemeldeten Mitarbeiter dazu bringen, ungewollt Aktionen im Verwaltungsbereich auszulösen, ohne dass dieser es bemerkt.",
+                "urgency": "Das Problem sollte zeitnah behoben werden, ist aber vor allem dann relevant, wenn Mitarbeiter regelmäßig den internen Verwaltungsbereich der Website nutzen."
+            }
+        }
+    },
+    "PKSA-72zd-w89p-dd55|core|typo3/cms": {
+        "contentHash": "5218eee956ff22f42996e1291dcff27df472e59f133d01cca7b9c8669309ee49",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "A weakness in how the site's configuration is handled could let private information from your website's settings be exposed to people who shouldn't see it.",
+                "urgency": "This is a moderate risk, so it's best to schedule the update soon as a normal maintenance task."
+            },
+            "de": {
+                "plainImpact": "Durch eine Schwachstelle in der Website-Einstellung könnten vertrauliche interne Informationen ungewollt sichtbar werden. Das könnte einem Angreifer Details verraten, die eigentlich privat bleiben sollten.",
+                "urgency": "Es empfiehlt sich, die Sicherheitslücke zeitnah zu schließen, auch wenn das Risiko als mittel eingestuft ist."
+            }
+        }
+    },
+    "PKSA-7w9w-389g-6rb9|core|typo3/cms-backend": {
+        "contentHash": "49e98b00546e0a6f141967191e408f9e367ddd7c802fb23fb7300e409094a38d",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "There is a weakness in the extra login security step that staff use to sign in to the website's control panel. This could make it easier for an attacker to get past that safeguard and reach the area where the site is managed.",
+                "urgency": "This should be addressed soon, especially if staff log in to manage the site and rely on the extra login security (the second step after entering a password)."
+            },
+            "de": {
+                "plainImpact": "Die zusätzliche Sicherheitsprüfung beim Anmelden im Verwaltungsbereich der Website funktioniert nicht zuverlässig. Dadurch könnte ein Angreifer diese zweite Schutzstufe umgehen und sich leichter Zugang zum internen Bereich der Website verschaffen.",
+                "urgency": "Sie sollten zeitnah handeln, besonders wenn im Verwaltungsbereich die zusätzliche Anmeldeprüfung (zweiter Sicherheitsschritt) genutzt wird."
+            }
+        }
+    },
+    "PKSA-83hy-ynvj-7pfq|core|typo3/cms-core": {
+        "contentHash": "e440a2b8aaac27c5220c4d23120ac0a0185da71431087072eae16d376451c6cd",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "A security weakness could let someone view certain website information that was not meant to be shown to them. The exposed details are limited, but content that should stay private could become visible.",
+                "urgency": "This is a low-risk issue, so it can be handled during routine maintenance rather than urgently."
+            },
+            "de": {
+                "plainImpact": "Durch eine Schwäche in der Verwaltung mehrerer Webseiten könnten unter Umständen Inhalte oder Informationen sichtbar werden, die eigentlich nicht öffentlich zugänglich sein sollten. Das kann dazu führen, dass Details preisgegeben werden, die für Besucher nicht bestimmt sind.",
+                "urgency": "Da das Risiko als gering eingestuft ist, besteht kein akuter Handlungsdruck, eine Aktualisierung sollte aber im Rahmen der nächsten Wartung erfolgen."
+            }
+        }
+    },
+    "PKSA-8vkj-4d3h-x586|core|typo3/cms-core": {
+        "contentHash": "d0e242e3d0fb0643a1bd5f6b7bcc1015edada79079bc57cf58bc5f82b462ef01",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "There is a security weakness in the part of the system your team uses to build and manage forms. If exploited, harmful code could be slipped in and run in the browser of someone working in the site's admin area, which could be used to steal their information or misuse their access.",
+                "urgency": "This mainly affects staff who log in to manage the site, so plan to update soon but the risk to everyday visitors is low."
+            },
+            "de": {
+                "plainImpact": "Wenn im Verwaltungsbereich der Website mit Formularen gearbeitet wird, könnte ein Angreifer schädlichen Code einschleusen, der dann im Browser einer angemeldeten Person ausgeführt wird. Das kann genutzt werden, um an Informationen zu gelangen oder Aktionen im Namen dieser Person auszuführen.",
+                "urgency": "Bald handeln, wenn im Verwaltungsbereich Formulare erstellt oder bearbeitet werden; andernfalls ist das Risiko gering."
+            }
+        }
+    },
+    "PKSA-957f-x856-svyv|core|typo3/cms-backend": {
+        "contentHash": "b7459d60c2ed9494d5dc34f74fa22d15d3ac39ea9fda00b7c49342714909b1a4",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "This affects the behind-the-scenes admin area where your team manages the website. A logged-in user could trigger a problem that makes part of the admin tools stop working properly for a while.",
+                "urgency": "This mostly matters for people who log in to manage the site, so it's worth updating in due course but is not an emergency."
+            },
+            "de": {
+                "plainImpact": "Diese Schwäche betrifft den internen Verwaltungsbereich der Website, mit dem Sie Ihre Inhalte pflegen. Im ungünstigen Fall könnte jemand diesen Bereich lahmlegen, sodass das Bearbeiten der Website vorübergehend nicht möglich ist. Ihre öffentliche Website bleibt davon in der Regel weiterhin sichtbar.",
+                "urgency": "Das Problem sollte bei Gelegenheit behoben werden; da nur der Verwaltungsbereich betroffen ist und ein Zugang dazu nötig ist, ist die Gefahr eher gering."
+            }
+        }
+    },
+    "PKSA-99mg-htb6-c272|core|typo3/cms-core": {
+        "contentHash": "9d00e5e385485196ca4444b8c8351b8c1662e2f15634be147d915ff91f98368c",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "There is a weakness in how the website manages permissions for files and folders. A logged-in user could end up doing more with files than they are supposed to be allowed to do.",
+                "urgency": "Best to update fairly soon, especially if several people with different permission levels can log in to manage the site's content and files."
+            },
+            "de": {
+                "plainImpact": "Eine Schwäche in der Rechteverwaltung könnte es angemeldeten Nutzern erlauben, mehr zu ändern oder zu speichern, als ihnen eigentlich erlaubt sein sollte. Dadurch könnten Inhalte oder Dateien im Verwaltungsbereich der Website unbefugt verändert werden.",
+                "urgency": "Sollte zeitnah behoben werden, besonders wenn mehrere Personen mit unterschiedlichen Rechten Zugang zum Verwaltungsbereich der Website haben."
+            }
+        }
+    },
+    "PKSA-9vjc-5m3y-9mrq|core|typo3/cms-backend": {
+        "contentHash": "56c2b968d04b0483f9bd160ee5988b1fc71502c5cd928ee854a9a43c47f4655e",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "This weakness affects a tool inside the website's admin area. In certain cases it could be misused to make that admin area slow down or stop working properly for the people who manage the site.",
+                "urgency": "This is a low-level issue and only affects staff who log in to manage the site, so it can be handled during your normal update schedule."
+            },
+            "de": {
+                "plainImpact": "Diese Schwäche betrifft nur den internen Verwaltungsbereich der Website, in dem angemeldete Redakteure arbeiten. Im ungünstigen Fall könnte dieser Bereich vorübergehend gestört oder unbenutzbar werden, sodass die Bearbeitung der Website kurzzeitig erschwert ist.",
+                "urgency": "Da die Schwäche als gering eingestuft ist und nur den geschützten Verwaltungsbereich betrifft, reicht es, das Update bei Gelegenheit im Rahmen der regulären Wartung einzuspielen."
+            }
+        }
+    },
+    "PKSA-b5m3-ttcx-cz18|core|typo3/cms-core": {
+        "contentHash": "be50cdbc47976984a5fca90d14d46fc113097b7550dd90b6fc241b6452b87b10",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "A weakness in how the website handles its stored data could let someone see information that was meant to stay private. In some cases, content that should have been hidden from certain visitors might become visible.",
+                "urgency": "The risk is rated low, so plan the update as routine maintenance rather than an emergency."
+            },
+            "de": {
+                "plainImpact": "Durch eine Schwäche in der Software könnten in bestimmten Fällen Informationen sichtbar werden, die eigentlich verborgen bleiben sollten. Dadurch könnten Unbefugte an Daten gelangen, die nicht für sie bestimmt sind.",
+                "urgency": "Das Risiko ist als gering eingestuft, dennoch sollte die Aktualisierung bei Gelegenheit vorgenommen werden."
+            }
+        }
+    },
+    "PKSA-bzt2-2962-49bj|core|typo3/cms-core": {
+        "contentHash": "8a172161374afe75a8953dc6f25ae773f842acf590d5286c94b08c13b13c2918",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "A logged-in staff member could see or restore deleted website content that they should not have access to. This means some people managing the site might reach information or items beyond their normal permissions.",
+                "urgency": "This is a moderate issue, so plan an update soon; it mainly matters if more than one person has a login to manage the website."
+            },
+            "de": {
+                "plainImpact": "Es gibt eine Sicherheitslücke bei der Zugriffskontrolle im sogenannten Papierkorb-Bereich der Website-Verwaltung. Dadurch könnten Personen auf Inhalte oder Funktionen zugreifen, für die sie eigentlich keine Berechtigung haben.",
+                "urgency": "Dies betrifft nur den internen Verwaltungsbereich, in dem mehrere Redakteure mit unterschiedlichen Rechten arbeiten; in solchen Fällen sollte die Aktualisierung zeitnah erfolgen, ansonsten ist das Risiko gering."
+            }
+        }
+    },
+    "PKSA-ccxj-fgkz-pynv|core|typo3/cms-core": {
+        "contentHash": "9efe6ec145bb8ecdd8609a9b17022e7033218ee19379a5561aea43d38734456b",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "If the site uses forms, an attacker could trick the site into running harmful commands. This could let them take control of parts of the website or access information they shouldn't.",
+                "urgency": "Act soon if the site uses forms; if it doesn't, the risk is much lower."
+            },
+            "de": {
+                "plainImpact": "Wenn die Website Formulare nutzt, könnte ein Angreifer eigene Befehle auf dem Server ausführen. Damit könnte er im schlimmsten Fall die Kontrolle über die Website und deren Daten übernehmen.",
+                "urgency": "Bitte zeitnah handeln, wenn die Website Formulare verwendet; nutzt sie keine, ist das Risiko gering."
+            }
+        }
+    },
+    "PKSA-d551-hdqh-5mmf|core|typo3/cms-core": {
+        "contentHash": "c3800dcd954676a55295ce4bd5212a0dc49b2cf5e4339cda5d90335239ffeb15",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "A secret value that helps protect your website could be exposed to the wrong people. If someone gets hold of it, they may be able to weaken the site's protections and gain access they shouldn't have.",
+                "urgency": "This is worth fixing fairly soon to keep the site's internal security key private."
+            },
+            "de": {
+                "plainImpact": "Ein geheimer Schlüssel Ihrer Website könnte unter bestimmten Umständen sichtbar werden. Gerät dieser geheime Schlüssel in falsche Hände, könnte ein Angreifer damit die Sicherheit der Website weiter untergraben.",
+                "urgency": "Es empfiehlt sich, die Aktualisierung zeitnah vorzunehmen, da der Schutz eines zentralen Sicherheitsbausteins der Website betroffen ist."
+            }
+        }
+    },
+    "PKSA-ghx2-mc2z-fx6x|core|typo3/cms-core": {
+        "contentHash": "8cf4a2601691d17f8c9328ad7529324a1bad0349a82d325c80e39364cbd61bad",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "There is a security weakness in how the website handles files, meaning someone might be able to reach files they are not supposed to see or use. This could expose private documents or other content that was meant to stay restricted.",
+                "urgency": "This is rated high, so it's best to fix it soon, especially if the site stores files that aren't meant to be public."
+            },
+            "de": {
+                "plainImpact": "Wegen einer Schwachstelle bei der Rechteprüfung könnten Personen unter Umständen auf Dateien zugreifen, die eigentlich nicht für sie bestimmt sind. Dadurch könnten geschützte oder vertrauliche Dokumente in falsche Hände geraten.",
+                "urgency": "Da es sich um eine hohe Einstufung handelt, sollte die Aktualisierung zeitnah erfolgen, besonders wenn auf der Website geschützte oder vertrauliche Dateien verwaltet werden."
+            }
+        }
+    },
+    "PKSA-gj1k-954p-nhmk|core|typo3/cms-core": {
+        "contentHash": "641155120b1d8e6def29bbd8fc58499547e3ca7a0f2eb1c2d93a25f22153b312",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "There is a weakness in how the website handles files, which means someone might be able to view or reach files they should not have access to. This could expose files that were meant to stay private.",
+                "urgency": "The risk is rated low, so plan the fix as part of normal maintenance; it mainly matters if the site stores files that are meant to be restricted."
+            },
+            "de": {
+                "plainImpact": "Es gibt eine Schwäche bei der Zugriffskontrolle für Dateien auf der Website. Dadurch könnten bestimmte Dateien für Personen zugänglich sein, die eigentlich keine Berechtigung dafür haben.",
+                "urgency": "Da die Schwäche als gering eingestuft ist, besteht kein akuter Handlungsdruck, ein Update sollte aber im Rahmen der nächsten regulären Wartung eingespielt werden."
+            }
+        }
+    },
+    "PKSA-gksc-phy8-f181|core|typo3/cms-backend": {
+        "contentHash": "c12f20b011e43782fd1c93ef5c422ee76ef1eead173566921fbc16622e4afde9",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "There is a weakness in the website's administration area where access checks are not properly enforced. This could let someone reach parts of the admin system they should not be allowed to use, potentially viewing or changing things they shouldn't.",
+                "urgency": "Worth updating in the near future as a sensible precaution, especially since this affects the site's admin area."
+            },
+            "de": {
+                "plainImpact": "Im Verwaltungsbereich der Website gibt es eine Schwäche bei der Zugriffskontrolle. Dadurch könnten angemeldete Personen möglicherweise auf Bereiche oder Aktionen zugreifen, für die sie eigentlich keine Berechtigung haben.",
+                "urgency": "Bald handeln, besonders wenn mehrere Personen mit unterschiedlichen Rechten Zugang zum Verwaltungsbereich haben."
+            }
+        }
+    },
+    "PKSA-gn27-rg5s-pdr4|optional|typo3/cms-workspaces": {
+        "contentHash": "de100bf7113aed08a7efbfac4b8856b1943e379681198aaad1a4ca6686445ec2",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "There is a security weakness in the part of the website used for reviewing and approving draft content. Someone could end up seeing information they should not be allowed to view.",
+                "urgency": "Act soon, especially if your site uses the content review and approval feature; if that feature isn't used, the risk is lower."
+            },
+            "de": {
+                "plainImpact": "Bei diesem Sicherheitsproblem könnten Unbefugte an Informationen gelangen, die eigentlich nicht öffentlich sein sollten. Das betrifft die Funktion, mit der noch nicht veröffentlichte Inhalte vorbereitet und geprüft werden.",
+                "urgency": "Bald handeln, wenn Ihre Website diese Funktion zum Vorbereiten und Prüfen von Inhalten nutzt; falls nicht, ist das Risiko gering."
+            }
+        }
+    },
+    "PKSA-h5xk-8nxx-znp4|core|typo3/cms-core": {
+        "contentHash": "a0973376ee9137f4c82c7a07181d0842e1bad0fa966680cbf4aec0bbd9162191",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "There is a weakness in how the site handles certain internal links to files or pages. Because of it, someone could reach content that was meant to be private or protected.",
+                "urgency": "This is worth addressing in your normal maintenance window; it mainly matters if the site stores content that isn't meant for everyone to see."
+            },
+            "de": {
+                "plainImpact": "Durch eine Schwäche in der Zugriffskontrolle könnten bestimmte Dateien oder Inhalte auf der Website abgerufen werden, die eigentlich nicht öffentlich sein sollten. Dadurch könnten Unbefugte an Inhalte gelangen, die eigentlich geschützt sein sollten.",
+                "urgency": "Die Aktualisierung sollte in nächster Zeit erfolgen; der Handlungsbedarf ist mittel, besonders wenn auf der Website geschützte oder nicht-öffentliche Inhalte verwaltet werden."
+            }
+        }
+    },
+    "PKSA-hf6f-qcwd-7279|core|typo3/cms-core": {
+        "contentHash": "bc61232cc6b89d727615c3d830fbcf61157ff965ccf94d620378c7b669bb4aab",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "If your site lets visitors or members log in, this weakness makes those logins less secure than they should be. That could make it easier for someone to gain access to an account they shouldn't have.",
+                "urgency": "Update fairly soon if your site has a login area for visitors or members; if no one logs in on the front of the site, the risk is low."
+            },
+            "de": {
+                "plainImpact": "Wenn Ihre Website einen Login-Bereich für Besucher oder Kunden hat, gibt es dort eine Schwäche bei der Anmeldung. Dadurch könnte sich jemand unter Umständen leichter unbefugt Zugang zu einem Benutzerkonto verschaffen.",
+                "urgency": "Sie sollten die Aktualisierung zeitnah einplanen, aber das betrifft vor allem Websites mit einem Login-Bereich für Besucher; ohne einen solchen Bereich ist das Risiko gering."
+            }
+        }
+    },
+    "PKSA-j4dd-3nrn-j8w4|core|typo3/cms-backend": {
+        "contentHash": "d86998053514c836d103533490cd35099bdd06819f75b43ad294c9fd5c1366c4",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "A password that people use to manage the website is being stored in plain, readable form instead of being kept secret. This means someone with the wrong kind of access could see that password and use it to get into the site's admin area.",
+                "urgency": "Act soon, since this affects the accounts used to run the website; the risk is higher if several people have access to the admin area."
+            },
+            "de": {
+                "plainImpact": "Ein Passwort wurde im Verwaltungsbereich der Website unverschlüsselt gespeichert. Dadurch könnte jemand mit Zugriff auf diesen Bereich das Passwort im Klartext lesen und missbrauchen.",
+                "urgency": "Sollte bald behoben werden, besonders wenn mehrere Personen Zugang zum Verwaltungsbereich der Website haben."
+            }
+        }
+    },
+    "PKSA-jbhx-knzt-5y6m|core|typo3/cms-core": {
+        "contentHash": "1c27c35696bc5735bee5d5bf9badd6c4f2012a2446f1cf5b155b577e03228abf",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "A weakness in the website's admin area could let someone see the scrambled versions of stored passwords. On their own these are hard to read, but they give an attacker extra material that could help them try to work out real passwords.",
+                "urgency": "This is worth fixing in a normal update cycle; it mainly matters for people who have access to the site's admin area."
+            },
+            "de": {
+                "plainImpact": "In der Verwaltungsoberfläche der Website könnten die verschlüsselten Passwörter von Nutzerkonten für angemeldete Redakteure sichtbar werden. Zwar sind die Passwörter nicht im Klartext lesbar, doch schon ihre Preisgabe schwächt den Schutz der betroffenen Konten.",
+                "urgency": "Die Aktualisierung sollte zeitnah erfolgen, ist aber vor allem wichtig, wenn mehrere Personen Zugang zur Verwaltungsoberfläche der Website haben."
+            }
+        }
+    },
+    "PKSA-jp7z-h3vv-yr4s|core|typo3/cms-core": {
+        "contentHash": "9471250e34311f15124d1ff464371c86568e1763186a0ddb8b1119e6e07ce02b",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "There is a weakness in how the website keeps people logged in. This could make it easier for an attacker to misuse someone's active login and act as if they were that person.",
+                "urgency": "This is worth fixing in the near future, especially if people log in to the site (for example editors or customer accounts)."
+            },
+            "de": {
+                "plainImpact": "Es gibt eine Schwäche bei der Art, wie die Website Benutzer-Sitzungen (das eingeloggte Verweilen auf der Seite) prüft. Dadurch könnte es einem Angreifer leichter fallen, sich als ein bereits angemeldeter Benutzer auszugeben und auf dessen Konto zuzugreifen.",
+                "urgency": "Sie sollten dies zeitnah beheben lassen, besonders wenn sich Personen auf der Website anmelden – etwa Redakteure im Backend oder Kunden in einem Login-Bereich."
+            }
+        }
+    },
+    "PKSA-kq4c-tzdn-3hmx|optional|typo3/cms-recycler": {
+        "contentHash": "50b7f1b65398f9cd2d217fafdfcccb04477e78c4895ecd68df7932d4f12a223d",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "There is a weakness in a behind-the-scenes admin tool that manages deleted content. Someone who shouldn't have access could see or work with items they aren't supposed to, because permission checks aren't being applied properly.",
+                "urgency": "Address this soon, especially if several people have logins to manage the website's content."
+            },
+            "de": {
+                "plainImpact": "Über einen internen Bereich zum Wiederherstellen gelöschter Inhalte könnten Personen auf Inhalte oder Aktionen zugreifen, für die sie eigentlich keine Berechtigung haben. Dadurch könnten gelöschte Daten unbefugt eingesehen oder verändert werden.",
+                "urgency": "Zeitnah handeln, wenn im Redaktionsbereich mehrere Benutzer mit unterschiedlichen Rechten arbeiten; bei nur einem Administrator ist das Risiko geringer."
+            }
+        }
+    },
+    "PKSA-mjqj-t7m3-nkyp|optional|typo3/cms-indexed-search": {
+        "contentHash": "042922fd71cc2bfda2ac08663129b68c04194a963f7a9a375e39abdb25f751ba",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "There is a security weakness in the search feature that lets an attacker trick a logged-in staff member into carrying out an unwanted action without realising it. This could cause changes to be made through their account that they did not intend.",
+                "urgency": "This mainly matters if your site uses the built-in search feature; if so, it's worth updating in the near future, though the risk is moderate."
+            },
+            "de": {
+                "plainImpact": "Es gibt eine Sicherheitslücke im Bereich der Website-Suche. Ein Angreifer könnte einen angemeldeten Nutzer dazu bringen, unbemerkt eine Aktion auszulösen, die dieser gar nicht ausführen wollte.",
+                "urgency": "Zeitnah handeln, wenn die Website die integrierte Suchfunktion nutzt; andernfalls ist das Risiko gering."
+            }
+        }
+    },
+    "PKSA-npmp-rd1w-2fyt|core|typo3/cms-backend": {
+        "contentHash": "f6058fdf4876bfb50a7748c3c4e8669eb3cfa5f0dd7f398dc30d13f09802b082",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "A weakness in the CSV download feature could let information be seen by people who shouldn't have access to it. This mainly affects data handled through the website's admin area.",
+                "urgency": "Worth updating in the near future, especially if staff regularly use the admin area to export data as CSV files."
+            },
+            "de": {
+                "plainImpact": "Beim Herunterladen von Daten als CSV-Datei könnten Informationen sichtbar werden, die eigentlich nicht für die betreffende Person bestimmt sind. Dadurch könnten interne Daten in falsche Hände geraten.",
+                "urgency": "Sollte zeitnah behoben werden, betrifft aber vor allem Websites, bei denen Mitarbeiter im Verwaltungsbereich Daten als CSV-Datei herunterladen."
+            }
+        }
+    },
+    "PKSA-ns26-fz7n-2jm8|core|typo3/cms-core": {
+        "contentHash": "fade73b75f90865b3b968bbd6e750da0289c4cb8a84e7b824f7e74edaace1b52",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "When something goes wrong on the site, an error message could reveal private details that should stay hidden. An attacker could use those details to learn more about your site and plan further attacks.",
+                "urgency": "This is a moderate risk, so it's worth updating in the near future as part of routine maintenance."
+            },
+            "de": {
+                "plainImpact": "Wenn ein Fehler auf der Website auftritt, könnte die Fehlermeldung interne Informationen preisgeben, die eigentlich verborgen bleiben sollten. Angreifer könnten diese Angaben nutzen, um sich ein besseres Bild von der Website zu machen und weitere Schwachstellen zu suchen.",
+                "urgency": "Das Risiko ist eher mittel; die Aktualisierung sollte in absehbarer Zeit eingeplant werden, ist aber nicht extrem dringend."
+            }
+        }
+    },
+    "PKSA-p6ct-pkr6-phmf|optional|typo3/cms-form": {
+        "contentHash": "f359883b2a1180f8725a7142b45ae117afe0ebd9bb881cba567190f571f0f96c",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "If the site uses the form-building feature, an attacker could trick a logged-in staff member into clicking a link or visiting a page that quietly makes unwanted changes on their behalf. This could lead to changes being made in the system that the staff member didn't intend.",
+                "urgency": "This mainly matters if your site uses the form-building tools in the admin area; if it does, it's worth updating in the near future."
+            },
+            "de": {
+                "plainImpact": "Wenn Ihre Website das Formular-Modul nutzt, könnte ein Angreifer eine angemeldete Person dazu bringen, unbeabsichtigt eine Aktion auszuführen, ohne dass diese es merkt. Dadurch könnten im Verwaltungsbereich ungewollte Änderungen vorgenommen werden.",
+                "urgency": "Zeitnah handeln, wenn Ihre Website das Formular-Modul verwendet; andernfalls ist das Risiko gering."
+            }
+        }
+    },
+    "PKSA-pg93-52nb-x8ym|core|typo3/cms-core": {
+        "contentHash": "5795c99d1164e40e7ab98ad95c1078e87bb88f2fd797241546da0d125b7ad345",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "If the site uses its built-in search feature, an attacker could slip harmful code into a page that then runs in a visitor's browser. This could be used to steal information from visitors or take over their session.",
+                "urgency": "Act soon if the site offers a search feature to visitors; if it doesn't, the risk is low."
+            },
+            "de": {
+                "plainImpact": "Wenn Ihre Website eine interne Suchfunktion nutzt, könnte ein Angreifer schädlichen Code über die Suche einschleusen, der dann im Browser eines Besuchers ausgeführt wird. Damit lassen sich zum Beispiel Informationen abgreifen oder die Sitzung eines Besuchers übernehmen.",
+                "urgency": "Handeln Sie zeitnah, wenn Ihre Website eine eingebaute Suchfunktion verwendet; falls nicht, ist das Risiko gering."
+            }
+        }
+    },
+    "PKSA-prgj-sgzn-q6cs|core|typo3/cms-core": {
+        "contentHash": "70ad33d42e6e848719a7ae6d1d8e5fd59b9e102d7b36a3a20140cd6200c5214a",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "There is a security weakness in the website's built-in setup tool. In certain cases an attacker could get the website to run their own commands, which could let them take control of the site.",
+                "urgency": "This is rated high, so it's best to update promptly to close the gap."
+            },
+            "de": {
+                "plainImpact": "Über ein internes Verwaltungswerkzeug der Website könnte ein Angreifer eigene Befehle auf dem Server ausführen. Im schlimmsten Fall bekommt er dadurch weitgehende Kontrolle über die Website und ihre Daten.",
+                "urgency": "Bitte zeitnah handeln, da es sich um eine schwerwiegende Lücke handelt; besonders wichtig, wenn dieses Verwaltungswerkzeug erreichbar ist."
+            }
+        }
+    },
+    "PKSA-pz1k-khnw-3j7j|core|typo3/cms-core": {
+        "contentHash": "481c10f112c276f3902bc280ce06f72b7c148603bf177cda30620a2571277db4",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "There is a weakness that could let an attacker use a link that appears to go to your website but secretly forwards visitors to a different, untrusted site. This can be used to trick your visitors, for example into landing on a fake or harmful page.",
+                "urgency": "It's worth fixing in the near future as part of normal maintenance, since the risk is moderate and mainly affects people who click specially crafted links."
+            },
+            "de": {
+                "plainImpact": "Es gibt eine Schwachstelle, durch die Besucher unbemerkt auf eine fremde Internetseite umgeleitet werden könnten. Angreifer können das ausnutzen, um Nutzer auf gefälschte oder schädliche Seiten zu locken, etwa um an persönliche Daten zu gelangen.",
+                "urgency": "Die Aktualisierung sollte zeitnah erfolgen, da diese Weiterleitungen von jedem Besucher der Website ausgelöst werden könnten."
+            }
+        }
+    },
+    "PKSA-q3vc-jr63-rrrj|core|typo3/cms-core": {
+        "contentHash": "99cb3d85933c672436d0324158ffca178d0b12ed4840ca194b31a823d9d5cb3c",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "A security weakness in a core part of the website could let an attacker send specially crafted data that the site handles unsafely. This could potentially allow them to interfere with how the site works or gain access they shouldn't have.",
+                "urgency": "This is rated medium, so it's best to update in the near future as part of regular maintenance rather than as an emergency."
+            },
+            "de": {
+                "plainImpact": "Durch eine Sicherheitslücke im Kern der Website könnte ein Angreifer manipulierte Daten einschleusen und so das Verhalten der Website in unerwünschter Weise beeinflussen. Im schlimmsten Fall könnte dies die Sicherheit oder Stabilität der Seite gefährden.",
+                "urgency": "Da diese Schwachstelle den zentralen Bestandteil der Website betrifft, sollte die Aktualisierung zeitnah eingeplant werden."
+            }
+        }
+    },
+    "PKSA-q3vc-nbpk-d1gk|core|typo3/cms-core": {
+        "contentHash": "ad366013bbf215b4890ed5f5ba4e61c7c91f582c07eeb4a2333286f7c455e9c5",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "A security weakness in how the site handles uploaded files could let someone upload files that shouldn't be allowed. This could put harmful files onto the website and create a way for attackers to cause damage or misuse the site.",
+                "urgency": "Address this in the near term, especially if your site lets people upload files (for example through forms or a member area); if no one can upload files, the risk is lower."
+            },
+            "de": {
+                "plainImpact": "Bei diesem Sicherheitsproblem könnten Dateien auf die Website hochgeladen werden, die eigentlich nicht erlaubt sein sollten. Solche unerwünschten Dateien können missbraucht werden, um der Website oder ihren Besuchern zu schaden.",
+                "urgency": "Zeitnah handeln, vor allem wenn auf der Website Datei-Uploads möglich sind – etwa für Redakteure oder Besucher; ansonsten ist das Risiko geringer."
+            }
+        }
+    },
+    "PKSA-q52p-kj6f-r4yz|optional|typo3/cms-webhooks": {
+        "contentHash": "7950b11ea6f0b33ad9cb96d3a6bbcfeca0bb276b0b72b3f54657284ae8c25cb3",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "There is a security weakness in the part of the site that sends automatic messages to other web services. An attacker could trick your website into making requests it shouldn't, which could be used to probe hidden systems that are normally out of reach.",
+                "urgency": "The risk is low, but it's worth fixing in your normal update schedule, and it only matters if your site uses the feature that sends these automatic messages to other services."
+            },
+            "de": {
+                "plainImpact": "Bei dieser Sicherheitslücke geht es um die sogenannte Webhook-Funktion, mit der Ihre Website automatisch Nachrichten an andere Systeme senden kann. Ein Angreifer könnte diese Funktion ausnutzen, um Ihre Website dazu zu bringen, Anfragen an Ziele zu senden, die eigentlich nicht erreichbar sein sollten.",
+                "urgency": "Das Problem ist als gering eingestuft und betrifft nur Websites, die die Webhook-Funktion tatsächlich nutzen; wenn das der Fall ist, sollten Sie die Aktualisierung bei Gelegenheit einplanen."
+            }
+        }
+    },
+    "PKSA-rtck-8z1q-gn5s|core|typo3/cms-core": {
+        "contentHash": "8bd9fb5541359785ee8d58001cbdaaf445c0ee4ce2ed0909afd24906b37e1e9a",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "There is a security weakness in the part of the website that handles outgoing email. In certain setups, an attacker could take advantage of this to make the website do things it shouldn't, which could compromise the site.",
+                "urgency": "This should be fixed in the near term, but the risk mainly matters if the site sends email in the way affected by this weakness."
+            },
+            "de": {
+                "plainImpact": "Es gibt eine Sicherheitslücke im Bereich, in dem die Website E-Mails vor dem Versand zwischenspeichert. Unter bestimmten Umständen könnte ein Angreifer dies ausnutzen, um schädliche Befehle einzuschleusen und so möglicherweise die Kontrolle über Teile der Website zu erlangen.",
+                "urgency": "Diese Lücke sollte zeitnah geschlossen werden, ist aber vor allem dann relevant, wenn die Website E-Mails über die betroffene Zwischenspeicherung versendet."
+            }
+        }
+    },
+    "PKSA-rwv7-ff55-f18g|core|typo3/cms-core": {
+        "contentHash": "490d61ff966b79bd01881973671490982518c06d34c5cbffd7955347c73c84d5",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "When the website creates passwords automatically, they may be easier to guess than they should be. This could let an attacker work out a password and gain access to an account they shouldn't have.",
+                "urgency": "Worth updating soon, but it mainly matters if the site relies on the system to generate passwords for accounts."
+            },
+            "de": {
+                "plainImpact": "Automatisch vom System erzeugte Passwörter sind nicht zufällig genug und dadurch leichter zu erraten. Gelingt das einem Angreifer, könnte er sich unbefugt Zugang zu betroffenen Konten verschaffen.",
+                "urgency": "Bald handeln, wenn die Website vom System erzeugte Passwörter verwendet; werden alle Passwörter manuell vergeben, ist das Risiko geringer."
+            }
+        }
+    },
+    "PKSA-s3vj-chpj-8wrn|core|typo3/cms-core": {
+        "contentHash": "441c4f1ae09927c776a509e35e9d4ce81fa48de74d8fa8722455d72434588441",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "A security weakness could let an attacker use a link that appears to go to your website but secretly sends visitors to a different, untrusted site. This is often used to trick people into scams or fake login pages while making the link look like it comes from you.",
+                "urgency": "This is a medium-level issue, so it's best to update reasonably soon to protect your visitors from being misled by fake links."
+            },
+            "de": {
+                "plainImpact": "Ein Angreifer könnte einen Link so präparieren, dass er zunächst wie ein Link zu Ihrer Website aussieht, Besucher dann aber unbemerkt auf eine fremde, möglicherweise betrügerische Seite weiterleitet. Das kann für Betrugsversuche missbraucht werden und das Vertrauen Ihrer Besucher schädigen.",
+                "urgency": "Die Aktualisierung sollte zeitnah eingeplant werden; das Risiko ist mittel, da ein Angreifer die Besucher zunächst dazu bringen muss, auf einen solchen Link zu klicken."
+            }
+        }
+    },
+    "PKSA-tm11-834c-1wbq|core|typo3/cms-core": {
+        "contentHash": "9fef959577aeaaac29e71287f20a0dc3a81ff3d5a519ca32530fde39694c15f1",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "An attacker could send repeated requests that force your website to use up too much of its computing power. This could slow the site down or make it temporarily unavailable to real visitors.",
+                "urgency": "Worth updating in the near term, as this can affect any public TYPO3 site, though it does not put your data at risk."
+            },
+            "de": {
+                "plainImpact": "Ein Angreifer könnte die Bildanzeige der Website gezielt überlasten, sodass der Server sehr viele Ressourcen verbraucht. Das kann die Website verlangsamen oder zeitweise unerreichbar machen.",
+                "urgency": "Sollte zeitnah behoben werden, da die betroffene Bildfunktion in vielen TYPO3-Websites standardmäßig aktiv ist."
+            }
+        }
+    },
+    "PKSA-v3gm-s5dn-x7cy|optional|typo3/cms-beuser": {
+        "contentHash": "bd27fa7275136b739d0e3133c1ca03532abf90fdb199baf2dae393de4b6e3405",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "There is a security weakness in the part of the site staff use to manage user accounts. An attacker could trick a logged-in staff member into unknowingly carrying out actions in that area without meaning to.",
+                "urgency": "Worth addressing in your normal update cycle; it mainly matters if people log in to manage the website's back end."
+            },
+            "de": {
+                "plainImpact": "Ein Angreifer könnte einen angemeldeten Administrator dazu bringen, unbemerkt eine Aktion im Benutzer-Verwaltungsbereich auszuführen, ohne dass dieser es merkt. Dadurch könnten ungewollte Änderungen an Benutzerkonten der Website vorgenommen werden.",
+                "urgency": "Die Sicherheitslücke sollte zeitnah geschlossen werden, betrifft aber vor allem Websites, bei denen mehrere Personen im Verwaltungsbereich angemeldet sind."
+            }
+        }
+    },
+    "PKSA-vbrn-fwpj-xmx5|core|typo3/cms-core": {
+        "contentHash": "cadb57323e15b618410e18126e921583700157c42dd00e47dbff6581c094d112",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "There is a security weakness in the part of the site used to manage media like images and files. Someone could gain access to media they are not supposed to see or change, because the system did not properly check their permissions.",
+                "urgency": "This should be addressed soon, especially if several people log in to manage the website's content and files."
+            },
+            "de": {
+                "plainImpact": "Im Medienbereich der Webseite gibt es eine Schwachstelle bei der Zugriffskontrolle. Dadurch könnten Personen an Dateien oder Funktionen gelangen, für die sie eigentlich keine Berechtigung haben.",
+                "urgency": "Zeitnah handeln, vor allem wenn mehrere Personen mit unterschiedlichen Rechten Zugriff auf den Verwaltungsbereich der Webseite haben."
+            }
+        }
+    },
+    "PKSA-vv7s-w171-wb2j|core|typo3/cms-core": {
+        "contentHash": "dae3871303a57b2eb6ab51859048cd2f21f7d6c22e68941553a21f1628e61acc",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "There is a weakness in how the website checks who is allowed to make changes. This could let someone perform actions or reach areas they shouldn't normally have permission to.",
+                "urgency": "This mainly affects sites where people log in to manage content, so it's worth updating in good time, but it's a moderate rather than urgent risk."
+            },
+            "de": {
+                "plainImpact": "Es besteht eine Sicherheitslücke bei der Zugriffskontrolle im internen Verwaltungsbereich der Website. Dadurch könnte jemand auf Inhalte oder Funktionen zugreifen oder Daten verändern, für die er eigentlich keine Berechtigung haben sollte.",
+                "urgency": "Sie sollten dies zeitnah beheben; besonders wichtig ist es, wenn mehrere Personen mit unterschiedlichen Rechten Zugang zum Verwaltungsbereich haben."
+            }
+        }
+    },
+    "PKSA-vwj1-nbq6-bxyy|core|typo3/cms-install": {
+        "contentHash": "cd6200138b67e4c7bdc609349a4286a441289913f7037aad3d63b869fd402952",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "A part of the site's setup tool could reveal some information that was meant to stay private. On its own this is a minor issue and does not let someone take over the site.",
+                "urgency": "The risk is low, so this can be handled as part of normal maintenance rather than as an emergency."
+            },
+            "de": {
+                "plainImpact": "Über das Installations-Werkzeug der Website könnten interne Informationen sichtbar werden, die eigentlich privat bleiben sollten. Solche Informationen könnten einem Angreifer helfen, mehr über die Website zu erfahren.",
+                "urgency": "Das Risiko ist gering, aber ein Update sollte bei nächster Gelegenheit erfolgen; besonders wenn das Installations-Werkzeug von außen erreichbar ist."
+            }
+        }
+    },
+    "PKSA-vz6p-3jbg-f6db|optional|typo3/cms-belog": {
+        "contentHash": "576955b1006366519e32f6eac6492e02925e37d2c5d9a43145d113d771004a95",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "There is a security weakness in the part of the website's admin area that shows activity logs. In certain cases, a logged-in administrator could be tricked into performing an action they didn't intend while browsing another website.",
+                "urgency": "This is a medium-level issue that only affects the site's admin tools, so it's worth fixing in your normal update schedule but is not an emergency."
+            },
+            "de": {
+                "plainImpact": "Es geht um einen Bereich in der Verwaltung Ihrer Website, in dem Aktivitäten und Ereignisse protokolliert werden. Durch diese Schwäche könnte ein Angreifer eine angemeldete Verwaltungsperson dazu bringen, ohne ihr Wissen unbeabsichtigte Aktionen in diesem Bereich auszuführen.",
+                "urgency": "Das Risiko ist mittel; die Aktualisierung sollte zeitnah eingeplant werden, betrifft aber vor allem Websites, bei denen Personen regelmäßig im Verwaltungsbereich angemeldet sind."
+            }
+        }
+    },
+    "PKSA-y4y2-63tg-bjxn|core|typo3/cms-install": {
+        "contentHash": "6ca6a20ea0f18061df8f9c876e672060a6beb064ab57dd0121dca1d7dca78647",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "When something goes wrong on the site, error messages or logs could reveal internal details that were meant to stay private. This information could help an attacker learn more about how the site is set up.",
+                "urgency": "The risk is low, but it's worth updating as part of your regular maintenance."
+            },
+            "de": {
+                "plainImpact": "Wenn auf der Website ein Fehler auftritt, könnten dabei interne Informationen sichtbar werden, die eigentlich verborgen bleiben sollten. Ein Angreifer könnte diese Details nutzen, um mehr über den Aufbau der Website zu erfahren.",
+                "urgency": "Die Gefahr ist gering, daher sollte das Update bei nächster Gelegenheit im Rahmen der normalen Wartung eingespielt werden."
+            }
+        }
+    },
+    "PKSA-zz7z-6zsy-d2hc|core|typo3/cms-core": {
+        "contentHash": "4426547573038627ceaf9604dacb81c8db38b06bfccc9b34e45a9fb1d86f02bc",
+        "promptVersion": 1,
+        "langs": {
+            "en": {
+                "plainImpact": "A weakness in how the website handles its stored files could let someone reach files they should not be able to see or open. This might expose information that was meant to stay private.",
+                "urgency": "This is a medium-level issue, so it's worth updating in the near future to keep your files protected."
+            },
+            "de": {
+                "plainImpact": "Ein Angreifer könnte durch eine Schwachstelle im Umgang mit Dateien auf Dateien oder Ordner zugreifen, die eigentlich nicht öffentlich zugänglich sein sollten. Dadurch könnten vertrauliche Inhalte der Website sichtbar oder abrufbar werden.",
+                "urgency": "Es empfiehlt sich, die Aktualisierung zeitnah einzuplanen, da diese Schwäche einen grundlegenden Teil der Website betrifft, auch wenn das Risiko als mittel eingestuft ist."
+            }
+        }
     }
-  }
 }
