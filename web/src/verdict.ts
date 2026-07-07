@@ -142,7 +142,10 @@ export function computeVerdict(
       tier = 'stale-data';
       recommendedVersion = null;
       text = m.stale(freshnessIso);
-      concerns.length = 0; // the underlying findings are disclaimed — don't surface them under "can't confirm"
+      // The underlying findings are disclaimed — surface neither the concerns nor the advisory
+      // lists under "can't confirm"; the UI renders `affecting` unconditionally.
+      concerns.length = 0;
+      affecting.length = 0;
     } else {
       // Critical tier stands (over-reporting is the safe direction), but a stale dataset's "latest"
       // may itself be obsolete — drop the structured recommendation and flag the staleness up front.

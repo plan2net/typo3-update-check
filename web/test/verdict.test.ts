@@ -234,6 +234,24 @@ describe('computeVerdict — data freshness (fail closed on a stalled pipeline)'
     expect(v.concerns).toHaveLength(0);
   });
 
+  it('hides the disclaimed advisory lists when downgrading to stale-data', () => {
+    const optionalOnly: Typo3Data = {
+      ...staleData,
+      advisories: [
+        {
+          id: 'SA-OPT', cve: 'CVE-B', package: 'typo3/cms-form', optional: true, severity: 'medium',
+          title: 'Optional extension', affectedVersions: '>=13.0.0,<13.4.31', link: '#',
+          affected: { '13': { from: '13.4.30', fixedIn: '13.4.31', fixedInElts: false } },
+          explanation: null,
+        },
+      ],
+    };
+    // 13.4.30 would be review-optional listing SA-OPT; under "can't confirm" nothing may be listed.
+    const v = computeVerdict('13.4.30', false, optionalOnly, later);
+    expect(v.tier).toBe('stale-data');
+    expect(v.affecting).toHaveLength(0);
+  });
+
   it('keeps a critical verdict under staleness but drops its (possibly obsolete) recommendation', () => {
     const v = computeVerdict('12.4.10', false, staleData, later); // stale, but live criticals affect 12.4.10
     expect(v.tier).toBe('critical-missing-fix');           // criticality stands (over-reporting is safe)
