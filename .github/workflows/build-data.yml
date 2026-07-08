@@ -21,7 +21,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: shivammathur/setup-php@v2
         with:
@@ -35,7 +35,7 @@ jobs:
         run: vendor/bin/phpunit
         working-directory: web/build
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: '20'
 
@@ -57,11 +57,11 @@ jobs:
         run: php validate.php
         working-directory: web/build
 
+      # GITHUB_REPOSITORY (owner/repo) is guaranteed on every event; an empty repository name in
+      # the event payload would otherwise yield base "//" and break every asset URL.
       - name: Build site
-        run: npm run build
+        run: PAGES_BASE="/${GITHUB_REPOSITORY#*/}/" npm run build
         working-directory: web
-        env:
-          PAGES_BASE: /${{ github.event.repository.name }}/
 
       # Stamp the DEPLOYED data (not the committed source) with a freshness heartbeat every run, so
       # the frontend can fail closed if the pipeline ever stops. generatedAt only moves on a real data
@@ -83,14 +83,15 @@ jobs:
             git config user.email "github-actions[bot]@users.noreply.github.com"
             git add web/public/data
             git commit -m "chore(data): refresh TYPO3 release/advisory data"
+            git pull --rebase # a human push during the run must not fail the deploy
             git push
           else
             echo "No data changes."
           fi
 
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: web/dist
       - id: deploy
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
