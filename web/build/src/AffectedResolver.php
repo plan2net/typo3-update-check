@@ -10,6 +10,13 @@ use Composer\Semver\Semver;
 final class AffectedResolver
 {
     /**
+     * @param \Closure(string):void|null $warningSink receives data-quality warnings; STDERR by default.
+     *        Tests inject a collector so exercising the warning paths cannot leak alarming lines
+     *        into the CI log — a warning there always means REAL data.
+     */
+    public function __construct(private readonly ?\Closure $warningSink = null) {}
+
+    /**
      * @param list<array{version:string,elts:bool}> $releasesAsc releases of one major (any order)
      * @return array{from:string,fixedIn:string|null,fixedInElts:bool}|null
      *         null if the constraint does not match any release in this major OR is malformed (mirrors the plugin's skip).
@@ -46,7 +53,10 @@ final class AffectedResolver
             // false negative. Instead, conservatively treat the whole span first..last-affected as
             // affected — this may over-report the gap versions (the safe direction) but never
             // under-reports — and log it for review.
-            fwrite(STDERR, "warning: non-contiguous affected range, treating the span conservatively as affected: {$affectedVersions}\n");
+            $warn = $this->warningSink ?? static function (string $warning): void {
+                fwrite(STDERR, $warning);
+            };
+            $warn("warning: non-contiguous affected range, treating the span conservatively as affected: {$affectedVersions}\n");
         }
 
         $fix = $releasesAsc[$max + 1] ?? null; // first release after the LAST affected one

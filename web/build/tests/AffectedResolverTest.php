@@ -58,13 +58,22 @@ final class AffectedResolverTest extends TestCase
     }
 
     #[Test]
-    public function nonContiguousAffectedRangeIsTreatedConservatively(): void
+    public function nonContiguousAffectedRangeIsTreatedConservativelyAndWarnsViaTheSink(): void
     {
         // Matches 12.4.10 and 12.4.46+ but not 12.4.45 (a gap). Rather than throw or drop, the
         // whole span first..last-affected is treated as affected, so the gap version (12.4.45) is
-        // over-reported as affected, never silently missed.
-        $r = (new AffectedResolver())->resolve('<=12.4.10|>=12.4.46', $this->releases12);
+        // over-reported as affected, never silently missed. The warning goes to the injected sink —
+        // NOT to STDERR — so this test can't leak a scary-looking line into the CI log.
+        $warnings = [];
+        $resolver = new AffectedResolver(function (string $warning) use (&$warnings): void {
+            $warnings[] = $warning;
+        });
+
+        $r = $resolver->resolve('<=12.4.10|>=12.4.46', $this->releases12);
+
         $this->assertSame('12.4.10', $r['from']);
         $this->assertNull($r['fixedIn']); // last affected is the newest release -> no fix above it
+        $this->assertCount(1, $warnings);
+        $this->assertStringContainsString('non-contiguous', $warnings[0]);
     }
 }
