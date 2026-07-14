@@ -1,12 +1,18 @@
 {
-    "generatedAt": "2026-07-07T14:32:06+00:00",
+    "generatedAt": "2026-07-14T14:19:38+00:00",
     "majors": {
         "12": {
             "maintainedUntil": "2026-04-30T00:00:00+02:00",
             "eltsUntil": "2030-04-30T00:00:00+02:00",
             "latestFree": "12.4.45",
-            "latestElts": "12.4.47",
+            "latestElts": "12.4.48",
             "releases": [
+                {
+                    "version": "12.4.48",
+                    "date": "2026-07-14T12:30:55+02:00",
+                    "type": "regular",
+                    "elts": true
+                },
                 {
                     "version": "12.4.47",
                     "date": "2026-06-16T08:49:04+02:00",
@@ -342,9 +348,15 @@
         "13": {
             "maintainedUntil": "2027-12-31T00:00:00+01:00",
             "eltsUntil": "2030-12-31T00:00:00+01:00",
-            "latestFree": "13.4.32",
-            "latestElts": "13.4.32",
+            "latestFree": "13.4.33",
+            "latestElts": "13.4.33",
             "releases": [
+                {
+                    "version": "13.4.33",
+                    "date": "2026-07-14T12:24:51+02:00",
+                    "type": "regular",
+                    "elts": false
+                },
                 {
                     "version": "13.4.32",
                     "date": "2026-06-16T08:45:07+02:00",
@@ -596,9 +608,15 @@
         "14": {
             "maintainedUntil": "2029-06-30T00:00:00+02:00",
             "eltsUntil": "2032-06-30T00:00:00+02:00",
-            "latestFree": "14.3.4",
-            "latestElts": "14.3.4",
+            "latestFree": "14.3.5",
+            "latestElts": "14.3.5",
             "releases": [
+                {
+                    "version": "14.3.5",
+                    "date": "2026-07-14T12:28:59+02:00",
+                    "type": "security",
+                    "elts": false
+                },
                 {
                     "version": "14.3.4",
                     "date": "2026-06-16T08:55:55+02:00",
