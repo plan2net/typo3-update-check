@@ -1,5 +1,5 @@
 {
-    "generatedAt": "2026-07-14T14:19:38+00:00",
+    "generatedAt": "2026-07-15T12:46:33+00:00",
     "majors": {
         "12": {
             "maintainedUntil": "2026-04-30T00:00:00+02:00",
@@ -1543,6 +1543,33 @@
                 "de": {
                     "plainImpact": "Wenn auf der Website Formulare eingesetzt werden, könnte ein Angreifer schädliche Befehle auf dem Server ausführen. Im schlimmsten Fall kann er dadurch die Kontrolle über die Website übernehmen.",
                     "urgency": "Das Update sollte bald eingespielt werden, wenn die Website Formulare nutzt; ohne Formulare ist das Risiko gering."
+                }
+            }
+        },
+        {
+            "id": "PKSA-d4vj-m6hn-xm1j",
+            "cve": "CVE-2026-15305",
+            "package": "typo3/cms-form",
+            "optional": true,
+            "severity": "unknown",
+            "title": "TYPO3-CORE-SA-2026-020: TYPO3 CMS - Unrestricted File Upload in Form Framework",
+            "affectedVersions": ">=14.2.0,<14.3.5",
+            "link": "https://news.typo3.com/security/advisory/typo3-core-sa-2026-020",
+            "affected": {
+                "14": {
+                    "from": "14.2.0",
+                    "fixedIn": "14.3.5",
+                    "fixedInElts": false
+                }
+            },
+            "explanation": {
+                "en": {
+                    "plainImpact": "If the site uses forms that let visitors upload files, someone could upload files that shouldn't be allowed. This weakness could be misused to place harmful files on your website.",
+                    "urgency": "Apply the fix soon if the site has forms with file uploads; if none of your forms accept uploads, the risk is much lower."
+                },
+                "de": {
+                    "plainImpact": "Wenn die Website Formulare mit einer Möglichkeit zum Hochladen von Dateien nutzt, könnte jemand unerwünschte Dateien auf den Server laden. Das könnte die Sicherheit der Website beeinträchtigen.",
+                    "urgency": "Zeitnah handeln, falls die Website Formulare mit Datei-Uploads verwendet; ohne solche Formulare ist das Risiko gering."
                 }
             }
         },
