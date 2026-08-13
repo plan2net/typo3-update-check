@@ -1,5 +1,5 @@
 {
-    "generatedAt": "2026-08-11T07:43:35+00:00",
+    "generatedAt": "2026-08-13T08:46:10+00:00",
     "majors": {
         "12": {
             "maintainedUntil": "2026-04-30T00:00:00+02:00",
@@ -1791,6 +1791,29 @@
                     "urgency": "Das Update sollte zeitnah eingespielt werden, besonders wenn die Website geschützte oder nicht-öffentliche Inhalte enthält."
                 }
             }
+        },
+        {
+            "id": "PKSA-hf64-fs5s-6k3h",
+            "cve": "CVE-2026-19418",
+            "package": "typo3/cms-core",
+            "optional": false,
+            "severity": "unknown",
+            "title": "TYPO3-CORE-SA-2026-021: Broken Access Control in Backend and Install Tool",
+            "affectedVersions": ">=13.0.0,<13.4.34|>=14.0.0,<14.3.6",
+            "link": "https://news.typo3.com/security/advisory/typo3-core-sa-2026-021",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": "14.3.6",
+                    "fixedInElts": false
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": "13.4.34",
+                    "fixedInElts": false
+                }
+            },
+            "explanation": null
         },
         {
             "id": "PKSA-hf6f-qcwd-7279",
