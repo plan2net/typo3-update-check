@@ -475,6 +475,20 @@
             }
         }
     },
+    "PKSA-hf64-fs5s-6k3h|core|typo3/cms-core": {
+        "contentHash": "57e7f6b4f12d6fe07d1b3587fbd87731391b7897fcecacda8f837f077c1366de",
+        "promptVersion": 2,
+        "langs": {
+            "en": {
+                "plainImpact": "There is a weakness in the site's administration and setup areas that may not properly limit who can access certain functions. This could let someone reach parts of the system they should not be able to use.",
+                "urgency": "It's best to apply the fix promptly, since it affects the behind-the-scenes admin area used to manage the website."
+            },
+            "de": {
+                "plainImpact": "Es gibt eine Schwachstelle in der Verwaltung Ihrer Website, bei der der Zugriff nicht richtig eingeschränkt wird. Dadurch könnten Personen Bereiche oder Funktionen erreichen, die eigentlich nur berechtigten Nutzern vorbehalten sein sollten.",
+                "urgency": "Diese Aktualisierung sollte zeitnah eingespielt werden, besonders wenn mehrere Personen Zugang zur Verwaltung Ihrer Website haben."
+            }
+        }
+    },
     "PKSA-hf6f-qcwd-7279|core|typo3/cms-core": {
         "contentHash": "bc61232cc6b89d727615c3d830fbcf61157ff965ccf94d620378c7b669bb4aab",
         "promptVersion": 2,

@@ -1,5 +1,5 @@
 {
-    "generatedAt": "2026-08-13T08:46:10+00:00",
+    "generatedAt": "2026-08-26T18:31:34+00:00",
     "majors": {
         "12": {
             "maintainedUntil": "2026-04-30T00:00:00+02:00",
@@ -1813,7 +1813,16 @@
                     "fixedInElts": false
                 }
             },
-            "explanation": null
+            "explanation": {
+                "en": {
+                    "plainImpact": "There is a weakness in the site's administration and setup areas that may not properly limit who can access certain functions. This could let someone reach parts of the system they should not be able to use.",
+                    "urgency": "It's best to apply the fix promptly, since it affects the behind-the-scenes admin area used to manage the website."
+                },
+                "de": {
+                    "plainImpact": "Es gibt eine Schwachstelle in der Verwaltung Ihrer Website, bei der der Zugriff nicht richtig eingeschränkt wird. Dadurch könnten Personen Bereiche oder Funktionen erreichen, die eigentlich nur berechtigten Nutzern vorbehalten sein sollten.",
+                    "urgency": "Diese Aktualisierung sollte zeitnah eingespielt werden, besonders wenn mehrere Personen Zugang zur Verwaltung Ihrer Website haben."
+                }
+            }
         },
         {
             "id": "PKSA-hf6f-qcwd-7279",
