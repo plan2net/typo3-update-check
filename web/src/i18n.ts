@@ -87,9 +87,9 @@ const EN: Strings = {
   }),
   eltsOnly: (major, gated) => ({
     headline: `Free security support for TYPO3 ${major} has ended.`,
-    detail: 'Newer security fixes are ELTS-only. ' +
-      `${gated > 0 ? `Your version is exposed to ${gated} ${plural(gated, 'issue', 'issues')} fixed only in ELTS releases. ` : ''}` +
-      'To keep getting security patches you need an ELTS subscription or an upgrade to a newer TYPO3 version.',
+    detail: 'Newer security fixes ship in ELTS releases only. ' +
+      `${gated > 0 ? `This version is exposed to ${gated} ${plural(gated, 'issue', 'issues')} fixed only in ELTS releases. ` : ''}` +
+      'Further patches require an ELTS subscription or an upgrade to a newer major.',
   }),
   eol: (major, eltsUntilIso) => ({
     headline: `TYPO3 ${major} is end of life.`,
@@ -101,24 +101,24 @@ const EN: Strings = {
     detail: `${hasElts ? 'ELTS' : 'Free'} security support for TYPO3 ${major} ends on ${fmtDate(endsIso, 'en')}.`,
   }),
   reviewOptional: (count) => ({
-    headline: 'Your core looks fine — check optional extensions.',
+    headline: 'No core issues. Check the optional extensions.',
     detail: `${count} ${plural(count, 'advisory', 'advisories')} may apply depending on which extensions are installed.`,
   }),
   behind: (version, target) => ({
-    headline: "You're secure, but a newer release is available.",
+    headline: 'Secure, but a newer release is available.',
     detail: `Updating ${version} → ${target} is low-risk and recommended.`,
   }),
   allGood: (hasElts) => ({
-    headline: "You're up to date.",
-    detail: `You're on the latest ${hasElts ? '' : 'free '}release of a supported version. Nothing to do right now.`,
+    headline: 'Up to date.',
+    detail: `This is the latest ${hasElts ? '' : 'free '}release of a supported version. Nothing to do right now.`,
   }),
   stale: (updatedIso) => ({
-    headline: "We can't confirm this right now.",
+    headline: 'This result is unconfirmed.',
     detail: `Our security data was last verified on ${fmtDate(updatedIso, 'en')} and may be out of date. ` +
-      'Please check again later — until then, treat a clean result with caution.',
+      'Treat a clean result with caution until it refreshes.',
   }),
   unknownVersion: () => ({
-    headline: "We couldn't recognise that version.",
+    headline: 'Unrecognised version.',
     detail: 'Enter the exact TYPO3 version, for example 12.4.10.',
   }),
   unknownMajor: (major, maintainedIso, eltsIso) => ({
@@ -128,39 +128,40 @@ const EN: Strings = {
   }),
   concernOptional: (count, packages) =>
     `${count} ${plural(count, 'advisory', 'advisories')} may also apply depending on installed extensions (${packages.join(', ')}).`,
-  concernSeparateUnfixed: () => "A separate known issue has no released fix yet — updating won't resolve it.",
+  concernSeparateUnfixed: () => "A separate known issue has no released fix yet, so updating won't resolve it.",
   concernStale: (updatedIso) =>
-    `Based on security data from ${fmtDate(updatedIso, 'en')}, which may be out of date — confirm the current release before updating.`,
+    `Based on security data from ${fmtDate(updatedIso, 'en')}, which may be out of date. Confirm the current release before updating.`,
   concernMaybeNewer: (updatedIso) =>
-    `Our release data was last verified on ${fmtDate(updatedIso, 'en')} — your version may be newer than our data. Please check again later.`,
+    `Our release data was last verified on ${fmtDate(updatedIso, 'en')}, so this version may be newer than our data.`,
   concernEltsGatedRemain: (count) =>
-    `${count} core ${plural(count, 'issue is', 'issues are')} fixed only in ELTS releases — a free update won't resolve ` +
-    `${plural(count, 'it', 'them')}; an ELTS subscription (or a newer major) is required.`,
-  concernAlsoBehind: (count) => `You're also ${count} free ${plural(count, 'release', 'releases')} behind on this line.`,
+    `${count} core ${plural(count, 'issue is', 'issues are')} fixed only in ELTS releases. A free update won't resolve ` +
+    `${plural(count, 'it', 'them')}; that needs an ELTS subscription or a newer major.`,
+  concernAlsoBehind: (count) => `This version is also ${count} free ${plural(count, 'release', 'releases')} behind on this line.`,
   concernNewerMajor: (major) => `TYPO3 ${major} is available as a newer major version.`,
-  severityLabel: (severity) => severity, // the data's severity values are already plain English
+  // The data's severity values are already plain English; only "unknown" needs saying properly.
+  severityLabel: (severity) => (severity === 'unknown' ? 'not rated' : severity),
   showAllAdvisories: (total) => `Show all ${total}`,
   ui: {
     title: 'Is your TYPO3 up to date?',
-    tagline: "Check any client's TYPO3 and share the result.",
-    versionLabel: 'Which TYPO3 version is the site on?',
-    versionHint: "You'll find the exact version in the TYPO3 backend top bar.",
-    majorLabel: 'TYPO3 version line',
-    yourVersion: 'Your version',
+    tagline: 'Known vulnerabilities and support status for any TYPO3 version.',
+    versionLabel: 'Which TYPO3 version is your site running?',
+    versionHint: 'The exact version is in the backend top bar, or run composer show typo3/cms-core.',
+    majorLabel: 'Major version',
+    yourVersion: 'Installed version',
     tagLatest: 'latest',
     tagSecurity: 'security release',
     tagElts: 'ELTS',
     eltsLabel: 'This site has an ELTS subscription',
     check: 'Check',
-    affects: 'Affects this site',
+    affects: 'Affects this version',
     mayApply: 'May apply, depending on installed extensions',
     copyLink: 'Copy link to this result',
     copied: 'Link copied',
-    shareHint: 'Send it to your client, or schedule your team to perform the update.',
+    shareHint: 'The link carries the version and ELTS setting, so it reopens this exact result.',
     officialAdvisory: 'Official advisory',
     opensNewTab: 'opens in a new tab',
     onlyIfUses: 'Only relevant if the site uses',
-    loadError: 'Sorry — could not load update data.',
+    loadError: 'Could not load the update data. Try reloading.',
     langNavLabel: 'Language',
     resultLabel: 'Result',
     resourcesLabel: 'Resources',
@@ -196,9 +197,9 @@ const DE: Strings = {
   }),
   eltsOnly: (major, gated) => ({
     headline: `Der kostenlose Sicherheitssupport für TYPO3 ${major} ist beendet.`,
-    detail: 'Neuere Sicherheitsfixes gibt es nur über ELTS. ' +
-      `${gated > 0 ? `Ihre Version ist ${plural(gated, 'einem Sicherheitsproblem ausgesetzt, das nur in ELTS-Releases behoben ist', `${gated} Sicherheitsproblemen ausgesetzt, die nur in ELTS-Releases behoben sind`)}. ` : ''}` +
-      'Für weitere Sicherheitsupdates brauchen Sie ein ELTS-Abo oder ein Upgrade auf eine neuere TYPO3-Version.',
+    detail: 'Neuere Sicherheitsfixes erscheinen nur noch in ELTS-Releases. ' +
+      `${gated > 0 ? `Diese Version ist ${plural(gated, 'einem Sicherheitsproblem ausgesetzt, das nur in ELTS-Releases behoben ist', `${gated} Sicherheitsproblemen ausgesetzt, die nur in ELTS-Releases behoben sind`)}. ` : ''}` +
+      'Weitere Patches erfordern ein ELTS-Abo oder ein Upgrade auf eine neuere Major-Version.',
   }),
   eol: (major, eltsUntilIso) => ({
     headline: `TYPO3 ${major} hat das Lebensende erreicht.`,
@@ -210,7 +211,7 @@ const DE: Strings = {
     detail: `Der ${hasElts ? 'ELTS-' : 'kostenlose '}Sicherheitssupport für TYPO3 ${major} endet am ${fmtDate(endsIso, 'de')}.`,
   }),
   reviewOptional: (count) => ({
-    headline: 'Der Kern ist in Ordnung — prüfen Sie optionale Erweiterungen.',
+    headline: 'Keine Kernprobleme. Prüfen Sie die optionalen Erweiterungen.',
     detail: `${count} ${plural(count, 'Hinweis betrifft', 'Hinweise betreffen')} eventuell installierte Erweiterungen.`,
   }),
   behind: (version, target) => ({
@@ -218,16 +219,16 @@ const DE: Strings = {
     detail: `Das Update ${version} → ${target} ist risikoarm und empfohlen.`,
   }),
   allGood: (hasElts) => ({
-    headline: 'Sie sind auf dem aktuellen Stand.',
-    detail: `Sie nutzen das aktuellste ${hasElts ? '' : 'kostenlose '}Release einer unterstützten Version. Nichts zu tun.`,
+    headline: 'Aktueller Stand.',
+    detail: `Das ist das aktuellste ${hasElts ? '' : 'kostenlose '}Release einer unterstützten Version. Nichts zu tun.`,
   }),
   stale: (updatedIso) => ({
-    headline: 'Das können wir gerade nicht bestätigen.',
+    headline: 'Dieses Ergebnis ist unbestätigt.',
     detail: `Unsere Sicherheitsdaten wurden zuletzt am ${fmtDate(updatedIso, 'de')} geprüft und sind möglicherweise nicht mehr aktuell. ` +
-      'Bitte später erneut prüfen — bis dahin ein „sauberes“ Ergebnis mit Vorsicht behandeln.',
+      'Behandeln Sie ein „sauberes“ Ergebnis bis zur nächsten Aktualisierung mit Vorsicht.',
   }),
   unknownVersion: () => ({
-    headline: 'Diese Version konnten wir nicht erkennen.',
+    headline: 'Unbekannte Version.',
     detail: 'Geben Sie die genaue TYPO3-Version ein, zum Beispiel 12.4.10.',
   }),
   unknownMajor: (major, maintainedIso, eltsIso) => ({
@@ -237,40 +238,40 @@ const DE: Strings = {
   }),
   concernOptional: (count, packages) =>
     `${count} ${plural(count, 'Hinweis betrifft', 'Hinweise betreffen')} eventuell installierte Erweiterungen (${packages.join(', ')}).`,
-  concernSeparateUnfixed: () => 'Ein weiteres bekanntes Problem hat noch keinen Fix — das Update behebt es nicht.',
+  concernSeparateUnfixed: () => 'Ein weiteres bekanntes Problem hat noch keinen Fix, das Update behebt es also nicht.',
   concernStale: (updatedIso) =>
-    `Basiert auf Sicherheitsdaten vom ${fmtDate(updatedIso, 'de')} und ist möglicherweise nicht mehr aktuell — prüfen Sie vor dem Update das aktuelle Release.`,
+    `Basiert auf Sicherheitsdaten vom ${fmtDate(updatedIso, 'de')} und ist möglicherweise nicht mehr aktuell. Prüfen Sie vor dem Update das aktuelle Release.`,
   concernMaybeNewer: (updatedIso) =>
-    `Unsere Release-Daten wurden zuletzt am ${fmtDate(updatedIso, 'de')} geprüft — Ihre Version könnte neuer sein als unsere Daten. Bitte später erneut prüfen.`,
+    `Unsere Release-Daten wurden zuletzt am ${fmtDate(updatedIso, 'de')} geprüft, diese Version könnte also neuer sein als unsere Daten.`,
   concernEltsGatedRemain: (count) =>
-    `${count} ${plural(count, 'Kernproblem ist', 'Kernprobleme sind')} nur in ELTS-Releases behoben — ein kostenloses Update beseitigt ` +
-    `${plural(count, 'es', 'sie')} nicht; dafür ist ein ELTS-Abo (oder eine neuere Hauptversion) nötig.`,
-  concernAlsoBehind: (count) => `Sie sind außerdem ${count} ${plural(count, 'kostenloses Release', 'kostenlose Releases')} im Rückstand.`,
-  concernNewerMajor: (major) => `TYPO3 ${major} ist als neuere Hauptversion verfügbar.`,
+    `${count} ${plural(count, 'Kernproblem ist', 'Kernprobleme sind')} nur in ELTS-Releases behoben. Ein kostenloses Update beseitigt ` +
+    `${plural(count, 'es', 'sie')} nicht; dafür braucht es ein ELTS-Abo oder eine neuere Major-Version.`,
+  concernAlsoBehind: (count) => `Diese Version ist außerdem ${count} ${plural(count, 'kostenloses Release', 'kostenlose Releases')} im Rückstand.`,
+  concernNewerMajor: (major) => `TYPO3 ${major} ist als neuere Major-Version verfügbar.`,
   severityLabel: (severity) =>
-    ({ critical: 'kritisch', high: 'hoch', medium: 'mittel', low: 'niedrig', unknown: 'unbekannt' })[severity] ?? severity,
+    ({ critical: 'kritisch', high: 'hoch', medium: 'mittel', low: 'niedrig', unknown: 'nicht eingestuft' })[severity] ?? severity,
   showAllAdvisories: (total) => `Alle ${total} anzeigen`,
   ui: {
     title: 'Ist Ihre TYPO3-Installation aktuell?',
-    tagline: 'Prüfen Sie die TYPO3-Installation eines Kunden und teilen Sie das Ergebnis.',
-    versionLabel: 'Welche TYPO3-Version läuft auf der Website?',
-    versionHint: 'Die genaue Version steht in der TYPO3-Backend-Kopfzeile.',
-    majorLabel: 'TYPO3-Versionslinie',
-    yourVersion: 'Ihre Version',
+    tagline: 'Bekannte Sicherheitslücken und Support-Status für jede TYPO3-Version.',
+    versionLabel: 'Welche TYPO3-Version läuft auf Ihrer Website?',
+    versionHint: 'Die genaue Version steht in der Backend-Kopfzeile oder liefert composer show typo3/cms-core.',
+    majorLabel: 'Major-Version',
+    yourVersion: 'Installierte Version',
     tagLatest: 'neueste',
     tagSecurity: 'Sicherheitsrelease',
     tagElts: 'ELTS',
     eltsLabel: 'Diese Website hat ein ELTS-Abo',
     check: 'Prüfen',
-    affects: 'Betrifft diese Website',
+    affects: 'Betrifft diese Version',
     mayApply: 'Kann zutreffen, je nach installierten Erweiterungen',
     copyLink: 'Link zu diesem Ergebnis kopieren',
     copied: 'Link kopiert',
-    shareHint: 'Senden Sie ihn an Ihren Kunden oder planen Sie das Update mit Ihrem Team.',
+    shareHint: 'Der Link enthält Version und ELTS-Einstellung und öffnet genau dieses Ergebnis wieder.',
     officialAdvisory: 'Offizieller Hinweis',
     opensNewTab: 'öffnet in einem neuen Tab',
     onlyIfUses: 'Nur relevant, wenn die Website nutzt:',
-    loadError: 'Entschuldigung — die Update-Daten konnten nicht geladen werden.',
+    loadError: 'Die Update-Daten konnten nicht geladen werden. Bitte neu laden.',
     langNavLabel: 'Sprache',
     resultLabel: 'Ergebnis',
     resourcesLabel: 'Ressourcen',

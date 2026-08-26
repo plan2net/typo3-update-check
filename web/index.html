@@ -27,7 +27,7 @@
         </div>
         <div class="brand-text">
           <h1 id="app-title">Is your TYPO3 up to date?</h1>
-          <p id="app-tagline" class="tagline">Check any client's TYPO3 and share the result.</p>
+          <p id="app-tagline" class="tagline">Known vulnerabilities and support status for any TYPO3 version.</p>
         </div>
         <div class="header-side">
           <nav id="lang-toggle" class="lang-toggle" aria-label="Language" data-i18n-label="langNavLabel">
@@ -45,16 +45,16 @@
         <!-- LEFT: input rail -->
         <div class="t3-rail">
           <form id="check-form">
-            <p id="version-label" class="rail-label">Which TYPO3 version is the site on?</p>
-            <p id="version-hint" class="hint">You'll find the exact version in the TYPO3 backend top bar.</p>
+            <p id="version-label" class="rail-label">Which TYPO3 version is your site running?</p>
+            <p id="version-hint" class="hint">The exact version is in the backend top bar, or run composer show typo3/cms-core.</p>
 
             <div class="field">
-              <label id="major-label" for="major">TYPO3 version line</label>
+              <label id="major-label" for="major">Major version</label>
               <select id="major" name="major"></select>
             </div>
 
             <div class="field">
-              <label id="version-select-label" for="version">Your version</label>
+              <label id="version-select-label" for="version">Installed version</label>
               <select id="version" name="version"></select>
             </div>
 
