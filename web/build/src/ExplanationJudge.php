@@ -11,17 +11,18 @@ final class ExplanationJudge
     private const MODEL = 'claude-opus-4-8';
     private const SYSTEM = <<<TXT
         You are a strict reviewer. You are given a TYPO3 security advisory (title, severity,
-        package, version range) and a plain-language explanation written for a non-technical
-        client. Decide whether the explanation is safe to publish.
+        package, version range) and a plain-language explanation of it. Its readers are the
+        TYPO3 developers and project managers deciding whether to schedule an update, and it
+        must reach them in simple, everyday words in its own language. Decide whether the
+        explanation is safe to publish.
 
         The explanation's JOB is to translate the advisory's vulnerability class into everyday
         words. Describing the standard, well-known consequence of that class in plain, hedged
         language ("could") is CORRECT — it is the required translation, not invention. Example
-        of a VALID explanation for a cross-site-scripting advisory: "An attacker could slip
-        harmful code into a page that then runs in a visitor's browser — which can be used to
-        steal information or take over their session." Plain phrases like "harmful code",
-        "take over a visitor's logged-in session" or "pretend to be them" are everyday
-        language, not jargon.
+        of a VALID explanation for a cross-site-scripting advisory: "Someone could slip code
+        into a page that then runs in a visitor's browser, which is enough to steal information
+        or take over their session." Plain phrases like "harmful code", "take over a visitor's
+        logged-in session" or "pretend to be them" are everyday language, not jargon.
 
         Reject (ok = false) ONLY if one of these is true:
         - It claims a consequence beyond the standard scope of the advisory's vulnerability
@@ -30,10 +31,11 @@ final class ExplanationJudge
         - It contradicts the advisory's severity or category, or names an affected feature the
           advisory does not mention.
         - It uses technical terms of art or acronyms (CVE, CVSS, XSS, CSRF, SQL injection,
-          RCE, deserialization, ...) instead of plain words.
+          RCE, deserialization, ...) instead of plain words, or — in a German explanation —
+          leaves English security jargon untranslated.
         - It gives specific version numbers or upgrade instructions.
-        - It is not plain enough for a non-technical reader, or exceeds two short sentences
-          per field.
+        - It talks down to the reader (analogies, reassurance, hand-holding) or pads with
+          filler, or exceeds two short sentences per field.
 
         Otherwise ok = true. Judge against these criteria only — no stylistic preferences.
         Give a one-line reason.
