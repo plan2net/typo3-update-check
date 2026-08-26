@@ -1,5 +1,5 @@
 {
-    "generatedAt": "2026-08-26T18:31:34+00:00",
+    "generatedAt": "2026-08-26T19:02:36+00:00",
     "majors": {
         "12": {
             "maintainedUntil": "2026-04-30T00:00:00+02:00",
@@ -727,12 +727,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "There is a weakness in the part of the website that manages web address redirects. Someone in the site's admin area who shouldn't have access to this feature may be able to view or use it anyway.",
-                    "urgency": "Worth fixing in your normal update cycle; it mainly matters if your site has multiple back-office users with limited permissions."
+                    "plainImpact": "A backend user could work with redirects in the module even when they should not have access to it. This lets them see or change redirect entries beyond their intended permissions.",
+                    "urgency": "Schedule this in a normal update cycle; it only matters if editors with limited rights have backend access and the redirects module is in use."
                 },
                 "de": {
-                    "plainImpact": "In der Verwaltung des Systems gibt es eine Schwäche bei den Zugriffsrechten im Bereich für Weiterleitungen. Ein angemeldeter Nutzer könnte dadurch möglicherweise auf Weiterleitungen zugreifen oder diese verändern, obwohl er dazu eigentlich nicht berechtigt sein sollte.",
-                    "urgency": "Das sollte zeitnah behoben werden, ist aber vor allem dann wichtig, wenn mehrere Personen mit unterschiedlichen Rechten Zugang zur Verwaltung der Website haben."
+                    "plainImpact": "Ein angemeldeter Backend-Nutzer kann im Bereich für Weiterleitungen auf Dinge zugreifen oder Änderungen vornehmen, die eigentlich außerhalb seiner Berechtigung liegen. Betroffen ist damit die Verwaltung von Weiterleitungen durch Redakteure mit eingeschränkten Rechten.",
+                    "urgency": "Mit dem nächsten geplanten Wartungsfenster einspielen, vor allem wenn es Backend-Nutzer mit eingeschränkten Rechten und das Weiterleitungs-Modul gibt."
                 }
             }
         },
@@ -759,12 +759,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "A logged-in administrator could be tricked into visiting a booby-trapped web page that then makes their browser carry out unwanted actions in the part of the site that manages add-on features, without them realising it. This could lead to unwanted changes being made to the website's setup.",
-                    "urgency": "Act soon, as this is a high-severity issue; the risk mainly applies when a site administrator is logged in and could be lured to a malicious page."
+                    "plainImpact": "A logged-in administrator could be tricked into visiting a prepared page or link that quietly sends actions to the extension manager on their behalf. This could cause changes to installed extensions without the administrator meaning to do so.",
+                    "urgency": "Schedule this soon, since it targets administrators and any site with backend access could be affected."
                 },
                 "de": {
-                    "plainImpact": "Bei dieser Schwäche könnte ein Angreifer eine angemeldete Person mit erweiterten Rechten dazu bringen, unbemerkt eine Aktion im Verwaltungsbereich der Website auszulösen – zum Beispiel über einen präparierten Link oder eine manipulierte Seite. So könnten ungewollte Änderungen an der Website vorgenommen werden, ohne dass die betroffene Person es merkt.",
-                    "urgency": "Sollte zeitnah behoben werden, da die Schwäche als hoch eingestuft ist und den Verwaltungsbereich betrifft, in dem berechtigte Personen angemeldet sind."
+                    "plainImpact": "Ein Angreifer kann einen angemeldeten Administrator dazu bringen, unbemerkt Aktionen im Verwaltungsbereich für Erweiterungen auszulösen. Dazu genügt es, dass der Administrator eine vom Angreifer vorbereitete Seite öffnet, während er im Backend angemeldet ist.",
+                    "urgency": "Bald einplanen, da es Administratoren mit Zugriff auf die Erweiterungsverwaltung betrifft."
                 }
             }
         },
@@ -791,12 +791,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "There is a weakness in the website's admin area that controls who can access certain management screens. Someone with a login could reach parts of the admin area they shouldn't be able to see or use.",
-                    "urgency": "Worth updating fairly soon, especially if several people have logins to the admin area with different permission levels."
+                    "plainImpact": "A logged-in backend user could reach parts of the administration area they should not have access to. This lets them view or use functions beyond what their permissions were meant to allow.",
+                    "urgency": "Schedule this in a normal update cycle; it matters most if you have backend users with limited or restricted permissions."
                 },
                 "de": {
-                    "plainImpact": "Im internen Verwaltungsbereich der Website gibt es eine Schwachstelle bei der Zugriffskontrolle. Dadurch könnten angemeldete Mitarbeiter auf Bereiche oder Funktionen zugreifen, die eigentlich nicht für sie vorgesehen sind.",
-                    "urgency": "Diese Sicherheitslücke sollte zeitnah behoben werden und ist vor allem dann wichtig, wenn mehrere Personen mit unterschiedlichen Rechten Zugang zum Verwaltungsbereich haben."
+                    "plainImpact": "Ein angemeldeter Benutzer im Verwaltungsbereich kann auf Bereiche zugreifen, die eigentlich nicht für ihn freigegeben sind. So kann jemand mehr sehen oder tun, als seine Rolle erlauben sollte.",
+                    "urgency": "Bald einplanen, wenn es mehrere Redakteure oder eingeschränkte Benutzerkonten im Verwaltungsbereich gibt; bei nur wenigen vertrauenswürdigen Administratoren ist das Risiko geringer."
                 }
             }
         },
@@ -818,12 +818,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "An attacker could hide harmful code inside content that gets saved on your website. When a visitor opens the affected page, that code runs in their browser, which could be used to steal their information or hijack their session.",
-                    "urgency": "This is a high-risk issue and should be fixed soon, especially if your site accepts or displays content that people can submit."
+                    "plainImpact": "Someone can save harmful code into the site so it runs in the browser of every visitor who opens the affected page. This can be used to take over the session of a logged-in editor.",
+                    "urgency": "Schedule this soon, as it affects the normal frontend that visitors see."
                 },
                 "de": {
-                    "plainImpact": "Ein Angreifer könnte schädlichen Code in die Website einschleusen, der dauerhaft gespeichert wird und dann im Browser Ihrer Besucher ausgeführt wird. Damit lassen sich zum Beispiel Informationen der Besucher abgreifen oder deren Sitzung übernehmen.",
-                    "urgency": "Sie sollten hier bald handeln, da die Schwachstelle den normalen Aufbau der öffentlichen Seiten betrifft und daher viele Besucher erreichen kann."
+                    "plainImpact": "Jemand kann Schadcode auf einer Seite hinterlegen, der dann im Browser jedes Besuchers ausgeführt wird, der diese Seite öffnet. Das reicht aus, um die Sitzung eines angemeldeten Redakteurs zu übernehmen.",
+                    "urgency": "Bald einplanen, da die Anzeige von Seiten im Frontend jede öffentliche TYPO3-Seite betrifft."
                 }
             }
         },
@@ -850,12 +850,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "A person who already has some limited access to the website's admin area could gain much higher control than they are supposed to have. With that extra control, they could change important settings across the whole site.",
-                    "urgency": "This should be addressed promptly, especially if more than one person has admin access to the site."
+                    "plainImpact": "A backend user with limited rights can raise their own access to the highest maintainer level. From there they can control the whole system and change any setting.",
+                    "urgency": "Schedule this soon, especially on sites with several backend users who should not be fully trusted."
                 },
                 "de": {
-                    "plainImpact": "Eine Sicherheitslücke könnte es einem Nutzer mit eingeschränkten Rechten ermöglichen, sich mehr Rechte zu verschaffen und so zu einem Verwalter mit weitreichender Kontrolle über die Website zu werden. Damit könnten wichtige Einstellungen verändert oder die Website manipuliert werden.",
-                    "urgency": "Sie sollten zeitnah handeln, vor allem wenn es mehrere Personen mit Zugangskonten im Verwaltungsbereich der Website gibt."
+                    "plainImpact": "Ein Nutzer im Backend mit eingeschränkten Rechten kann sich höhere Rechte verschaffen und so zum System-Verwalter werden. Damit hätte er vollen Zugriff auf die Einstellungen und Verwaltung der gesamten Installation.",
+                    "urgency": "Bald einplanen, vor allem wenn es im Backend mehrere Redakteure oder Nutzer mit begrenzten Rechten gibt."
                 }
             }
         },
@@ -887,12 +887,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "If the site uses forms, someone might be able to reach or use parts of a form that they were not supposed to access. This could let them view or act on things that were meant to be restricted.",
-                    "urgency": "Act soon if the site uses forms; if it doesn't, the risk is low."
+                    "plainImpact": "Someone could reach parts of the form feature they are not meant to use, letting them view or act on things that should be off limits.",
+                    "urgency": "Schedule this soon if the site uses the form framework; without it the exposure is limited."
                 },
                 "de": {
-                    "plainImpact": "Wenn die Website Formulare nutzt, könnten Personen auf Bereiche oder Funktionen zugreifen, die eigentlich für sie gesperrt sein sollten. Dadurch könnten geschützte Inhalte oder Aktionen erreichbar werden, die normalerweise nicht zugänglich sein dürfen.",
-                    "urgency": "Sollte zeitnah behoben werden, wenn die Website Formulare einsetzt; ist das nicht der Fall, ist das Risiko gering."
+                    "plainImpact": "Jemand kann über das Formular-System auf Dinge zugreifen, die eigentlich geschützt sein sollten. So lassen sich Daten oder Funktionen erreichen, die für den Betreffenden nicht vorgesehen sind.",
+                    "urgency": "Bald einplanen, wenn die Seite das Formular-System nutzt; ohne dessen Einsatz ist die Gefahr gering."
                 }
             }
         },
@@ -924,12 +924,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "There is a weakness in the website's editing area that could let a logged-in user access or act on content they are not meant to reach. This affects the behind-the-scenes management area, not what your public visitors see.",
-                    "urgency": "This should be addressed in a normal update cycle, and it mainly matters if several people have login access to manage the website."
+                    "plainImpact": "A logged-in backend user can use the clipboard feature to reach or act on content they should not have access to. This lets someone see or handle items beyond their normal permissions.",
+                    "urgency": "Schedule this in a normal update cycle; it only matters for sites with backend users who have limited permissions."
                 },
                 "de": {
-                    "plainImpact": "In der Verwaltung der Website gibt es eine Schwachstelle, durch die jemand mit einem Zugang möglicherweise auf Inhalte oder Bereiche zugreifen kann, die eigentlich nicht für ihn bestimmt sind. Dadurch könnten interne Inhalte eingesehen oder verändert werden, obwohl die betreffende Person dazu nicht berechtigt sein sollte.",
-                    "urgency": "Das Update sollte zeitnah eingespielt werden, besonders wenn mehrere Personen mit unterschiedlichen Rechten Zugang zur Verwaltung der Website haben."
+                    "plainImpact": "Ein angemeldeter Redakteur kann über die Zwischenablage auf Inhalte oder Dateien zugreifen oder mit ihnen arbeiten, für die er eigentlich keine Berechtigung hat. So kann jemand mehr sehen oder verändern, als seine Rolle im Backend erlauben sollte.",
+                    "urgency": "In den nächsten Wartungsplan aufnehmen; betrifft vor allem Installationen mit mehreren Backend-Nutzern und abgestuften Berechtigungen."
                 }
             }
         },
@@ -956,12 +956,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "A weakness in how web links are read could let an attacker trick your site into sending visitors to a different, untrusted website. This is often used to make scam or fake pages look like they came from your site.",
-                    "urgency": "Worth updating in the near future as a routine fix; the risk depends on your site handling links that send visitors elsewhere."
+                    "plainImpact": "An attacker can craft a link that looks like it points to your site but sends the visitor to an outside site instead. This can be used to send people to a page the attacker controls while making the link appear trustworthy.",
+                    "urgency": "Schedule this in a normal update cycle; it matters most if your site passes web addresses through redirects that visitors can influence."
                 },
                 "de": {
-                    "plainImpact": "Angreifer könnten einen Link zu Ihrer Website so präparieren, dass Besucher unbemerkt auf eine fremde, möglicherweise betrügerische Seite weitergeleitet werden. Das kann genutzt werden, um Besucher zu täuschen, etwa auf gefälschten Seiten, die echt aussehen.",
-                    "urgency": "Sie sollten die Aktualisierung zeitnah einplanen; besonders wichtig ist das, wenn auf Ihrer Website Weiterleitungen genutzt werden."
+                    "plainImpact": "Ein Angreifer kann einen Link so gestalten, dass ein Nutzer nach dem Klick unbemerkt auf eine fremde, vom Angreifer gewählte Website weitergeleitet wird. Das lässt sich nutzen, um Nutzer auf gefälschte oder schädliche Seiten zu lenken.",
+                    "urgency": "In absehbarer Zeit einplanen; das Risiko besteht vor allem, wenn Links mit Weiterleitungszielen an Nutzer verschickt oder auf der Seite verarbeitet werden."
                 }
             }
         },
@@ -983,12 +983,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "After someone resets their password, older sign-ins may not be properly ended. This means a previous session could stay active longer than it should, giving unwanted access to a website account.",
-                    "urgency": "This mainly matters if people log in to manage the site, so it's worth addressing in your regular maintenance rather than treating it as an emergency."
+                    "plainImpact": "When someone changes their password, older login sessions are not ended. Someone who was already signed in on another device or browser can stay signed in even after the password is reset.",
+                    "urgency": "Schedule this in a normal update cycle; it mainly matters if you rely on password resets to lock out access after an account is compromised."
                 },
                 "de": {
-                    "plainImpact": "Wenn ein Passwort geändert wird, bleiben ältere Anmeldungen unter Umständen weiterhin aktiv, obwohl sie eigentlich beendet sein sollten. Dadurch könnte jemand, der zuvor Zugang hatte, trotz des neuen Passworts noch für eine Weile eingeloggt bleiben.",
-                    "urgency": "Sollte zeitnah behoben werden, ist aber vor allem dann wichtig, wenn mehrere Personen Zugänge zur Website haben und Passwörter aus Sicherheitsgründen zurückgesetzt werden."
+                    "plainImpact": "Wenn ein Nutzer sein Passwort zurücksetzt, bleiben ältere Anmeldungen weiterhin gültig, statt beendet zu werden. Dadurch kann jemand mit einer alten Sitzung auch nach der Passwortänderung noch eingeloggt bleiben.",
+                    "urgency": "Mit dem nächsten geplanten Update einspielen; besonders relevant, wenn Passwörter zurückgesetzt werden, um alte Zugänge zu sperren."
                 }
             }
         },
@@ -1015,12 +1015,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "There is a security weakness in the part of the website that displays images. An attacker could use it to sneak harmful code into a page, which then runs in a visitor's browser and could be used to trick them or interfere with their session.",
-                    "urgency": "This is worth fixing in the near term as part of regular maintenance, since it affects a standard part of the website."
+                    "plainImpact": "Someone can craft a link to the image display function that causes code to run in the browser of a person who opens it. This could be used to act in the context of a logged-in user who follows such a link.",
+                    "urgency": "Schedule this in a normal update cycle; it only matters where this image display feature is reachable and requires tricking a user into opening a prepared link."
                 },
                 "de": {
-                    "plainImpact": "Über eine bestimmte Funktion zur Anzeige von Bildern könnte ein Angreifer schädlichen Code in eine Seite einschleusen, der dann im Browser eines Besuchers ausgeführt wird. Das kann genutzt werden, um Informationen des Besuchers abzugreifen oder seine aktive Sitzung zu missbrauchen.",
-                    "urgency": "Sollte zeitnah behoben werden, ist aber vor allem relevant, wenn die betroffene Bildanzeige-Funktion auf der Website tatsächlich genutzt wird."
+                    "plainImpact": "Ein Angreifer kann über die Bildanzeige eigenen Code einschleusen, der dann im Browser eines Besuchers ausgeführt wird. Damit lassen sich zum Beispiel Eingaben abgreifen oder die Sitzung eines angemeldeten Nutzers missbrauchen.",
+                    "urgency": "Bald einplanen, wenn die Bildanzeige des Systems genutzt wird; ohne deren Einsatz ist das Risiko gering."
                 }
             }
         },
@@ -1047,12 +1047,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "A logged-in staff member might be able to see the names or structure of pages in the website's editing area that they weren't meant to see. This is a minor information leak and does not expose visitor data or let anyone change the site.",
-                    "urgency": "Low priority — this only matters if several people with different permission levels log in to manage the site, so it can be handled during routine maintenance."
+                    "plainImpact": "A logged-in backend user could see the names or structure of pages in the page tree that they were not meant to see. No page content is changed and nothing is exposed to outside visitors.",
+                    "urgency": "Low priority; only relevant if you have backend users whose access to parts of the page tree is meant to be restricted."
                 },
                 "de": {
-                    "plainImpact": "Im internen Verwaltungsbereich der Website könnten angemeldete Personen Hinweise auf Inhalte oder Strukturen sehen, die eigentlich nicht für sie gedacht sind. Es handelt sich um ein geringfügiges Problem, bei dem etwas mehr sichtbar wird als vorgesehen.",
-                    "urgency": "Das Risiko ist gering; die Aktualisierung kann bei nächster Gelegenheit erfolgen und betrifft vor allem Websites mit mehreren Redakteuren im Verwaltungsbereich."
+                    "plainImpact": "Ein angemeldeter Redakteur kann im Seitenbaum Angaben zu Seiten sehen, die eigentlich nicht für ihn bestimmt sind. Es geht dabei nur um das Anzeigen solcher Angaben, nicht um das Ändern von Inhalten oder Zugängen.",
+                    "urgency": "Das Update kann bei Gelegenheit eingeplant werden und ist vor allem dann sinnvoll, wenn mehrere Redakteure mit unterschiedlichen Rechten im Backend arbeiten."
                 }
             }
         },
@@ -1084,12 +1084,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "This is a weakness in the website's editing area, where the usual limits on what a logged-in editor is allowed to do may not be properly enforced. As a result, someone with access to the editing area might be able to reach or change things they normally shouldn't.",
-                    "urgency": "Worth updating in good time; this mainly matters if several people have login access to manage the site's content."
+                    "plainImpact": "A logged-in backend user can reach or act on records they should not be allowed to edit. This lets them view or change content beyond the permissions their account was meant to have.",
+                    "urgency": "Schedule this in a normal update cycle; it only matters where backend accounts have limited permissions that are meant to keep users apart."
                 },
                 "de": {
-                    "plainImpact": "In der Verwaltungsoberfläche der Website könnte jemand auf Bereiche oder Inhalte zugreifen, für die er eigentlich keine Berechtigung hat. So könnten Inhalte eingesehen oder bearbeitet werden, die einem Nutzer nicht offenstehen sollten.",
-                    "urgency": "Diese Schwachstelle betrifft nur Personen mit einem Zugang zum Verwaltungsbereich der Website; ein Update sollte zeitnah eingeplant werden, ist aber nicht hochdringlich."
+                    "plainImpact": "Ein angemeldeter Redakteur kann Inhalte im Bearbeitungsbereich ansehen oder ändern, für die er eigentlich keine Berechtigung hat. Möglich ist das nur für Personen, die bereits Zugang zum Backend haben.",
+                    "urgency": "Die Aktualisierung sollte in absehbarer Zeit eingeplant werden, vor allem wenn mehrere Redakteure mit unterschiedlichen Rechten am System arbeiten."
                 }
             }
         },
@@ -1116,12 +1116,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "There is a weakness in how password changes are confirmed for staff who log in to manage the website. In some cases a password could be changed without the proper extra check being made.",
-                    "urgency": "This is a low-level issue, but it's worth applying the update in good time; it only concerns the staff login area, not regular website visitors."
+                    "plainImpact": "A logged-in backend user can change their password without the change being properly checked. This makes it easier for someone using an already-open editor session to reset the password and keep access.",
+                    "urgency": "Low priority; schedule with your normal update cycle, and it only matters where backend users can log in and manage their own passwords."
                 },
                 "de": {
-                    "plainImpact": "Es gibt eine kleine Sicherheitslücke rund um das Ändern von Passwörtern für Mitarbeiter, die sich im internen Verwaltungsbereich der Website anmelden. Unter bestimmten Umständen kann ein Passwortwechsel erfolgen, ohne dass zusätzlich ausreichend geprüft wird, dass die Änderung wirklich berechtigt ist.",
-                    "urgency": "Da es sich um ein geringes Risiko handelt, reicht es aus, das Update bei der nächsten Gelegenheit einzuspielen; betroffen sind ohnehin nur Websites mit mehreren Anmeldekonten im Verwaltungsbereich."
+                    "plainImpact": "Ein bereits angemeldeter Redakteur oder Administrator kann sein Passwort ändern, ohne dass die Änderung noch einmal bestätigt werden muss. Dadurch fehlt eine zusätzliche Sicherheitsprüfung beim Wechsel des Passworts.",
+                    "urgency": "Die Bedeutung ist gering; das Update kann im regulären Wartungsfenster eingeplant werden, da nur bereits angemeldete Backend-Nutzer betroffen sind."
                 }
             }
         },
@@ -1153,12 +1153,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "If the site uses forms, someone could gain access to actions or information they are not supposed to reach. This means parts of the site meant to be restricted may not be properly protected.",
-                    "urgency": "Act soon if the site uses forms; if it doesn't, the risk is low."
+                    "plainImpact": "Someone can reach parts of the form feature they are not supposed to reach, letting them see or do things that should be blocked. This can expose form data or actions meant only for permitted users.",
+                    "urgency": "Schedule this soon if the site uses the form framework; without it the exposure is limited."
                 },
                 "de": {
-                    "plainImpact": "Wenn die Website Formulare nutzt, könnten Personen an Bereiche oder Aktionen gelangen, die eigentlich nur für Berechtigte gedacht sind. Dadurch könnten sie Dinge sehen oder tun, die ihnen normalerweise nicht erlaubt wären.",
-                    "urgency": "Handeln Sie zeitnah, wenn die Website Formulare einsetzt; falls keine Formulare verwendet werden, ist das Risiko gering."
+                    "plainImpact": "Über das Formular-System kann jemand auf Funktionen oder Daten zugreifen, die eigentlich nicht für ihn bestimmt sind. Die nötigen Rechte werden dabei nicht richtig geprüft.",
+                    "urgency": "Bald einplanen, wenn die Seite das Formular-System nutzt; ohne dessen Einsatz ist die Gefahr gering."
                 }
             }
         },
@@ -1185,12 +1185,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "There is a security weakness in the dashboard area that staff use to manage the website. An attacker could trick a logged-in staff member into unknowingly triggering an action in the dashboard that they didn't intend to make.",
-                    "urgency": "Worth fixing in the near term, especially if staff regularly log in and use the dashboard."
+                    "plainImpact": "An attacker can trick a logged-in backend user into triggering unwanted actions in the Dashboard module without meaning to, for example by getting them to open a prepared link or page. This can lead to changes being made to their dashboard on their behalf.",
+                    "urgency": "Schedule this at the next regular update; it only matters for sites where editors use the Dashboard module."
                 },
                 "de": {
-                    "plainImpact": "Es gibt eine Schwachstelle im Dashboard-Bereich, mit dem angemeldete Redakteure die Website verwalten. Ein Angreifer könnte einen angemeldeten Mitarbeiter dazu bringen, ungewollt bestimmte Aktionen im Dashboard auszuführen, ohne dass dieser es merkt.",
-                    "urgency": "Das sollte zeitnah behoben werden, betrifft aber nur, wenn Ihre Mitarbeiter den Dashboard-Bereich im Verwaltungsbereich nutzen."
+                    "plainImpact": "Ein Angreifer kann einen eingeloggten Redakteur dazu bringen, ungewollt eine Aktion im Dashboard-Modul auszulösen, ohne dass dieser es bemerkt. Das geschieht, indem der Redakteur eine vom Angreifer vorbereitete Seite oder einen Link öffnet.",
+                    "urgency": "Mit mittlerer Dringlichkeit einplanen, aber nur relevant, wenn das Dashboard-Modul im Backend genutzt wird."
                 }
             }
         },
@@ -1212,12 +1212,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "A weakness in how the website's setup handles certain settings could let private information from behind the scenes be revealed to someone who shouldn't see it. This could expose internal details that were meant to stay hidden.",
-                    "urgency": "This is a medium-level issue, so it's worth updating in the near future to keep sensitive settings from leaking."
+                    "plainImpact": "Someone with access to edit the site configuration could pull out internal system details that should stay hidden, such as settings or values from the server environment.",
+                    "urgency": "Schedule this in a normal update cycle; it only matters if untrusted people can edit the site configuration."
                 },
                 "de": {
-                    "plainImpact": "Durch eine Schwachstelle in der Einrichtung der Website könnten vertrauliche interne Informationen ungewollt sichtbar werden. Solche Angaben sind normalerweise nicht für die Öffentlichkeit bestimmt.",
-                    "urgency": "Diese Aktualisierung sollte zeitnah vorgenommen werden, da sie die Grundeinstellungen der Website betrifft."
+                    "plainImpact": "Über die Site-Konfiguration lassen sich interne Werte auslesen, die eigentlich verborgen bleiben sollten. Ein Angreifer kann so an vertrauliche Informationen des Systems gelangen.",
+                    "urgency": "In absehbarer Zeit einplanen, besonders wenn mehrere Personen Zugriff auf die Site-Konfiguration haben."
                 }
             }
         },
@@ -1239,12 +1239,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "An attacker could sneak some unwanted content into a behind-the-scenes editing tool used by staff, which could alter how that page looks. This is a minor issue and does not expose visitor data or give control of the site.",
-                    "urgency": "This is low risk, so it can be handled during routine maintenance; it only matters for the staff editing area, not for regular visitors."
+                    "plainImpact": "Someone can place their own content into the record history view, so an editor looking at that history sees altered or unexpected content on the page. The effect is limited to what shows up in the history module.",
+                    "urgency": "Low priority; only relevant for sites where editors use the history module in the backend."
                 },
                 "de": {
-                    "plainImpact": "Diese Schwäche betrifft nur einen internen Verwaltungsbereich der Website. Im ungünstigsten Fall könnten dort unerwünschte Inhalte angezeigt werden, was eher eine Störung als eine ernste Gefahr darstellt.",
-                    "urgency": "Da das Risiko gering ist, reicht es aus, die Behebung bei der nächsten regulären Aktualisierung mit einzuplanen."
+                    "plainImpact": "Jemand kann eigenen Inhalt in das Verlaufs-Modul einschleusen, der dann angezeigt wird, wenn ein Redakteur diesen Bereich öffnet. Dabei kann fremder Inhalt in die Seite des Backends eingefügt werden.",
+                    "urgency": "Kann bei nächster Gelegenheit eingeplant werden; betrifft nur den Backend-Bereich und Redakteure, die das Verlaufs-Modul nutzen."
                 }
             }
         },
@@ -1271,12 +1271,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "There is a weakness in the extra login-security step (the second code or check) used by staff who manage the website. Because of this flaw, that extra protection may not work as intended, making it easier for an attacker to break into the site's management area.",
-                    "urgency": "Address this soon, especially since it affects staff logins to the site's control panel; it matters most if more than one person can log in to manage the site."
+                    "plainImpact": "The extra login step meant to add a second check on backend accounts does not work as it should. An attacker could get past this second check and reach the backend as a logged-in user.",
+                    "urgency": "Schedule this soon if you rely on the second login step to protect backend accounts; without it turned on the risk is lower."
                 },
                 "de": {
-                    "plainImpact": "Es gibt eine Schwäche beim zusätzlichen Sicherheitsschritt für die Anmeldung im Verwaltungsbereich der Website (der zweite Bestätigungsschritt nach dem Passwort). Dadurch könnte sich ein Angreifer unter Umständen unbefugt Zugang zum internen Verwaltungsbereich verschaffen und dort Inhalte und Einstellungen verändern.",
-                    "urgency": "Weil der Verwaltungsbereich betroffen ist, sollten Sie zeitnah handeln; besonders wichtig ist das, wenn mehrere Personen sich dort anmelden oder der zusätzliche Anmeldeschritt genutzt wird."
+                    "plainImpact": "Die zusätzliche Anmeldeprüfung im Backend über einen zweiten Faktor funktioniert nicht richtig. Ein Angreifer kann diese zweite Prüfung umgehen und sich so Zugang zum Backend verschaffen, obwohl der zweite Faktor ihn eigentlich aufhalten sollte.",
+                    "urgency": "Bald einplanen, wenn im Backend die Anmeldung mit einem zweiten Faktor genutzt wird; ohne diese Funktion ist die Gefahr gering."
                 }
             }
         },
@@ -1298,12 +1298,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "A weakness could let an attacker sneak harmful code past the website's built-in protection, so it runs in a visitor's browser. This could be used to affect what visitors see or do while on the site.",
-                    "urgency": "Worth updating in the near future as part of normal maintenance, since this affects the site's core protection against harmful content."
+                    "plainImpact": "The built-in filter that is supposed to strip dangerous code from content can be tricked. This means someone could get harmful code past it and have it run in the browser of people who view the affected page.",
+                    "urgency": "Schedule this in a normal update cycle; it matters wherever the site relies on the built-in content cleaning to handle untrusted input."
                 },
                 "de": {
-                    "plainImpact": "Ein Schutzmechanismus, der schädlichen Code auf Ihrer Website blockieren soll, funktioniert unter bestimmten Umständen nicht zuverlässig. Dadurch könnte es einem Angreifer gelingen, versteckten Code in eine Seite einzuschleusen, der dann im Browser eines Besuchers ausgeführt wird.",
-                    "urgency": "Sie sollten das Update in absehbarer Zeit einspielen; die Dringlichkeit ist mittel, da eine Ausnutzung nur unter bestimmten Bedingungen möglich ist."
+                    "plainImpact": "Der eingebaute Schutz, der schädlichen Code aus Inhalten entfernen soll, lässt sich in bestimmten Fällen umgehen. Dadurch kann eingeschleuster Code im Browser von Besuchern ausgeführt werden.",
+                    "urgency": "Bald einplanen, wenn die Seite auf diese Filterfunktion für Inhalte angewiesen ist; sonst ist die Gefahr geringer."
                 }
             }
         },
@@ -1325,12 +1325,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "There is a small weakness in how the website figures out which site a request belongs to. In some cases, this could reveal a little bit of information that was not meant to be shown to visitors.",
-                    "urgency": "This is a low-level issue, so it can be handled as part of your regular maintenance rather than as an emergency."
+                    "plainImpact": "Under certain conditions the system may pick the wrong site configuration and show content that was meant for a different site. This can reveal small pieces of information that were not supposed to be visible in that context.",
+                    "urgency": "Low priority; handle it in a regular update cycle, and it mainly matters if you run several sites in one installation."
                 },
                 "de": {
-                    "plainImpact": "Durch eine Schwäche in der Website-Zuordnung könnten unter bestimmten Umständen Inhalte oder Informationen sichtbar werden, die eigentlich nicht angezeigt werden sollten. Es handelt sich um ein geringfügiges Problem, das keine schwerwiegenden Folgen wie Datendiebstahl oder Kontenübernahme erwarten lässt.",
-                    "urgency": "Das Problem hat eine niedrige Einstufung, daher können Sie es bei einer der nächsten planmäßigen Wartungen beheben lassen."
+                    "plainImpact": "Unter bestimmten Bedingungen kann jemand Seiteninhalte sehen, die eigentlich einer anderen Site zugeordnet sind und nicht angezeigt werden sollten. Es geht dabei um das Anzeigen von Inhalten, nicht um das Verändern oder Übernehmen von Konten.",
+                    "urgency": "Da es sich um ein geringes Risiko handelt, kann das Update bei der nächsten geplanten Wartung eingespielt werden, vor allem wenn mehrere Sites in einer Installation betrieben werden."
                 }
             }
         },
@@ -1357,12 +1357,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "There is a security weakness in the part of the site's backend where forms are managed. An attacker could plant harmful code that runs in the browser of a staff member working in that area, which could be misused to interfere with their session.",
-                    "urgency": "This mainly affects people who log in to manage the website, so it's worth fixing at your next update; the risk is lower if only trusted staff have backend access."
+                    "plainImpact": "Someone with access to the form manager in the backend can place code that then runs in the browser of another logged-in editor who opens it. This could be used to act with that editor's rights.",
+                    "urgency": "Schedule this update in a normal maintenance window; it only matters if editors use the form manager module, and an attacker needs backend access to exploit it."
                 },
                 "de": {
-                    "plainImpact": "Über einen Bereich zur Verwaltung von Formularen im Verwaltungsbereich der Website könnte schädlicher Code eingeschleust werden, der dann im Browser eines eingeloggten Redakteurs ausgeführt wird. Das könnte genutzt werden, um an Informationen zu gelangen oder Aktionen im Namen der betroffenen Person auszulösen.",
-                    "urgency": "Diese Schwachstelle betrifft nur den internen Verwaltungsbereich; wenn dort mit Formularen gearbeitet wird, sollte zeitnah gehandelt werden, ansonsten ist das Risiko gering."
+                    "plainImpact": "Ein angemeldeter Redakteur kann im Formular-Manager schädlichen Code hinterlegen, der dann im Browser anderer Bearbeiter ausgeführt wird, wenn diese den Bereich öffnen. Damit lassen sich Aktionen im Namen dieser Bearbeiter auslösen.",
+                    "urgency": "Bald einplanen, wenn im Backend mehrere Personen mit dem Formular-Manager arbeiten; sonst ist die Gefahr gering."
                 }
             }
         },
@@ -1389,12 +1389,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "This affects a feature used by staff when they log in to manage the website, not by normal visitors. Someone could misuse a weakness in this admin tool to make it stop working properly or become unresponsive for the people managing the site.",
-                    "urgency": "This only matters for the staff area used to run the site, so plan an update reasonably soon but it is not an emergency."
+                    "plainImpact": "A logged-in backend user can misuse the bookmark toolbar to overload the system, which can make the backend slow or unavailable for others.",
+                    "urgency": "Schedule this in a normal update cycle; it only matters where backend users can log in and is limited since it requires an existing account."
                 },
                 "de": {
-                    "plainImpact": "Diese Schwäche betrifft den internen Verwaltungsbereich Ihrer Website. Sie könnte dazu ausgenutzt werden, dass dieser Bereich vorübergehend nicht mehr richtig funktioniert oder blockiert wird.",
-                    "urgency": "Das Problem betrifft nur den internen Anmelde- und Verwaltungsbereich; für Besucher der Website ist es nicht relevant. Ein Update sollte in absehbarer Zeit eingeplant werden."
+                    "plainImpact": "Ein angemeldeter Redakteur kann über die Lesezeichen-Leiste im Backend eine Störung auslösen, die den Backend-Bereich lahmlegt oder unbrauchbar macht. Es geht dabei nur um die Verfügbarkeit, nicht um den Diebstahl von Daten.",
+                    "urgency": "Mittelfristig einplanen; betrifft nur Installationen mit Zugang zum Backend, da ein gültiger Login nötig ist."
                 }
             }
         },
@@ -1421,12 +1421,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "A logged-in user could gain access to files or file settings they were not meant to change or see. This means someone with limited permissions might edit or reach parts of the site's files beyond what they should be allowed to.",
-                    "urgency": "Act soon, especially if the site has multiple backend users or editors with different permission levels."
+                    "plainImpact": "A logged-in backend user can change or save file and folder records they should not be allowed to touch. This lets them act on files beyond the permissions they were given.",
+                    "urgency": "Schedule this soon, especially if you have backend users with limited file permissions who should not have full access."
                 },
                 "de": {
-                    "plainImpact": "Angemeldete Nutzer könnten über eine Schwäche in der Zugriffskontrolle Dateien und deren Verwaltungsdaten verändern, für die sie eigentlich keine Berechtigung haben. Dadurch könnten unbefugte Änderungen an Dateien vorgenommen werden.",
-                    "urgency": "Diese Lücke sollte zeitnah geschlossen werden, besonders wenn mehrere Personen mit unterschiedlichen Rechten Zugang zum Verwaltungsbereich der Website haben."
+                    "plainImpact": "Ein angemeldeter Redakteur kann über die Verwaltung von Inhalten auch Datei-Einträge ändern oder speichern, für die er eigentlich keine Berechtigung hat. So lassen sich Beschränkungen umgehen, die den Zugriff auf bestimmte Dateien und Ordner eigentlich einschränken sollen.",
+                    "urgency": "Bald einplanen, wenn es auf der Website mehrere Redakteure mit unterschiedlichen Rechten gibt; bei nur wenigen voll vertrauenswürdigen Bearbeitern ist die Gefahr geringer."
                 }
             }
         },
@@ -1453,12 +1453,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "This is a minor weakness in a tool inside the site's admin area. In the worst case, it could briefly disrupt how that admin tool works for the people managing the website, but it doesn't affect visitors or your website content.",
-                    "urgency": "This is a low-priority fix that only matters for the staff who log in to manage the site, so it can be handled as part of routine maintenance."
+                    "plainImpact": "A logged-in backend user could use the bookmark toolbar to cause the backend to stop responding for that session. This is a disruption only, with no access to data or accounts.",
+                    "urgency": "Low priority; only relevant for sites where backend users have access to the bookmark toolbar."
                 },
                 "de": {
-                    "plainImpact": "Es gibt eine kleine Schwäche im Verwaltungsbereich der Website (im Lesezeichen-Menü, das nur angemeldete Redakteure sehen). Im ungünstigsten Fall könnte dadurch die Bedienung des Verwaltungsbereichs kurzzeitig gestört werden.",
-                    "urgency": "Das Risiko ist gering und betrifft nur den internen Verwaltungsbereich; ein Update kann bei Gelegenheit im Rahmen der normalen Wartung eingespielt werden."
+                    "plainImpact": "Ein angemeldeter Redakteur kann über die Lesezeichen-Leiste im Backend eine Eingabe machen, die den Bereich stört oder unbrauchbar macht. Es geht nur um eine Beeinträchtigung der Bedienung, nicht um Datenverlust oder Kontenübernahme.",
+                    "urgency": "Kann bei Gelegenheit eingeplant werden; betrifft nur Installationen, in denen Redakteure Zugang zum Backend haben."
                 }
             }
         },
@@ -1485,12 +1485,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "Because of this security weakness, small pieces of information that were meant to stay hidden could become visible to someone who shouldn't see them. This is a minor issue and does not put visitor accounts or sensitive personal data at serious risk.",
-                    "urgency": "The risk is low, so you can apply the fix as part of your normal maintenance rather than as an emergency."
+                    "plainImpact": "In some cases the system may show records that were meant to stay hidden from the current user. An attacker could see limited data they should not have access to.",
+                    "urgency": "This is a low-severity issue, so include it in your regular update cycle rather than treating it as urgent."
                 },
                 "de": {
-                    "plainImpact": "Durch eine Schwäche in der Website-Software könnten in bestimmten Fällen einzelne Informationen sichtbar werden, die eigentlich verborgen bleiben sollten. Da es sich um ein geringfügiges Problem handelt, geht es hier nur um kleinere Einblicke und nicht um den Verlust wichtiger oder sensibler Daten.",
-                    "urgency": "Das Risiko ist gering, daher genügt es, die Behebung bei Gelegenheit im Rahmen der regulären Wartung einzuplanen."
+                    "plainImpact": "Unter bestimmten Umständen können Daten sichtbar werden, die eigentlich verborgen bleiben sollten. Es geht um das Anzeigen von Inhalten, nicht um Änderungen oder Übernahme von Konten.",
+                    "urgency": "Die Aktualisierung kann mit dem regulären Wartungszyklus eingeplant werden; das Risiko ist gering."
                 }
             }
         },
@@ -1522,12 +1522,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "There is a weakness in the tool that manages deleted items in your website's admin area. A logged-in editor could end up seeing or acting on content they should not have access to.",
-                    "urgency": "This only affects people who log in to manage the site, so plan an update at your next convenient maintenance window rather than as an emergency."
+                    "plainImpact": "A backend user could reach records in the recycler that they should not be allowed to see or restore. This lets someone view or bring back deleted content outside their normal permissions.",
+                    "urgency": "Schedule this in a normal update cycle; it only matters if you have backend users with limited permissions who can access the recycler."
                 },
                 "de": {
-                    "plainImpact": "Eine Schwachstelle in der Verwaltung der Website könnte dazu führen, dass Personen mit einem Zugang mehr sehen oder tun können, als eigentlich für sie vorgesehen ist. Das betrifft die Funktion zum Wiederherstellen gelöschter Inhalte im internen Bereich Ihrer Website.",
-                    "urgency": "Die Aktualisierung sollte zeitnah erfolgen, ist aber vor allem wichtig, wenn mehrere Personen mit unterschiedlichen Rechten Zugang zur Verwaltung der Website haben."
+                    "plainImpact": "Ein angemeldeter Redakteur kann über den Papierkorb auf gelöschte Inhalte zugreifen oder diese wiederherstellen, für die er eigentlich keine Berechtigung hat. So können Inhalte aus Bereichen sichtbar oder wieder aktiv werden, die dem Nutzer sonst verschlossen bleiben.",
+                    "urgency": "Bald einplanen, wenn im Backend mehrere Redakteure mit eingeschränkten Rechten arbeiten und der Papierkorb genutzt wird; sonst ist das Risiko gering."
                 }
             }
         },
@@ -1549,12 +1549,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "If the site uses the form feature, an attacker could trick the website into running their own commands. This could let them take control of parts of the site or access information they shouldn't.",
-                    "urgency": "Act soon if the site uses forms; if it doesn't, the risk is lower, but updating is still recommended given the seriousness."
+                    "plainImpact": "Someone can get the site to run their own commands on the server through the form framework. This can give them full control over the site and the data it holds.",
+                    "urgency": "Schedule this update quickly if the site uses the form framework; without forms the exposure is limited."
                 },
                 "de": {
-                    "plainImpact": "Wenn auf der Website Formulare eingesetzt werden, könnte ein Angreifer schädliche Befehle auf dem Server ausführen. Im schlimmsten Fall kann er dadurch die Kontrolle über die Website übernehmen.",
-                    "urgency": "Das Update sollte bald eingespielt werden, wenn die Website Formulare nutzt; ohne Formulare ist das Risiko gering."
+                    "plainImpact": "Ein Angreifer kann über das Formular-System eigene Befehle auf dem Server ausführen lassen. Damit lässt sich der Server weitgehend übernehmen und auf gespeicherte Daten zugreifen.",
+                    "urgency": "Bald einplanen, wenn die Seite das Formular-System nutzt; ohne dieses ist das Risiko geringer."
                 }
             }
         },
@@ -1563,7 +1563,7 @@
             "cve": "CVE-2026-15305",
             "package": "typo3/cms-form",
             "optional": true,
-            "severity": "unknown",
+            "severity": "medium",
             "title": "TYPO3-CORE-SA-2026-020: TYPO3 CMS - Unrestricted File Upload in Form Framework",
             "affectedVersions": ">=14.2.0,<14.3.5",
             "link": "https://news.typo3.com/security/advisory/typo3-core-sa-2026-020",
@@ -1576,12 +1576,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "If the site uses forms that let visitors upload files, someone could upload files that shouldn't be allowed. This weakness could be misused to place harmful files on your website.",
-                    "urgency": "Apply the fix soon if the site has forms with file uploads; if none of your forms accept uploads, the risk is much lower."
+                    "plainImpact": "Someone using a form can upload files that the system should not accept. This could let them place unwanted files on the server.",
+                    "urgency": "Schedule this in your normal update cycle; it only matters if the site uses the form framework with file uploads."
                 },
                 "de": {
-                    "plainImpact": "Wenn die Website Formulare mit einer Möglichkeit zum Hochladen von Dateien nutzt, könnte jemand unerwünschte Dateien auf den Server laden. Das könnte die Sicherheit der Website beeinträchtigen.",
-                    "urgency": "Zeitnah handeln, falls die Website Formulare mit Datei-Uploads verwendet; ohne solche Formulare ist das Risiko gering."
+                    "plainImpact": "Über ein Formular können Dateien hochgeladen werden, ohne dass der Dateityp ausreichend geprüft wird. Ein Angreifer kann so unerwünschte Dateien auf den Server bringen.",
+                    "urgency": "Zeitnah einplanen, wenn die Website das Formular-Framework mit Datei-Uploads nutzt; sonst ist die Gefahr gering."
                 }
             }
         },
@@ -1608,12 +1608,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "A security weakness in the site's setup area could let a secret value used to protect the website leak out. If someone got hold of it, they could gain access to parts of the site they shouldn't reach.",
-                    "urgency": "This should be addressed in the near term as part of routine maintenance, since it affects a core part of the website."
+                    "plainImpact": "An attacker can read the site's secret encryption key through the Install Tool. Once known, that key can be used to weaken other protections that rely on it.",
+                    "urgency": "Schedule this in your normal update cycle; it matters most where the Install Tool is reachable and not tightly locked down."
                 },
                 "de": {
-                    "plainImpact": "Über das Verwaltungswerkzeug der Website könnte ein geheimer Schlüssel offengelegt werden, der eigentlich vertraulich bleiben soll. Wird dieser Schlüssel bekannt, könnte ein Angreifer bestimmte Schutzmechanismen der Website leichter aushebeln.",
-                    "urgency": "Das Update sollte zeitnah eingespielt werden, da es sich um eine allgemeine Schwachstelle der Systembasis handelt, die grundsätzlich jede betroffene Website betrifft."
+                    "plainImpact": "Unter bestimmten Umständen kann ein Angreifer den geheimen Schlüssel der Installation auslesen. Mit diesem Schlüssel lassen sich Schutzmechanismen umgehen, die auf ihm aufbauen.",
+                    "urgency": "Bald einplanen, da der Schlüssel eine zentrale Rolle in der Sicherheit der Installation spielt."
                 }
             }
         },
@@ -1645,12 +1645,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "A security weakness in how the site handles files could let someone reach files they should not be allowed to see or use. This may expose files that were meant to stay private.",
-                    "urgency": "Because this is rated high, it is best to update soon, especially if the site stores files that are not meant to be public."
+                    "plainImpact": "Someone can reach files they should not be allowed to see or use. This can expose files that were meant to stay private or restricted.",
+                    "urgency": "Schedule this soon, especially if the site stores files with limited access for certain users or groups."
                 },
                 "de": {
-                    "plainImpact": "Es gibt eine Schwachstelle bei der Zugriffskontrolle für Dateien. Dadurch könnten Personen auf Dateien zugreifen, die eigentlich nicht für sie bestimmt sind.",
-                    "urgency": "Weil das Problem als hoch eingestuft ist, sollten Sie zeitnah handeln, besonders wenn auf der Website Dateien verwaltet werden, die nicht für alle sichtbar sein sollen."
+                    "plainImpact": "Ein Angreifer kann auf Dateien zugreifen, für die er eigentlich keine Berechtigung hat. So können geschützte Dateien gelesen oder verändert werden, obwohl das nicht erlaubt sein sollte.",
+                    "urgency": "Bald einplanen, vor allem wenn auf der Website Dateien mit eingeschränktem Zugriff verwaltet werden."
                 }
             }
         },
@@ -1682,12 +1682,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "There is a minor security weakness in how the website handles files. In some cases, a user might be able to reach a file or folder they were not meant to see.",
-                    "urgency": "This is a low-priority fix that can be handled during your next routine update."
+                    "plainImpact": "Someone could reach files through the file handling layer that they were not meant to see or use. Because this is rated low, the effect is limited access to files rather than a wider break-in.",
+                    "urgency": "Low priority; include it in your normal update cycle, and give it more attention if the site relies heavily on restricted file storage."
                 },
                 "de": {
-                    "plainImpact": "Es gibt eine Schwäche bei den Zugriffsrechten im Dateibereich Ihrer Website. Dadurch könnten Personen unter Umständen auf Dateien zugreifen, die eigentlich nicht für sie bestimmt sind.",
-                    "urgency": "Da das Risiko gering ist, reicht es, das Update bei nächster Gelegenheit einzuspielen; besonders relevant ist es, wenn auf Ihrer Website mit geschützten Dateien gearbeitet wird."
+                    "plainImpact": "Ein angemeldeter Nutzer kann auf Dateien oder Ordner zugreifen, die eigentlich nicht für ihn freigegeben sind. Der Fehler betrifft die Verwaltung von Dateien im Backend.",
+                    "urgency": "Die Einstufung ist niedrig; das Update kann bei Gelegenheit eingeplant werden, vor allem wenn mehrere Redakteure mit eingeschränkten Rechten Dateien verwalten."
                 }
             }
         },
@@ -1719,12 +1719,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "There is a security weakness in the website's admin area that could let a logged-in user reach or use certain features they should not have access to. This mainly affects people who already have some level of access to manage the site, not the general public.",
-                    "urgency": "This is worth fixing in the near future, and it matters most if several people have login access to your site's admin area."
+                    "plainImpact": "A logged-in backend user can reach parts of the backend interface they should not have access to. This lets them see or use functions beyond their assigned permissions.",
+                    "urgency": "Schedule this in a normal update cycle; it matters most if you have backend users with limited permissions who should be kept apart."
                 },
                 "de": {
-                    "plainImpact": "Im Verwaltungsbereich der Website (dort, wo die Inhalte gepflegt werden) gibt es eine Schwachstelle bei der Zugriffskontrolle. Angemeldete Personen könnten dadurch auf Funktionen oder Bereiche zugreifen, die eigentlich nicht für sie vorgesehen sind.",
-                    "urgency": "Die Aktualisierung sollte zeitnah eingeplant werden; besonders relevant ist das, wenn mehrere Personen mit unterschiedlichen Rechten Zugang zum Verwaltungsbereich haben."
+                    "plainImpact": "Ein angemeldeter Nutzer im Backend kann auf Funktionen oder Daten zugreifen, für die er eigentlich keine Berechtigung hat. Die Grenzen zwischen den Zugriffsrechten greifen an dieser Stelle nicht wie vorgesehen.",
+                    "urgency": "In absehbarer Zeit einplanen, besonders wenn es im Backend mehrere Nutzer mit unterschiedlichen Rechten gibt."
                 }
             }
         },
@@ -1751,12 +1751,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "There is a security weakness in the part of the website that handles draft or unpublished content. Someone could end up seeing information they were not supposed to see.",
-                    "urgency": "This should be addressed soon, and it mainly matters if your site uses the staging or draft-review feature for content."
+                    "plainImpact": "Someone can view content or draft changes in the workspaces area that they should not be allowed to see. This can expose unpublished work and other internal information.",
+                    "urgency": "Schedule this soon if the site uses workspaces for staged or draft content; sites without workspaces are not affected."
                 },
                 "de": {
-                    "plainImpact": "Über einen bestimmten Teil des Systems könnten unbefugte Personen Inhalte oder Informationen einsehen, die eigentlich nicht öffentlich sein sollten. Dadurch könnten interne oder noch nicht freigegebene Daten sichtbar werden.",
-                    "urgency": "Zeitnah handeln, wenn auf der Website die Funktion für Entwurfs- bzw. Freigabe-Versionen von Inhalten genutzt wird; andernfalls ist das Risiko gering."
+                    "plainImpact": "Ein angemeldeter Nutzer kann über das Workspaces-Modul Inhalte oder Angaben einsehen, die eigentlich nicht für ihn bestimmt sind. So gelangen interne Daten an Personen, die keinen Zugriff darauf haben sollten.",
+                    "urgency": "Bald einplanen, wenn die Website mit Arbeitsumgebungen (Workspaces) arbeitet; ohne diese Funktion ist die Gefahr gering."
                 }
             }
         },
@@ -1783,12 +1783,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "There is a weakness in how the website handles certain internal links, which could let someone reach files or content they were not meant to see.",
-                    "urgency": "This is a moderate issue, so it's best to update in the near future as part of your regular maintenance."
+                    "plainImpact": "Someone can use a special internal link to reach files or resources they should not have access to. This can reveal content that was meant to stay restricted.",
+                    "urgency": "Plan this update in a normal maintenance window; the risk is moderate and depends on the site using access restrictions on linked resources."
                 },
                 "de": {
-                    "plainImpact": "Durch eine Schwäche in der Zugriffskontrolle könnten Besucher unter Umständen auf Dateien oder Inhalte zugreifen, die eigentlich geschützt sein sollten. So könnten Inhalte sichtbar werden, die nicht für alle bestimmt sind.",
-                    "urgency": "Das Update sollte zeitnah eingespielt werden, besonders wenn die Website geschützte oder nicht-öffentliche Inhalte enthält."
+                    "plainImpact": "Über spezielle interne Verweise können Nutzer auf Dateien oder Inhalte zugreifen, die eigentlich nicht für sie freigegeben sind. So können geschützte Ressourcen sichtbar werden, für die eine Berechtigung fehlt.",
+                    "urgency": "In nächster Zeit einplanen, besonders wenn die Seite mit Zugriffsbeschränkungen auf Dateien oder Inhalte arbeitet."
                 }
             }
         },
@@ -1797,7 +1797,7 @@
             "cve": "CVE-2026-19418",
             "package": "typo3/cms-core",
             "optional": false,
-            "severity": "unknown",
+            "severity": "high",
             "title": "TYPO3-CORE-SA-2026-021: Broken Access Control in Backend and Install Tool",
             "affectedVersions": ">=13.0.0,<13.4.34|>=14.0.0,<14.3.6",
             "link": "https://news.typo3.com/security/advisory/typo3-core-sa-2026-021",
@@ -1815,12 +1815,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "There is a weakness in the site's administration and setup areas that may not properly limit who can access certain functions. This could let someone reach parts of the system they should not be able to use.",
-                    "urgency": "It's best to apply the fix promptly, since it affects the behind-the-scenes admin area used to manage the website."
+                    "plainImpact": "Someone can reach parts of the backend or the install tool that should be off limits to them. This lets them see or change settings they are not supposed to touch.",
+                    "urgency": "Schedule this soon, since the backend and install tool are part of every TYPO3 site."
                 },
                 "de": {
-                    "plainImpact": "Es gibt eine Schwachstelle in der Verwaltung Ihrer Website, bei der der Zugriff nicht richtig eingeschränkt wird. Dadurch könnten Personen Bereiche oder Funktionen erreichen, die eigentlich nur berechtigten Nutzern vorbehalten sein sollten.",
-                    "urgency": "Diese Aktualisierung sollte zeitnah eingespielt werden, besonders wenn mehrere Personen Zugang zur Verwaltung Ihrer Website haben."
+                    "plainImpact": "Ein Nutzer kann auf Bereiche im Backend oder Installationswerkzeug zugreifen, die eigentlich für ihn gesperrt sein sollten. Dadurch kann er Aktionen ausführen oder Daten einsehen, für die er keine Berechtigung hat.",
+                    "urgency": "Bald einplanen, vor allem wenn mehrere Personen mit unterschiedlichen Rechten Zugang zum Backend haben."
                 }
             }
         },
@@ -1842,12 +1842,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "This is a weakness in the way visitors log in to the website. It could make it easier for someone to get into a user account they should not have access to.",
-                    "urgency": "Address this in the near term, but it mainly matters if your site has a login area for visitors or members."
+                    "plainImpact": "The login process for website visitors has a weakness that makes it easier for an attacker to break in and take over a front-end user account.",
+                    "urgency": "Schedule this in your normal update cycle; it only matters if the site lets visitors log in on the front end."
                 },
                 "de": {
-                    "plainImpact": "Wenn die Website einen geschützten Login-Bereich für Besucher hat, könnte eine Schwäche bei der Anmeldung dazu führen, dass der Zugang nicht so sicher ist wie gedacht. Unbefugte könnten leichter Zugriff auf geschützte Inhalte erhalten.",
-                    "urgency": "Bald handeln, wenn die Website einen Login-Bereich für Besucher nutzt; falls es keinen solchen Bereich gibt, ist das Risiko gering."
+                    "plainImpact": "Die Anmeldung im Frontend prüft die Nutzer nicht streng genug. Dadurch kann sich jemand unter Umständen leichter Zugang zu einem Benutzerkonto im Frontend verschaffen.",
+                    "urgency": "Bald einplanen, wenn die Website eine Anmeldung im Frontend nutzt; ohne einen solchen Login-Bereich ist das Problem nicht relevant."
                 }
             }
         },
@@ -1869,12 +1869,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "If the site uses forms, an attacker could gain more access than they should or trick the site into revealing or changing information it stores. This could let them reach data or areas that are meant to be private.",
-                    "urgency": "Act soon if the site uses forms; if it doesn't, the risk is lower."
+                    "plainImpact": "Someone can gain more access rights than they should have, and can also feed their own commands into the site's database. This lets them read or change data they were never meant to reach.",
+                    "urgency": "Schedule this soon if the site uses the form framework; without it the risk is limited."
                 },
                 "de": {
-                    "plainImpact": "Wenn die Website Formulare nutzt, könnte ein Angreifer sich mehr Rechte verschaffen, als ihm zustehen, oder unerlaubt auf gespeicherte Daten der Website zugreifen. Dadurch könnten vertrauliche Informationen eingesehen oder verändert werden.",
-                    "urgency": "Bald handeln, wenn die Website Formulare einsetzt; ohne Formulare ist das Risiko gering."
+                    "plainImpact": "Ein Angreifer kann über das Formular-System mehr Rechte erlangen, als ihm zustehen, und eigene Befehle an die Datenbank schicken. Damit lassen sich Daten auslesen oder verändern, an die er eigentlich nicht herankommen dürfte.",
+                    "urgency": "Zeitnah einplanen, wenn die Seite das Formular-System nutzt; ohne dessen Einsatz ist die Gefahr geringer."
                 }
             }
         },
@@ -1896,12 +1896,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "A password used in the website's admin area could be stored in a readable, unprotected form instead of being properly hidden. This means someone who gains access to those settings could see the password in plain text and potentially use it.",
-                    "urgency": "This should be addressed soon, as it affects the security of the site's admin accounts."
+                    "plainImpact": "A user's password is kept in plain, readable form in the user settings area of the backend. Someone who can see that stored value could read the password and use it to log in as that user.",
+                    "urgency": "Schedule this soon, since it affects the backend user settings that most installations use."
                 },
                 "de": {
-                    "plainImpact": "In einem internen Verwaltungsbereich der Website wird ein Passwort unverschlüsselt, also im Klartext, gespeichert. Dadurch könnte jemand, der Zugriff auf diesen Bereich erhält, dieses Passwort im Klartext einsehen und missbrauchen.",
-                    "urgency": "Sollte bald behoben werden, besonders wenn mehrere Personen Zugang zum Verwaltungsbereich der Website haben."
+                    "plainImpact": "In den Benutzereinstellungen im Backend wird ein Passwort im Klartext gespeichert. Wer Zugriff auf diese gespeicherten Daten erhält, kann das Passwort im Klartext lesen und damit ein Konto übernehmen.",
+                    "urgency": "Betrifft nur Installationen mit der genau angegebenen Version; dort sollte das Update zeitnah eingeplant werden."
                 }
             }
         },
@@ -1928,12 +1928,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "A weakness in the website's admin area could let someone see the scrambled versions of stored passwords. On their own these are not the actual passwords, but having them makes it easier for an attacker to try to work them out.",
-                    "urgency": "This mainly matters for people who log in to manage the website, so it's worth fixing in the near term to keep those accounts safe."
+                    "plainImpact": "A logged-in backend user can see the scrambled (hashed) version of stored passwords through the backend forms. This does not reveal the passwords directly, but the hashed values could be used to try to work out the real passwords.",
+                    "urgency": "Schedule this update in your normal cycle; it only matters where backend users you do not fully trust have access to the affected forms."
                 },
                 "de": {
-                    "plainImpact": "In den Bearbeitungsformularen im internen Verwaltungsbereich der Website konnten verschlüsselte Passwörter sichtbar werden. Diese liegen zwar nicht im Klartext vor, sollten aber trotzdem nicht angezeigt werden, da sie sonst missbraucht werden könnten.",
-                    "urgency": "Diese Aktualisierung sollte zeitnah eingespielt werden, betrifft aber vor allem Websites, bei denen mehrere Personen Zugang zum internen Verwaltungsbereich haben."
+                    "plainImpact": "Über Formulare im Backend können die verschlüsselten Passwörter von Benutzern sichtbar werden. Ein Angreifer könnte diese Werte auslesen und versuchen, daraus die echten Passwörter zu ermitteln.",
+                    "urgency": "Sollte zeitnah eingeplant werden, betrifft aber vor allem Installationen mit mehreren Backend-Benutzern."
                 }
             }
         },
@@ -1955,12 +1955,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "There is a weakness in how the website keeps people signed in. In some cases this could let someone gain access to an account they should not be able to use.",
-                    "urgency": "This should be fixed reasonably soon, especially if people log in to the site, such as editors or registered users."
+                    "plainImpact": "A weakness in how login sessions are handled could let someone stay logged in or reuse a session when they should not be able to. This may allow access to an account that is not their own.",
+                    "urgency": "Schedule this in your normal update cycle; it affects any site where users log in."
                 },
                 "de": {
-                    "plainImpact": "In der Verwaltung von Anmelde-Sitzungen gibt es eine Schwachstelle. Dadurch könnte es unter Umständen für Unbefugte einfacher werden, sich Zugang zu einem angemeldeten Konto auf der Website zu verschaffen.",
-                    "urgency": "Sie sollten dies zeitnah umsetzen, besonders wenn sich Nutzer oder Redakteure auf der Website anmelden."
+                    "plainImpact": "Die Verwaltung der Anmelde-Sitzungen ist zu schwach abgesichert. Dadurch könnte jemand unter Umständen eine fremde angemeldete Sitzung übernehmen und im Namen dieses Nutzers handeln.",
+                    "urgency": "Zeitnah einplanen, vor allem wenn es Nutzer gibt, die sich am System anmelden."
                 }
             }
         },
@@ -1992,12 +1992,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "A logged-in staff member could access or act on parts of the site's content area they aren't supposed to reach, because the system doesn't properly check their permissions. This could let someone with limited access see or change things beyond their allowed role.",
-                    "urgency": "Act soon, especially if several people log in to manage the website with different permission levels."
+                    "plainImpact": "A logged-in backend user can reach records they are not allowed to see or restore through the Recycler module, working around the normal access limits. This lets them view or bring back content outside their own area of responsibility.",
+                    "urgency": "Schedule this soon if editors with limited permissions use the backend; it only matters where the Recycler module is in use."
                 },
                 "de": {
-                    "plainImpact": "Ein Nutzer mit eingeschränkten Rechten im Verwaltungsbereich könnte auf Bereiche zugreifen, die eigentlich nicht für ihn bestimmt sind. Dadurch könnten Inhalte eingesehen oder verändert werden, für die diese Person keine Berechtigung haben sollte.",
-                    "urgency": "Zeitnah handeln, wenn mehrere Personen mit unterschiedlichen Rechten Zugang zum Verwaltungsbereich der Website haben; sonst ist das Risiko geringer."
+                    "plainImpact": "Ein angemeldeter Benutzer kann über das Recycler-Modul auf gelöschte Inhalte zugreifen oder diese wiederherstellen, für die er eigentlich keine Berechtigung hat. So kann jemand Daten sehen oder verändern, die außerhalb seines eigenen Bereichs liegen.",
+                    "urgency": "Bald einplanen, wenn im Backend mehrere Benutzer mit unterschiedlichen Rechten arbeiten und das Recycler-Modul verfügbar ist."
                 }
             }
         },
@@ -2024,12 +2024,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "There is a security weakness in the site's search-related feature. A logged-in administrator could be tricked into unknowingly triggering an action they did not intend, simply by visiting a malicious web page.",
-                    "urgency": "Worth addressing in your normal update schedule; the risk mainly applies if your site uses this search feature and administrators log in to manage it."
+                    "plainImpact": "An attacker can trick a logged-in backend user into triggering an action in the indexed search module without meaning to, by getting them to open a prepared link or page. This can cause the module to carry out a request on the user's behalf.",
+                    "urgency": "Schedule this in a normal update cycle; it only matters if the site uses the indexed search module and depends on tricking a logged-in user."
                 },
                 "de": {
-                    "plainImpact": "Es gibt eine Sicherheitslücke im Suchbereich der Website. Wenn eine angemeldete Person mit Zugang zur Website-Verwaltung dazu gebracht wird, eine vorbereitete Seite oder einen Link zu öffnen, könnten unbemerkt Aktionen in ihrem Namen ausgeführt werden.",
-                    "urgency": "Diese Lücke sollte zeitnah geschlossen werden, betrifft aber vor allem Websites, die die Such-Funktion nutzen und Personen mit Verwaltungszugang haben."
+                    "plainImpact": "Ein Angreifer kann einen angemeldeten Redakteur dazu bringen, ohne es zu merken eine Aktion in der Suchfunktion auszulösen. Dazu muss das Opfer eine vom Angreifer vorbereitete Seite öffnen, während es angemeldet ist.",
+                    "urgency": "Bald einplanen, wenn die indizierte Suche im System genutzt wird; andernfalls ist die Gefahr gering."
                 }
             }
         },
@@ -2056,12 +2056,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "This affects the website's staff admin area, where information can be exported as a file. Because of this weakness, someone could end up seeing information they were not meant to see.",
-                    "urgency": "This mostly matters if your site has staff who log in to manage content and use the export/download option; it's worth applying the fix soon but it isn't an emergency."
+                    "plainImpact": "Someone could use the CSV download feature to see data they should not have access to. This exposes information in the backend to users who lack the proper permissions.",
+                    "urgency": "Schedule this update in your normal patch cycle; it mainly matters for sites where backend users have limited permissions and could reach the CSV download."
                 },
                 "de": {
-                    "plainImpact": "Bei einer Funktion zum Herunterladen von Daten als Tabelle (CSV-Datei) könnten Informationen sichtbar werden, die eigentlich nicht angezeigt werden sollten. So könnten Personen im Verwaltungsbereich Daten zu Gesicht bekommen, für die sie keine Berechtigung haben.",
-                    "urgency": "Sollte in nächster Zeit behoben werden, ist aber vor allem wichtig, wenn mehrere Personen mit unterschiedlichen Rechten Zugriff auf den Verwaltungsbereich haben."
+                    "plainImpact": "Beim Herunterladen einer CSV-Datei im Backend können Daten sichtbar werden, die eigentlich nicht angezeigt werden sollten. Ein angemeldeter Nutzer könnte so an Informationen gelangen, für die er keine Berechtigung hat.",
+                    "urgency": "In absehbarer Zeit einplanen, vor allem wenn im Backend mit CSV-Exporten gearbeitet wird und mehrere Nutzer mit unterschiedlichen Rechten Zugriff haben."
                 }
             }
         },
@@ -2088,12 +2088,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "When something goes wrong on the site, an error message could reveal internal details that should stay private. This information could help an attacker learn more about how the site is built.",
-                    "urgency": "This is worth fixing at your next convenient update, as it may leak details that could aid future attacks."
+                    "plainImpact": "An error message can reveal internal details about the system that are meant to stay hidden. An attacker could use these details to learn more about how the site is set up.",
+                    "urgency": "Schedule this in a normal update cycle; it lets someone gather information but does not by itself give them control."
                 },
                 "de": {
-                    "plainImpact": "Wenn auf der Website ein Fehler auftritt, kann die Fehlermeldung mehr Informationen anzeigen als nötig. Angreifer könnten diese Details nutzen, um mehr über die Website zu erfahren und weitere Schwachstellen zu finden.",
-                    "urgency": "Sollte zeitnah behoben werden, ist aber kein akuter Notfall; das Risiko besteht vor allem, wenn Fehlermeldungen für Besucher sichtbar sind."
+                    "plainImpact": "Wenn ein Fehler auftritt, kann die Fehlermeldung interne Angaben preisgeben, die eigentlich nicht sichtbar sein sollten. Ein Angreifer kann so an Informationen über das System kommen, die ihm weitere Angriffe erleichtern.",
+                    "urgency": "Bei nächster Gelegenheit einplanen; das Risiko besteht überall, wo Fehlermeldungen an Besucher ausgegeben werden."
                 }
             }
         },
@@ -2120,12 +2120,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "There is a security weakness in the part of the website that handles forms. An attacker could trick a logged-in staff member into unknowingly triggering an action they didn't intend, which could affect the site's form settings.",
-                    "urgency": "Worth updating in the near future, but this mainly matters if the site uses the form feature and staff log in to manage it."
+                    "plainImpact": "An attacker can trick a logged-in editor into triggering an unwanted action in the form module without the editor meaning to. This could change or create form settings behind the editor's back.",
+                    "urgency": "Plan this update in a normal cycle, and give it priority if editors regularly work with the form module in the backend."
                 },
                 "de": {
-                    "plainImpact": "Wenn die Website das Formular-Modul nutzt, könnte ein Angreifer eine angemeldete Person dazu bringen, ungewollt eine Aktion im Verwaltungsbereich auszulösen, ohne dass sie es bemerkt. Dadurch könnten zum Beispiel Einstellungen oder Formulare verändert werden.",
-                    "urgency": "Zeitnah handeln, wenn die Website das Formular-Modul verwendet; andernfalls ist das Risiko gering."
+                    "plainImpact": "Ein Angreifer kann einen angemeldeten Redakteur dazu bringen, ohne dessen Wissen eine Aktion im Formular-Modul auszulösen. So können im Namen des Redakteurs ungewollte Änderungen an Formularen vorgenommen werden.",
+                    "urgency": "Mit mittlerer Dringlichkeit einplanen, und nur relevant, wenn auf der Seite das Formular-Modul genutzt wird."
                 }
             }
         },
@@ -2152,12 +2152,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "If the site uses its built-in search feature, an attacker could sneak harmful code into a page that then runs in a visitor's browser. This could be used to mess with what visitors see or to interfere with their session.",
-                    "urgency": "Worth fixing in the near term, but this mainly matters if your site offers a search feature to visitors."
+                    "plainImpact": "Someone can put code into a search that then runs in the browser of anyone who views the search results. This could be used to run actions in the browser of a visitor or logged-in editor.",
+                    "urgency": "Schedule this in a normal update cycle, and sooner if the site uses the indexed search feature; without it there is no exposure."
                 },
                 "de": {
-                    "plainImpact": "Wenn die Seite eine interne Suchfunktion nutzt, könnte ein Angreifer schädlichen Code in eine Seite einschleusen, der dann im Browser eines Besuchers ausgeführt wird. Das kann genutzt werden, um Informationen abzugreifen oder die Sitzung des Besuchers zu missbrauchen.",
-                    "urgency": "Handeln Sie zeitnah, wenn die Seite eine interne Suchfunktion verwendet; wenn nicht, ist das Risiko gering."
+                    "plainImpact": "Über die interne Suche kann jemand schädlichen Code einschleusen, der dann im Browser anderer Besucher ausgeführt wird. Damit lässt sich zum Beispiel die laufende Sitzung eines angemeldeten Nutzers übernehmen.",
+                    "urgency": "Bald einplanen, wenn die Website die interne Suche (Indexed Search) nutzt; ohne diese Funktion besteht keine Gefahr."
                 }
             }
         },
@@ -2184,12 +2184,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "There is a security weakness in the website's setup and maintenance area. An attacker who reaches it could run their own commands on the website, which could let them take control of the site.",
-                    "urgency": "This is serious, so it should be fixed soon; the main protection is keeping this maintenance area locked down and not accessible to the public."
+                    "plainImpact": "An attacker can make the site run their own commands through the Install Tool. This gives them a high level of control over the site and its server.",
+                    "urgency": "Schedule this quickly, especially if the Install Tool is reachable or its access is not tightly locked down."
                 },
                 "de": {
-                    "plainImpact": "In einem Verwaltungsbereich der Website besteht eine Sicherheitslücke, über die ein Angreifer eigenen Schadcode auf der Website ausführen könnte. Damit könnte er die Website manipulieren, lahmlegen oder die Kontrolle über sie übernehmen.",
-                    "urgency": "Da es sich um ein ernstes Risiko handelt, sollte die Website zeitnah aktualisiert werden."
+                    "plainImpact": "Über das Installationswerkzeug von TYPO3 kann jemand eigenen Programmcode auf dem Server ausführen lassen. Damit lässt sich der betroffene Server vollständig übernehmen.",
+                    "urgency": "Zeitnah einplanen, besonders wenn das Installationswerkzeug erreichbar ist."
                 }
             }
         },
@@ -2216,12 +2216,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "A weakness could let an attacker use a link that looks like it goes to your website but quietly sends visitors to a different, untrusted site. This could be used to trick your visitors into landing on a harmful or fake page.",
-                    "urgency": "This is worth fixing in the near future as part of normal maintenance, since it mainly affects visitors who click specially crafted links."
+                    "plainImpact": "An attacker can craft a link that looks like it points to your site but quietly sends the visitor on to another website they control. This can be used to trick people into landing on a page that appears trusted.",
+                    "urgency": "Schedule this in a normal update cycle; it mainly matters where links or redirects can be built from values in the web address."
                 },
                 "de": {
-                    "plainImpact": "Ein Angreifer könnte einen Link so präparieren, dass er scheinbar zu Ihrer Website führt, Besucher aber unbemerkt auf eine fremde, möglicherweise betrügerische Seite weiterleitet. So lässt sich das Vertrauen in Ihre Website ausnutzen, etwa für Täuschungsversuche.",
-                    "urgency": "Sollte zeitnah behoben werden, da solche Links vor allem für Betrugsversuche gegenüber Ihren Besuchern missbraucht werden können."
+                    "plainImpact": "Ein Angreifer kann einen Link auf Ihrer Seite so vorbereiten, dass Besucher unbemerkt auf eine fremde Webseite weitergeleitet werden. Das lässt sich für Täuschungsversuche nutzen, weil der Link zunächst wie ein Link zu Ihrer Seite aussieht.",
+                    "urgency": "Zeitnah einplanen, vor allem wenn Ihre Seite Weiterleitungen über Links mit veränderbaren Zieladressen einsetzt."
                 }
             }
         },
@@ -2253,12 +2253,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "There is a security weakness in a core part of the website software. In some cases an attacker could misuse it to make the website behave in unintended ways.",
-                    "urgency": "Plan to apply the fix in the near future as part of normal maintenance, since it affects the core system that most sites rely on."
+                    "plainImpact": "An attacker can send specially crafted data that the system reads and turns back into active objects. Depending on what is available in the code, this can let them trigger unintended actions on the server.",
+                    "urgency": "Schedule this in your normal patch cycle; the risk is higher if untrusted data can reach the affected part of the core."
                 },
                 "de": {
-                    "plainImpact": "Es gibt eine Sicherheitslücke in einem zentralen Teil der Website. Ein Angreifer könnte diese Schwäche ausnutzen, um unerwünschte Aktionen auf der Website auszulösen und deren Verhalten zu beeinträchtigen.",
-                    "urgency": "Diese Lücke betrifft eine grundlegende Funktion des Systems, daher sollten Sie das Update in einem angemessenen Zeitrahmen einspielen."
+                    "plainImpact": "Ein Angreifer kann speziell vorbereitete Daten an die betroffene Schnittstelle schicken, die das System dann falsch verarbeitet. Dadurch kann er das Verhalten des Systems stören oder unerwartete Abläufe auslösen.",
+                    "urgency": "In üblichem Wartungsrhythmus einplanen; wie stark das System betroffen ist, hängt davon ab, ob und wie die betroffene Schnittstelle genutzt wird."
                 }
             }
         },
@@ -2285,12 +2285,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "There is a weakness in how the website handles file uploads. Someone could upload a file type that shouldn't be allowed, which could put unwanted or harmful files on the website.",
-                    "urgency": "Worth updating fairly soon, especially if your site lets visitors or logged-in users upload files."
+                    "plainImpact": "Someone with upload access can put files onto the server that should not be allowed. This could let them place unwanted or harmful files in the file storage.",
+                    "urgency": "Schedule this update in your normal cycle; it mainly matters if users who are not fully trusted can upload files."
                 },
                 "de": {
-                    "plainImpact": "Über die Dateiverwaltung könnten unter Umständen Dateien hochgeladen werden, die eigentlich nicht erlaubt sein sollten. Solche Dateien könnten missbraucht werden, um dem Betrieb oder den Besuchern der Website zu schaden.",
-                    "urgency": "Das Update sollte zeitnah eingespielt werden, besonders wenn auf der Website Dateien hochgeladen werden können; ansonsten ist das Risiko geringer."
+                    "plainImpact": "Ein Angreifer kann Dateien hochladen, die eigentlich nicht erlaubt sein sollten. Solche Dateien können später Schaden anrichten, etwa wenn sie auf dem Server ausgeführt oder von anderen geöffnet werden.",
+                    "urgency": "Bald einplanen, vor allem wenn Nutzer oder Redakteure Dateien hochladen können."
                 }
             }
         },
@@ -2317,12 +2317,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "There is a security weakness in the webhooks feature that could let someone trick the site into making requests it shouldn't. Because this is a low-level issue, any effect would likely be minor.",
-                    "urgency": "There's no rush, but it's worth patching during regular maintenance; it only matters if the site uses the webhooks feature."
+                    "plainImpact": "Someone with access to the webhook feature could make the server send requests to addresses it should not reach. This is a minor weakness with limited effect.",
+                    "urgency": "Low priority; only matters if the site uses the webhooks feature and lets untrusted people configure it."
                 },
                 "de": {
-                    "plainImpact": "Wenn die Webhooks-Funktion genutzt wird, könnte jemand die Website dazu bringen, unerwünschte Anfragen an andere Adressen zu senden. Es handelt sich um eine geringfügige Schwachstelle, die den normalen Betrieb der Website kaum beeinträchtigt.",
-                    "urgency": "Das Problem betrifft nur Websites, die die Webhooks-Funktion verwenden; da die Einstufung niedrig ist, reicht es, das Update bei nächster Gelegenheit einzuspielen."
+                    "plainImpact": "Ein Angreifer mit Zugriff auf die Webhook-Funktion kann das System dazu bringen, Anfragen an interne Adressen zu senden, die sonst von außen nicht erreichbar wären. Der mögliche Schaden ist gering.",
+                    "urgency": "Kann bei Gelegenheit eingeplant werden und betrifft nur Installationen, die die Webhook-Funktion nutzen."
                 }
             }
         },
@@ -2354,12 +2354,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "There is a security weakness in the part of the system that handles outgoing email. In certain cases, an attacker could exploit it to make the website behave in ways it shouldn't.",
-                    "urgency": "Plan to apply the fix in the near future as part of regular maintenance; this mainly matters if the site sends email using the affected file-based method."
+                    "plainImpact": "An attacker who can place or change files in the mail spool folder could get the system to run their own commands. This depends on the site being set up to store outgoing mail as files on disk.",
+                    "urgency": "Schedule this in your normal update cycle; it only matters if the site is configured to spool mail to files and an attacker can reach that folder."
                 },
                 "de": {
-                    "plainImpact": "Es gibt eine Sicherheitslücke im Bereich, in dem Ihre Website E-Mails zwischenspeichert, bevor sie versendet werden. Unter bestimmten Umständen könnte ein Angreifer dies ausnutzen, um unerwünschte Aktionen auf der Website auszulösen.",
-                    "urgency": "Das Update sollte zeitnah eingespielt werden, vor allem wenn Ihre Website E-Mails über eine Zwischenspeicherung versendet."
+                    "plainImpact": "Wenn E-Mails über die Datei-Warteschlange verschickt werden, kann ein Angreifer unter bestimmten Umständen eigene Befehle einschleusen, die dann auf dem Server ausgeführt werden. Das kann die Kontrolle über die Website beeinträchtigen.",
+                    "urgency": "In absehbarer Zeit einplanen, aber nur wichtig, wenn der E-Mail-Versand über die Datei-Warteschlange genutzt wird."
                 }
             }
         },
@@ -2386,12 +2386,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "When the website creates passwords automatically, those passwords are not as random as they should be. This means someone could have an easier time guessing them and getting access they shouldn't have.",
-                    "urgency": "Worth fixing in the near term, especially if the site relies on automatically generated passwords for user or admin accounts."
+                    "plainImpact": "Passwords that the system creates are more predictable than they should be. Someone who can guess such a password may gain access to the account it belongs to.",
+                    "urgency": "Schedule this in your normal update cycle; it only matters if the site relies on passwords generated by TYPO3 itself."
                 },
                 "de": {
-                    "plainImpact": "Beim automatischen Erstellen von Passwörtern durch das System sind diese nicht zufällig genug. Dadurch könnten sie leichter erraten werden, was Unbefugten den Zugang zu geschützten Bereichen erleichtern kann.",
-                    "urgency": "Die Aktualisierung sollte zeitnah erfolgen, ist aber vor allem dann wichtig, wenn die Website Passwörter automatisch erzeugt."
+                    "plainImpact": "Vom System erzeugte Passwörter sind nicht zufällig genug und lassen sich dadurch leichter erraten. Ein Angreifer könnte ein solches Passwort schneller herausfinden und sich damit Zugang verschaffen.",
+                    "urgency": "Bald einplanen, wenn die Anwendung sich auf automatisch erzeugte Passwörter verlässt; werden Passwörter anders vergeben, ist die Gefahr geringer."
                 }
             }
         },
@@ -2423,12 +2423,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "A weakness could let an attacker craft a link that appears to go to your website but quietly sends visitors on to a different, untrusted site. This could be used to trick your visitors into landing on a scam or harmful page.",
-                    "urgency": "Worth updating in the near future, as this affects the core system and could be misused to mislead your visitors."
+                    "plainImpact": "An attacker can craft a link that looks like it points to your site but sends the visitor onward to a different site of the attacker's choosing. This can be used to trick people into landing on a malicious page while thinking they stayed on your site.",
+                    "urgency": "Schedule this in a normal update cycle; the risk depends on links that carry a redirect target, so it mainly matters for phishing-style tricks against your users."
                 },
                 "de": {
-                    "plainImpact": "Angreifer könnten einen Link zu Ihrer Website so präparieren, dass Besucher unbemerkt auf eine fremde, möglicherweise betrügerische Seite weitergeleitet werden. Das kann von Kriminellen genutzt werden, um Besucher zu täuschen, weil der Link zunächst vertrauenswürdig aussieht.",
-                    "urgency": "Sie sollten die Aktualisierung zeitnah einplanen; das Risiko besteht vor allem, wenn solche vorbereiteten Links an Ihre Besucher verschickt werden."
+                    "plainImpact": "Ein Angreifer kann einen Link erstellen, der scheinbar zu Ihrer Website führt, den Besucher aber unbemerkt auf eine fremde Seite weiterleitet. Das lässt sich für Täuschungen nutzen, etwa um Nutzer auf gefälschte Seiten zu lenken.",
+                    "urgency": "Bei Gelegenheit einplanen; die Weiterleitung setzt voraus, dass ein Nutzer auf einen präparierten Link klickt."
                 }
             }
         },
@@ -2455,12 +2455,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "An attacker could repeatedly trigger a part of the website that handles displaying images, forcing it to do a lot of extra work. This could slow the site down or make it temporarily unavailable to normal visitors.",
-                    "urgency": "This should be addressed in the near future as a routine fix, since it mainly affects site performance and availability rather than stealing information."
+                    "plainImpact": "Someone can send repeated requests to the part of TYPO3 that displays images, forcing the server to do heavy work each time. Enough of these requests can slow the site down or make it stop responding for real visitors.",
+                    "urgency": "Schedule this in your normal update cycle; it matters most for public sites that show images through this feature and are exposed to unwanted traffic."
                 },
                 "de": {
-                    "plainImpact": "Ein Angreifer könnte die Website gezielt überlasten, indem er sie zwingt, immer wieder aufwändige Aufgaben zu erledigen. Das kann die Seite verlangsamen oder vorübergehend nicht erreichbar machen.",
-                    "urgency": "Sollte zeitnah behoben werden, ist aber vor allem dann relevant, wenn die Website öffentlich erreichbar ist und Bilder über diese Funktion ausliefert."
+                    "plainImpact": "Ein Angreifer kann über den Bildanzeige-Teil so viele Anfragen auslösen, dass der Server stark ausgelastet wird. Das kann die Seite verlangsamen oder zeitweise unerreichbar machen.",
+                    "urgency": "Bald einplanen, wenn die Seite Bilder über diesen Teil ausliefert und öffentlich erreichbar ist."
                 }
             }
         },
@@ -2487,12 +2487,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "There is a weakness in the part of the site that staff use to manage user accounts. An attacker could trick a logged-in administrator into unknowingly carrying out actions in that area that they did not intend.",
-                    "urgency": "This should be addressed in the normal course of updates; the risk mainly applies to sites where staff log in to manage users."
+                    "plainImpact": "An attacker can trick a logged-in administrator into carrying out actions in the backend user module without meaning to, just by getting them to open a prepared link or page. This could lead to unwanted changes to user accounts made under the administrator's identity.",
+                    "urgency": "Plan this update in a normal maintenance window; it only matters if administrators manage users through the backend and can be lured to an outside page while logged in."
                 },
                 "de": {
-                    "plainImpact": "Im Verwaltungsbereich der Website, in dem Benutzerkonten verwaltet werden, gibt es eine Sicherheitslücke. Ein Angreifer könnte einen angemeldeten Administrator dazu bringen, ohne dessen Wissen ungewollte Aktionen an Benutzerkonten auszulösen.",
-                    "urgency": "Das Update sollte zeitnah eingespielt werden, betrifft aber vor allem Websites mit mehreren Personen, die Zugang zum Verwaltungsbereich haben."
+                    "plainImpact": "Ein Angreifer kann einen angemeldeten Administrator dazu bringen, ohne dessen Wissen Aktionen im Modul zur Verwaltung von Backend-Benutzern auszuführen. So können etwa Benutzerkonten verändert werden, wenn der Administrator auf eine vom Angreifer vorbereitete Seite oder einen Link klickt.",
+                    "urgency": "In nächster Zeit einplanen, besonders wenn mehrere Personen mit Backend-Zugang das Benutzerverwaltungsmodul nutzen."
                 }
             }
         },
@@ -2524,12 +2524,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "There is a security weakness in the part of the site that manages media files. Someone could gain access to files or actions they are not supposed to see or use.",
-                    "urgency": "This should be addressed soon because of its high severity, especially if staff use the site's media management area."
+                    "plainImpact": "A logged-in backend user could reach media files or actions in the Media module that they should not have access to. This lets them view or work with files beyond their assigned permissions.",
+                    "urgency": "Schedule this soon if you have backend users with limited rights who could misuse the extra access; it matters wherever the Media module is used."
                 },
                 "de": {
-                    "plainImpact": "Es gibt eine Sicherheitslücke im Medien-Bereich der Website, bei der die Zugriffsrechte nicht richtig geprüft werden. Dadurch könnten Personen auf Medien-Dateien oder Funktionen zugreifen, für die sie eigentlich keine Berechtigung haben sollten.",
-                    "urgency": "Wegen der hohen Einstufung sollten Sie zeitnah handeln, besonders wenn mehrere Personen mit unterschiedlichen Rechten im Verwaltungsbereich der Website arbeiten."
+                    "plainImpact": "Ein angemeldeter Nutzer kann im Medienbereich auf Dateien oder Ordner zugreifen, für die ihm eigentlich die Rechte fehlen. So können Inhalte eingesehen oder verändert werden, die für ihn nicht vorgesehen sind.",
+                    "urgency": "Bald einplanen, wenn im Backend mehrere Nutzer mit unterschiedlichen Rechten arbeiten; bei nur wenigen voll berechtigten Redakteuren ist das Risiko geringer."
                 }
             }
         },
@@ -2556,12 +2556,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "There is a weakness in how the site checks whether someone is allowed to make changes to content. A logged-in user could end up doing things they shouldn't be permitted to do behind the scenes.",
-                    "urgency": "Worth updating fairly soon, especially if the site has several editors or users with different permission levels."
+                    "plainImpact": "A logged-in backend user could make changes to data they are not supposed to be allowed to touch. This lets them edit or affect records beyond their assigned permissions.",
+                    "urgency": "Schedule this in your normal update cycle; it only matters if you have backend users whose access is meant to be limited."
                 },
                 "de": {
-                    "plainImpact": "Es gibt eine Schwäche bei den Zugriffsrechten im System. Dadurch könnte jemand mit einem Konto Aktionen ausführen oder Inhalte bearbeiten, für die er eigentlich keine Berechtigung haben sollte.",
-                    "urgency": "Bald handeln, besonders wenn es mehrere Redakteure oder Nutzer mit unterschiedlichen Rechten im Verwaltungsbereich der Website gibt."
+                    "plainImpact": "Ein angemeldeter Nutzer kann Aktionen ausführen oder Daten ändern, die eigentlich nur mit höheren Rechten erlaubt sein sollten. So lassen sich Inhalte verändern, für die die Berechtigung fehlt.",
+                    "urgency": "In nächster Zeit einplanen; betrifft vor allem Installationen mit mehreren Redakteuren oder abgestuften Rechten."
                 }
             }
         },
@@ -2583,12 +2583,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "A security weakness in the site's setup tool could let someone see certain internal details that were meant to stay private. This is a minor issue and does not let anyone change the site or take control of it.",
-                    "urgency": "The risk is low, so this can be handled as part of normal maintenance rather than urgently."
+                    "plainImpact": "The install tool can reveal some internal details about the system that would normally stay hidden. This is limited to information being shown, not changes to the site or access to accounts.",
+                    "urgency": "Low priority; only relevant if the install tool is reachable, so include it in your next routine update."
                 },
                 "de": {
-                    "plainImpact": "Über den Installations-Bereich der Website könnten unbeabsichtigt einige interne Informationen sichtbar werden, die eigentlich nicht für die Öffentlichkeit gedacht sind. Es geht dabei um eine geringfügige Schwachstelle, kein direkter Zugriff auf Kundendaten oder das Konto.",
-                    "urgency": "Das Risiko ist gering, daher genügt es, das Update bei Gelegenheit einzuspielen."
+                    "plainImpact": "Über das Installationswerkzeug können bestimmte interne Informationen sichtbar werden, die eigentlich nicht nach außen gelangen sollten. Es geht um Einblick in Details, nicht um Zugriff auf Konten oder das Verändern von Inhalten.",
+                    "urgency": "Nur bei nächster Gelegenheit einplanen; betrifft vor allem Installationen, bei denen das Installationswerkzeug erreichbar ist."
                 }
             }
         },
@@ -2615,12 +2615,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "A weakness in the website's admin log tool could let an attacker trick a logged-in administrator into carrying out an unwanted action without realising it, by getting them to click a booby-trapped link or page.",
-                    "urgency": "Update in the near term as part of normal maintenance; the risk only applies when an administrator with access to the site's back-end is logged in and gets tricked into visiting a malicious page."
+                    "plainImpact": "An attacker can trick a logged-in backend user into triggering actions in the log module without meaning to, by getting them to open a prepared link or page. This is limited to what the log module itself can do.",
+                    "urgency": "Schedule this in a normal update cycle; it only matters for sites with backend users who use the log module."
                 },
                 "de": {
-                    "plainImpact": "Es gibt eine Sicherheitslücke in einem internen Bereich der Website-Verwaltung, der zum Anzeigen von Protokollen dient. Ein Angreifer könnte einen angemeldeten Verwalter dazu verleiten, unbeabsichtigt eine Aktion in diesem Bereich auszulösen, ohne dass dieser es merkt.",
-                    "urgency": "Dies sollte zeitnah behoben werden, betrifft aber vor allem Websites, bei denen sich Verwalter regelmäßig im internen Bereich anmelden."
+                    "plainImpact": "Ein Angreifer kann einen angemeldeten Redakteur oder Administrator dazu bringen, ohne dessen Wissen eine Aktion im Log-Modul auszulösen. Dazu muss das Opfer eine vom Angreifer vorbereitete Seite öffnen, während es angemeldet ist.",
+                    "urgency": "Betrifft nur Installationen, die das Log-Modul im Backend nutzen; bei mittlerer Einstufung im Rahmen der normalen Wartung einplanen."
                 }
             }
         },
@@ -2642,12 +2642,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "When something goes wrong on the site, the error messages or logs could show small pieces of internal information that were meant to stay private. On its own this is a minor issue and does not let someone change your site or steal customer data.",
-                    "urgency": "This is low risk, so it can be handled during your next routine update rather than urgently."
+                    "plainImpact": "When something goes wrong, the error handling can reveal internal details about the system that are not meant to be shown. This gives an attacker background information about how the site is set up, but no direct control.",
+                    "urgency": "Low priority; schedule with your normal update cycle, and it only matters for sites running the affected install tool component."
                 },
                 "de": {
-                    "plainImpact": "Wenn auf der Website ein Fehler auftritt, könnten dabei versehentlich technische Details sichtbar werden, die eigentlich verborgen bleiben sollten. Das gibt Fremden einen kleinen Einblick in interne Informationen der Website, richtet aber selbst keinen direkten Schaden an.",
-                    "urgency": "Das Problem hat eine geringe Dringlichkeit; ein Update kann bei nächster Gelegenheit im Rahmen der regulären Pflege eingespielt werden."
+                    "plainImpact": "Bei einem Fehler oder in Protokolldateien können interne Angaben auftauchen, die eigentlich nicht sichtbar sein sollten. Das betrifft nur kleinere Informationen, keine Kontoübernahme oder Datendiebstahl.",
+                    "urgency": "Kann bei Gelegenheit mit dem nächsten geplanten Update erledigt werden, da die Auswirkungen gering sind."
                 }
             }
         },
@@ -2674,12 +2674,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "There is a weakness in how the website handles stored files. In some cases, an attacker could reach files or folders they should not be able to see, which may expose information that was meant to stay private.",
-                    "urgency": "This is worth fixing in the near term as part of normal maintenance, especially if the site stores or manages files that aren't meant to be public."
+                    "plainImpact": "Someone with access to file handling could reach files outside the folders they are supposed to stay in. This can expose or affect files that were meant to be off limits.",
+                    "urgency": "Schedule this in a normal update cycle; it mainly matters for sites where users can upload or manage files."
                 },
                 "de": {
-                    "plainImpact": "Durch eine Sicherheitslücke im Umgang mit Dateien und Ordnern könnte jemand möglicherweise auf Dateien zugreifen, die eigentlich nicht öffentlich sein sollten. Dadurch könnten Inhalte sichtbar werden, die geschützt bleiben sollten.",
-                    "urgency": "Das Update sollte zeitnah eingespielt werden, besonders wenn auf der Website mit Dateien oder Datei-Uploads gearbeitet wird."
+                    "plainImpact": "Ein Angreifer kann über die Dateiverwaltung auf Dateien außerhalb des vorgesehenen Ordners zugreifen. Dadurch lassen sich Dateien lesen oder erreichen, die eigentlich nicht zugänglich sein sollten.",
+                    "urgency": "In absehbarer Zeit einplanen, vor allem wenn Nutzer oder Redakteure mit Dateien und Dateispeichern arbeiten können."
                 }
             }
         },
@@ -2711,12 +2711,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "There is a weakness in the part of the system that is meant to filter out harmful code from content. In some cases harmful code could slip through this filter and run in a visitor's browser, which could be used to affect their session or trick them.",
-                    "urgency": "This is worth updating fairly soon as a precaution, since the safeguard that normally blocks harmful content may not fully do its job."
+                    "plainImpact": "The tool that is supposed to clean up HTML content can be tricked, so harmful code slips through and runs in the browser of someone who views the page. This could let an attacker act in the context of a logged-in user who opens the affected content.",
+                    "urgency": "Schedule this update in your normal cycle; it matters wherever this content-cleaning tool is relied on to filter user- or editor-supplied HTML."
                 },
                 "de": {
-                    "plainImpact": "Der Schutzmechanismus, der schädlichen Code aus Inhalten herausfiltern soll, lässt sich unter bestimmten Umständen umgehen. Dadurch könnte schädlicher Code auf einer Seite landen und im Browser eines Besuchers ausgeführt werden.",
-                    "urgency": "Diese Aktualisierung sollte zeitnah eingespielt werden, da der Schutz eine grundlegende Sicherheitsfunktion der Website betrifft."
+                    "plainImpact": "Die Schutzfunktion, die schädlichen Code aus Inhalten entfernen soll, lässt sich unter Umständen umgehen. Dadurch kann eingeschleuster Code im Browser von Besuchern ausgeführt werden.",
+                    "urgency": "Zeitnah einplanen, vor allem wenn Inhalte von weniger vertrauenswürdigen Nutzern eingegeben werden und auf die genannte Schutzkomponente vertraut wird."
                 }
             }
         }
