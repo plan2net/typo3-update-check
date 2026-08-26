@@ -10,6 +10,7 @@ use Typo3UpdateCheckWeb\Build\ExplanationJudge;
 use Typo3UpdateCheckWeb\Build\Explainer;
 use Typo3UpdateCheckWeb\Build\Http;
 use Typo3UpdateCheckWeb\Build\Overrides;
+use Typo3UpdateCheckWeb\Build\SeverityBackfill;
 use Typo3UpdateCheckWeb\Build\Typo3Releases;
 
 require __DIR__ . '/vendor/autoload.php';
@@ -26,6 +27,10 @@ $explanations = is_file($cachePath)
 $http = new Http();
 $majors = (new Typo3Releases($http))->build();
 $advisories = (new Advisories($http, new AffectedResolver()))->build($majors);
+
+// Packagist serves a just-published advisory unrated; read the rating off TYPO3's own bulletin
+// instead of showing "not rated". Before the overrides, so a curated severity still wins.
+$advisories = (new SeverityBackfill($http->getText(...)))->apply($advisories);
 
 // Curated corrections for known upstream data bugs — applied before explanations so the
 // added/changed records are explained and validated like everything else.

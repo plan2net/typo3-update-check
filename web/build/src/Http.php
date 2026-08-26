@@ -6,6 +6,22 @@ namespace Typo3UpdateCheckWeb\Build;
 
 final class Http
 {
+    /** Fail-soft sibling of get(): callers that can live without the response get null, not an exception. */
+    public function getText(string $url): ?string
+    {
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_USERAGENT => 'typo3-update-check-web-build',
+        ]);
+        $body = curl_exec($ch);
+        $status = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+        return is_string($body) && $status < 400 ? $body : null;
+    }
+
     /** @return array<mixed> */
     public function get(string $url): array
     {
