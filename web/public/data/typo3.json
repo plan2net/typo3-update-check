@@ -1,5 +1,5 @@
 {
-    "generatedAt": "2026-08-26T19:02:36+00:00",
+    "generatedAt": "2026-09-01T22:23:43+00:00",
     "majors": {
         "12": {
             "maintainedUntil": "2026-04-30T00:00:00+02:00",
@@ -1799,7 +1799,7 @@
             "optional": false,
             "severity": "high",
             "title": "TYPO3-CORE-SA-2026-021: Broken Access Control in Backend and Install Tool",
-            "affectedVersions": ">=13.0.0,<13.4.34|>=14.0.0,<14.3.6",
+            "affectedVersions": ">=13.0.0,<13.4.34|>=13.0.0,<13.4.34|>=14.0.0,<14.3.6",
             "link": "https://news.typo3.com/security/advisory/typo3-core-sa-2026-021",
             "affected": {
                 "14": {
@@ -1815,12 +1815,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "Someone can reach parts of the backend or the install tool that should be off limits to them. This lets them see or change settings they are not supposed to touch.",
-                    "urgency": "Schedule this soon, since the backend and install tool are part of every TYPO3 site."
+                    "plainImpact": "Someone could reach parts of the backend or the install tool that should be off limits to them. This can let them see or change settings they are not supposed to access.",
+                    "urgency": "Schedule this soon, especially if the backend or install tool is reachable by users who should not have full access."
                 },
                 "de": {
-                    "plainImpact": "Ein Nutzer kann auf Bereiche im Backend oder Installationswerkzeug zugreifen, die eigentlich für ihn gesperrt sein sollten. Dadurch kann er Aktionen ausführen oder Daten einsehen, für die er keine Berechtigung hat.",
-                    "urgency": "Bald einplanen, vor allem wenn mehrere Personen mit unterschiedlichen Rechten Zugang zum Backend haben."
+                    "plainImpact": "Ein angemeldeter Nutzer kann auf Bereiche im Backend und im Installations-Werkzeug zugreifen, die ihm eigentlich nicht offenstehen. Dadurch lassen sich Funktionen oder Einstellungen nutzen, für die er keine Berechtigung hat.",
+                    "urgency": "Bald einplanen, wenn Personen Zugang zum Backend haben; ohne Backend-Nutzer ist die Gefahr gering."
                 }
             }
         },

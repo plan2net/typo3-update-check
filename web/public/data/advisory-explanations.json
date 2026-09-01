@@ -476,16 +476,16 @@
         }
     },
     "PKSA-hf64-fs5s-6k3h|core|typo3/cms-core": {
-        "contentHash": "4bf18e892b207a00d2a5fd931158da3a2e56b633f01708875220fcfaf6e58b43",
+        "contentHash": "1ea405e2ea0af3c7808e288d97a02973501c0795ffba498884e05fa91a877d97",
         "promptVersion": 3,
         "langs": {
             "en": {
-                "plainImpact": "Someone can reach parts of the backend or the install tool that should be off limits to them. This lets them see or change settings they are not supposed to touch.",
-                "urgency": "Schedule this soon, since the backend and install tool are part of every TYPO3 site."
+                "plainImpact": "Someone could reach parts of the backend or the install tool that should be off limits to them. This can let them see or change settings they are not supposed to access.",
+                "urgency": "Schedule this soon, especially if the backend or install tool is reachable by users who should not have full access."
             },
             "de": {
-                "plainImpact": "Ein Nutzer kann auf Bereiche im Backend oder Installationswerkzeug zugreifen, die eigentlich für ihn gesperrt sein sollten. Dadurch kann er Aktionen ausführen oder Daten einsehen, für die er keine Berechtigung hat.",
-                "urgency": "Bald einplanen, vor allem wenn mehrere Personen mit unterschiedlichen Rechten Zugang zum Backend haben."
+                "plainImpact": "Ein angemeldeter Nutzer kann auf Bereiche im Backend und im Installations-Werkzeug zugreifen, die ihm eigentlich nicht offenstehen. Dadurch lassen sich Funktionen oder Einstellungen nutzen, für die er keine Berechtigung hat.",
+                "urgency": "Bald einplanen, wenn Personen Zugang zum Backend haben; ohne Backend-Nutzer ist die Gefahr gering."
             }
         }
     },
