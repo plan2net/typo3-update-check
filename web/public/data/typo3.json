@@ -1,12 +1,18 @@
 {
-    "generatedAt": "2026-09-08T09:28:59+00:00",
+    "generatedAt": "2026-09-08T10:27:29+00:00",
     "majors": {
         "12": {
             "maintainedUntil": "2026-04-30T00:00:00+02:00",
             "eltsUntil": "2030-04-30T00:00:00+02:00",
             "latestFree": "12.4.45",
-            "latestElts": "12.4.48",
+            "latestElts": "12.4.49",
             "releases": [
+                {
+                    "version": "12.4.49",
+                    "date": "2026-09-08T09:23:00+02:00",
+                    "type": "security",
+                    "elts": true
+                },
                 {
                     "version": "12.4.48",
                     "date": "2026-07-14T12:30:55+02:00",
@@ -348,9 +354,15 @@
         "13": {
             "maintainedUntil": "2027-12-31T00:00:00+01:00",
             "eltsUntil": "2030-12-31T00:00:00+01:00",
-            "latestFree": "13.4.34",
-            "latestElts": "13.4.34",
+            "latestFree": "13.4.35",
+            "latestElts": "13.4.35",
             "releases": [
+                {
+                    "version": "13.4.35",
+                    "date": "2026-09-08T09:28:00+02:00",
+                    "type": "security",
+                    "elts": false
+                },
                 {
                     "version": "13.4.34",
                     "date": "2026-08-11T07:18:35+02:00",
@@ -619,8 +631,8 @@
             "releases": [
                 {
                     "version": "14.3.7",
-                    "date": "2026-09-08T09:19:30+02:00",
-                    "type": "regular",
+                    "date": "2026-09-08T09:19:00+02:00",
+                    "type": "security",
                     "elts": false
                 },
                 {
@@ -1224,6 +1236,43 @@
                 "de": {
                     "plainImpact": "Über die Site-Konfiguration lassen sich interne Werte auslesen, die eigentlich verborgen bleiben sollten. Ein Angreifer kann so an vertrauliche Informationen des Systems gelangen.",
                     "urgency": "In absehbarer Zeit einplanen, besonders wenn mehrere Personen Zugriff auf die Site-Konfiguration haben."
+                }
+            }
+        },
+        {
+            "id": "PKSA-745m-816f-bzfy",
+            "cve": "CVE-2026-77132",
+            "package": "typo3/cms-backend",
+            "optional": false,
+            "severity": "medium",
+            "title": "TYPO3-CORE-SA-2026-022: Information Disclosure via Backend Localization Wizard",
+            "affectedVersions": ">=10.0.0,<10.4.60|>=11.0.0,<11.5.54|>=12.0.0,<12.4.49|>=13.0.0,<13.4.35|>=14.0.0,<14.3.7",
+            "link": "https://news.typo3.com/security/advisory/typo3-core-sa-2026-022",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": "14.3.7",
+                    "fixedInElts": false
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": "13.4.35",
+                    "fixedInElts": false
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": "12.4.49",
+                    "fixedInElts": true
+                }
+            },
+            "explanation": {
+                "en": {
+                    "plainImpact": "A logged-in backend user could see content they are not meant to access through the tool that copies content between languages. This exposes information but does not let them change or take over anything.",
+                    "urgency": "Schedule this in a normal update cycle; it only matters for sites with backend users who work with multiple languages."
+                },
+                "de": {
+                    "plainImpact": "Ein angemeldeter Benutzer im Backend kann über den Übersetzungs-Assistenten an Informationen gelangen, die eigentlich nicht für ihn bestimmt sind.",
+                    "urgency": "Bei Gelegenheit einplanen; betroffen sind nur Installationen mit mehreren Backend-Benutzern, die unterschiedliche Rechte haben."
                 }
             }
         },
@@ -2435,6 +2484,33 @@
                 "de": {
                     "plainImpact": "Ein Angreifer kann einen Link erstellen, der scheinbar zu Ihrer Website führt, den Besucher aber unbemerkt auf eine fremde Seite weiterleitet. Das lässt sich für Täuschungen nutzen, etwa um Nutzer auf gefälschte Seiten zu lenken.",
                     "urgency": "Bei Gelegenheit einplanen; die Weiterleitung setzt voraus, dass ein Nutzer auf einen präparierten Link klickt."
+                }
+            }
+        },
+        {
+            "id": "PKSA-t4m5-b2kz-hh4n",
+            "cve": "CVE-2026-85400",
+            "package": "typo3/cms-lowlevel",
+            "optional": true,
+            "severity": "high",
+            "title": "TYPO3-CORE-SA-2026-023: Missing Authorization in lowlevel commands",
+            "affectedVersions": ">=14.2.0,<14.3.7",
+            "link": "https://news.typo3.com/security/advisory/typo3-core-sa-2026-023",
+            "affected": {
+                "14": {
+                    "from": "14.2.0",
+                    "fixedIn": "14.3.7",
+                    "fixedInElts": false
+                }
+            },
+            "explanation": {
+                "en": {
+                    "plainImpact": "Some of the low-level maintenance commands do not check whether the person running them is allowed to. A user with limited rights could run actions that should be reserved for administrators.",
+                    "urgency": "Schedule this soon, especially on sites where several people have backend access with different permission levels."
+                },
+                "de": {
+                    "plainImpact": "Bestimmte Wartungsbefehle prüfen nicht richtig, ob der Nutzer dazu berechtigt ist. Dadurch kann jemand ohne die nötigen Rechte diese Befehle ausführen und so auf Funktionen zugreifen, die eigentlich nur Berechtigten offenstehen.",
+                    "urgency": "Zeitnah einplanen, da die Einstufung hoch ist; betroffen sind vor allem Installationen, bei denen diese Wartungsbefehle erreichbar sind."
                 }
             }
         },

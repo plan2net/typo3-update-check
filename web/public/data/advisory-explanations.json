@@ -223,6 +223,20 @@
             }
         }
     },
+    "PKSA-745m-816f-bzfy|core|typo3/cms-backend": {
+        "contentHash": "81ee09b754743c14f1b15b057b83b445627cb44c4af6b3ca276c745528f022e2",
+        "promptVersion": 3,
+        "langs": {
+            "en": {
+                "plainImpact": "A logged-in backend user could see content they are not meant to access through the tool that copies content between languages. This exposes information but does not let them change or take over anything.",
+                "urgency": "Schedule this in a normal update cycle; it only matters for sites with backend users who work with multiple languages."
+            },
+            "de": {
+                "plainImpact": "Ein angemeldeter Benutzer im Backend kann über den Übersetzungs-Assistenten an Informationen gelangen, die eigentlich nicht für ihn bestimmt sind.",
+                "urgency": "Bei Gelegenheit einplanen; betroffen sind nur Installationen mit mehreren Backend-Benutzern, die unterschiedliche Rechte haben."
+            }
+        }
+    },
     "PKSA-7dr7-npxr-1nyj|core|typo3/cms-core": {
         "contentHash": "7a76c25379a40687fcff14096a8f3cb94f8c17220156643b111c3dcb17110da5",
         "promptVersion": 3,
@@ -752,6 +766,20 @@
             "de": {
                 "plainImpact": "Ein Angreifer kann einen Link erstellen, der scheinbar zu Ihrer Website führt, den Besucher aber unbemerkt auf eine fremde Seite weiterleitet. Das lässt sich für Täuschungen nutzen, etwa um Nutzer auf gefälschte Seiten zu lenken.",
                 "urgency": "Bei Gelegenheit einplanen; die Weiterleitung setzt voraus, dass ein Nutzer auf einen präparierten Link klickt."
+            }
+        }
+    },
+    "PKSA-t4m5-b2kz-hh4n|optional|typo3/cms-lowlevel": {
+        "contentHash": "548b909ef3a44731c4e997aa9be6f92bcd3f205690de946d8d3c5c80598087ce",
+        "promptVersion": 3,
+        "langs": {
+            "en": {
+                "plainImpact": "Some of the low-level maintenance commands do not check whether the person running them is allowed to. A user with limited rights could run actions that should be reserved for administrators.",
+                "urgency": "Schedule this soon, especially on sites where several people have backend access with different permission levels."
+            },
+            "de": {
+                "plainImpact": "Bestimmte Wartungsbefehle prüfen nicht richtig, ob der Nutzer dazu berechtigt ist. Dadurch kann jemand ohne die nötigen Rechte diese Befehle ausführen und so auf Funktionen zugreifen, die eigentlich nur Berechtigten offenstehen.",
+                "urgency": "Zeitnah einplanen, da die Einstufung hoch ist; betroffen sind vor allem Installationen, bei denen diese Wartungsbefehle erreichbar sind."
             }
         }
     },
