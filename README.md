@@ -8,6 +8,8 @@
 
 A Composer plugin that intercepts TYPO3 core updates and displays breaking changes and security updates before proceeding.
 
+**Is your TYPO3 safe? → [plan2net.github.io/typo3-update-check](https://plan2net.github.io/typo3-update-check/)** — check any TYPO3 version against every published security advisory in the browser, no install required.
+
 ## Purpose
 
 Breaking changes and security fixes are easy to overlook when updating TYPO3. This plugin brings that information directly to your terminal the moment you run `composer update`, highlighting breaking changes (⚠️) and security updates (⚡) so you can make an informed decision before proceeding.
