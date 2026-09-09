@@ -1,62 +1,106 @@
 /*
  * TYPO3 Update Check — web tool styling.
  *
- * Recreates the visual language of docs/design-reference/mockup-v2.dc.html
- * (warm editorial calm, one orange accent, a single soft-shadowed split card),
- * styling the markup that index.html / ui.ts already emit. Markup structure and
- * logic are NOT changed here.
+ * Severity always carries a word as well as a hue, so the list still works in
+ * greyscale or for a colour-blind reader (SC 1.4.1).
  *
- * Accessibility (WCAG 2.2 AA): brand orange #FF8700 fails with WHITE text (2.41:1) but is great
- * with DARK text — #1A1A1A on #FF8700 = 7.2:1 — so primary fills use brand orange + dark text.
- * --accent-strong (#A85800) is kept for the focus ring + checkbox tick; text links use --link
- * (#9A5400, 5.77:1 on card). Every interactive element keeps a visible focus ring.
+ * Measured contrast (WCAG 2.2 AA — 4.5:1 text, 3:1 controls and focus):
+ *   ink   #1B2027 on #FFFFFF = 16.4:1   dim  #5A6572 on #F5F7F9 = 5.5:1
+ *   ink-2 #39424E on #FFFFFF = 10.2:1   link #2C5578 on #FFFFFF =  7.8:1
+ *   rose  #8E2A3B on #F7EFF1 =  7.3:1   sage #1F5C43 on #EDF3F0 =  7.0:1
+ *   slate #44505E on #F1F4F7 =  7.5:1   ink  #1B2027 on #FF8700 =  6.8:1
+ *   control border #7E8896 on #FFFFFF = 3.6:1
+ *   orange edge    #A05E00 on #FFFFFF = 5.1:1
+ *
+ * Brand orange is reserved for the mark, the GitHub link and the value the
+ * visitor picked. A white switch knob on orange would be 2.4:1, so it is dark.
  */
 
 :root {
-  /* Palette (from the mockup) */
-  --paper: #f4f1ea;
-  --card: #ffffff;
-  --rail: #fbfaf7;
-  --text: #1a1a1a;
-  --text-soft: #2a2a2a;
-  --muted: #6b6b6b;
-  --hairline: #e5e0d5;
-  --hairline-soft: #ece7dc;
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --soft: #f5f7f9;
 
-  /* Orange: brand fill (dark text) vs. accessible white-text fill vs. link text */
-  --accent: #ff8700; /* TYPO3 brand orange — primary fills, paired with DARK text (AA: 7.2:1) */
-  --accent-press: #ef7d00; /* hover/press shade for brand fills; dark text stays >7:1 */
-  --accent-strong: #a85800; /* focus ring + checkbox tick (AA: 5.17:1) */
-  --link: #9a5400; /* text-link orange (AA: 5.77:1 on white) */
+  --ink: #1b2027;
+  --ink-2: #39424e;
+  --dim: #5a6572;
 
-  /* Dark command/pill surface */
-  --dark: #1c1c1c;
-  --dark-text: #ededed;
+  --line: #dfe4ea;
+  --line-soft: #edf0f3;
+  --control-bd: #7e8896;
 
-  /* Verdict tier tints (colour is always paired with the .tier word + an icon) */
-  --crit-fg: #c8102e;
-  --crit-bg: #fdecec;
-  --crit-bd: #f1c7cd;
-  --soon-fg: #b45309;
-  --soon-bg: #fef3c7;
-  --soon-bd: #efdda0;
-  --minor-fg: #1d4ed8;
-  --minor-bg: #e8eefc;
-  --minor-bd: #cbd9f6;
-  --good-fg: #1e7b34;
-  --good-bg: #e7f4ea;
-  --good-bd: #c2e2cb;
-  --neutral-fg: #6b6b6b;
-  --neutral-bg: #f4f1ea;
-  --neutral-bd: #e5e0d5;
+  --link: #2c5578;
+  --focus: #2c5578;
 
-  --radius-card: 16px;
+  --org: #ff8700;
+  --org-hover: #ed7c00;
+  --on-org: #1b2027;
+  --org-edge: #a05e00;
+
+  --rose: #8e2a3b;
+  --rose-bg: #f7eff1;
+  --rose-bd: #e5d2d7;
+  --sage: #1f5c43;
+  --sage-bg: #edf3f0;
+  --sage-bd: #cddfd7;
+  --slate: #44505e;
+  --slate-bg: #f1f4f7;
+  --slate-bd: #dce2e9;
+
+  --sev-critical: #7a1f30;
+  --sev-high: #93384a;
+  --sev-medium: #5f6b7a;
+  --sev-low: #78859a;
+  --sev-unknown: #9aa4b0;
+
   --radius-panel: 13px;
   --radius-control: 9px;
-  --shadow-card: 0 1px 2px rgba(26, 26, 26, 0.04), 0 18px 40px -20px rgba(26, 26, 26, 0.18);
 
-  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
-  --sans: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+
+  /* System faces only — no third-party font host is contacted. */
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #12161b;
+    --surface: #181d24;
+    --soft: #1c222a;
+
+    --ink: #e4eaf1;
+    --ink-2: #c2cbd6;
+    --dim: #98a4b2;
+
+    --line: #2a313a;
+    --line-soft: #232a33;
+    --control-bd: #7b8695;
+
+    --link: #8fb6dc;
+    --focus: #8fb6dc;
+
+    --org: #ff9422;
+    --org-hover: #ffa544;
+    --on-org: #12161b;
+    --org-edge: #ff9422;
+
+    --rose: #e9a3ae;
+    --rose-bg: #241519;
+    --rose-bd: #45272d;
+    --sage: #7cc9a4;
+    --sage-bg: #12211b;
+    --sage-bd: #274536;
+    --slate: #aab6c4;
+    --slate-bg: #1a2028;
+    --slate-bd: #333c47;
+
+    --sev-critical: #f0959f;
+    --sev-high: #d97f8c;
+    --sev-medium: #8a97a8;
+    --sev-low: #67717f;
+    --sev-unknown: #59626e;
+  }
 }
 
 *,
@@ -72,295 +116,922 @@ body {
 }
 
 body {
-  background: var(--paper);
-  color: var(--text);
+  background: var(--bg);
+  color: var(--ink);
   font-family: var(--sans);
-  font-size: 16px;
-  line-height: 1.5;
+  font-size: 17px;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
-/* ---- Shared focus indicator (2.4.7 / 2.4.11) ---------------------------- */
+/* Offset so the ring contrasts with the page ground, not the control fill (2.4.7 / 2.4.11). */
 :focus-visible {
-  outline: 3px solid var(--accent-strong);
+  outline: 2px solid var(--focus);
   outline-offset: 2px;
-  border-radius: 4px;
+  border-radius: 3px;
 }
-/* Keep a visible ring on dark / tinted surfaces too. */
-.copy-link:focus-visible {
-  outline-color: var(--accent-strong);
+
+.vh {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 /* ---- Page shell --------------------------------------------------------- */
 .t3-page {
   min-height: 100vh;
-  padding: 40px 24px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0;
+  padding: 0 24px 48px;
 }
 
 .t3-page > * {
   width: 100%;
-  max-width: 1060px;
+  max-width: 940px;
 }
 
-/* ---- Header ------------------------------------------------------------- */
-.t3-header {
+/* ---- App bar ------------------------------------------------------------ */
+.t3-bar {
   display: flex;
   align-items: center;
   gap: 16px;
-  margin-bottom: 22px;
+  padding: 15px 0;
+  border-bottom: 1px solid var(--line);
 }
 
 .brand {
-  flex: none;
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 48px;
-  border-radius: 13px;
-  background: var(--accent); /* decorative; chip is aria-hidden */
-  box-shadow: 0 8px 18px -8px rgba(255, 135, 0, 0.6);
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
 }
 
 .brand svg {
   display: block;
-}
-
-.brand-text {
-  min-width: 0;
-}
-
-.brand-text h1,
-#app-title {
-  font-size: clamp(22px, 5vw, 27px);
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-  font-weight: 800;
-  margin: 0;
-}
-
-.tagline {
-  font-size: 15px;
-  line-height: 1.4;
-  color: var(--muted);
-  margin: 3px 0 0;
-}
-
-/* ---- Language toggle (EN/DE pill) --------------------------------------- */
-/* Right-hand header column: language toggle with the attribution beneath it. */
-.header-side {
-  margin-left: auto;
   flex: none;
-  align-self: flex-start;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 8px;
+  color: var(--org);
 }
 
 .lang-toggle {
-  flex: none;
+  margin-left: auto;
   display: flex;
   gap: 3px;
-  background: var(--rail);
-  border: 1px solid var(--hairline);
-  border-radius: 10px;
-  padding: 3px;
 }
 
 .lang-toggle button {
   font-family: var(--sans);
-  font-size: 12px;
+  font-size: 13.5px;
   font-weight: 700;
-  letter-spacing: 0.02em;
-  border: none;
-  border-radius: 7px;
-  /* Target size >= 24x24 px (2.5.8): 12px text + 2x9 padding + 2x3 line ~ 30px tall. */
-  min-width: 36px;
-  min-height: 28px;
-  padding: 6px 11px;
+  letter-spacing: 0.03em;
+  border: 1px solid transparent;
   background: transparent;
-  color: var(--muted);
+  color: var(--dim);
+  /* Target size >= 24x24 (2.5.8). */
+  min-width: 40px;
+  min-height: 32px;
+  padding: 6px 10px;
+  border-radius: 6px;
   cursor: pointer;
-  transition: background 0.14s ease, color 0.14s ease, box-shadow 0.14s ease;
-}
-
-.lang-toggle button:hover {
-  color: var(--text);
+  transition: color 140ms var(--ease-out), background 140ms var(--ease-out);
 }
 
 .lang-toggle button[aria-pressed="true"] {
-  background: var(--accent); /* brand orange + dark text (AA: 7.2:1) — matches the Check button */
-  color: var(--text);
-  box-shadow: 0 4px 10px -5px rgba(255, 135, 0, 0.7);
+  background: var(--soft);
+  border-color: var(--line);
+  color: var(--ink);
 }
 
-/* ---- Split card --------------------------------------------------------- */
-.t3-card {
-  display: grid;
-  grid-template-columns: 344px 1fr;
-  min-height: 472px;
-  background: var(--card);
-  border: 1px solid var(--hairline);
-  border-radius: var(--radius-card);
-  box-shadow: var(--shadow-card);
-  overflow: hidden;
+.gh-link {
+  flex: none;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--on-org);
+  background: var(--org);
+  border-radius: 7px;
+  padding: 8px 15px;
+  text-decoration: none;
+  transition: background 140ms var(--ease-out);
 }
 
-/* ---- Left rail (input) -------------------------------------------------- */
-.t3-rail {
-  background: var(--rail);
-  border-right: 1px solid var(--hairline);
-  padding: 24px 22px;
-  display: flex;
-  flex-direction: column;
-}
-
-.t3-rail form {
-  display: flex;
-  flex-direction: column;
+/* ---- Hero + picker ------------------------------------------------------ */
+.t3-main {
   flex: 1;
 }
 
-.rail-label {
-  display: block;
-  font-size: 15px;
+.hero {
+  padding: 44px 0 0;
+}
+
+.hero h1,
+#app-title {
+  margin: 0 0 12px;
+  font-size: clamp(30px, 5.5vw, 42px);
+  line-height: 1.05;
+  letter-spacing: -0.028em;
+  font-weight: 800;
+  text-wrap: balance;
+}
+
+.tagline {
+  margin: 0 0 26px;
+  max-width: 56ch;
+  font-size: 18.5px;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+
+.picker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  background: var(--soft);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.pick-label {
+  flex: none;
+  font-size: 16px;
   font-weight: 700;
-  margin: 0 0 2px;
 }
 
-.hint {
-  font-size: 13px;
-  color: var(--muted);
-  margin: 0 0 14px;
-  line-height: 1.4;
+.seg {
+  flex: none;
+  display: flex;
+  gap: 3px;
+  padding: 3px;
+  background: var(--bg);
+  border: 1px solid var(--control-bd);
+  border-radius: var(--radius-control);
 }
 
-.field {
-  margin-bottom: 13px;
+.seg button {
+  font-family: var(--sans);
+  font-size: 16px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  border: 0;
+  background: transparent;
+  color: var(--ink-2);
+  min-width: 46px;
+  min-height: 34px;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 140ms var(--ease-out), color 140ms var(--ease-out),
+    transform 140ms var(--ease-out);
 }
 
-.field label {
-  display: block;
-  font-size: 12.5px;
-  font-weight: 600;
-  color: var(--text);
-  margin-bottom: 5px;
+/* The inset edge (5.1:1 against the page) and dark label (6.8:1 on the fill)
+ * mean the pressed state never rests on hue alone. */
+.seg button[aria-pressed="true"] {
+  background: var(--org);
+  color: var(--on-org);
+  box-shadow: inset 0 0 0 1px var(--org-edge);
 }
 
-/* Native select styled in the mockup idiom, with a custom chevron. */
-.field select {
+.seg button:active {
+  transform: scale(0.97);
+}
+
+.selwrap {
+  position: relative;
+  flex: none;
+}
+
+.selwrap select {
   appearance: none;
   -webkit-appearance: none;
-  width: 100%;
-  padding: 11px 36px 11px 13px;
-  font-size: 14px;
-  font-family: var(--mono);
-  color: var(--text);
-  background-color: var(--card);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='15' viewBox='0 0 24 24' fill='none' stroke='%236B6B6B' stroke-width='2.4'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  border: 1.5px solid var(--hairline);
-  border-radius: var(--radius-control);
-  cursor: pointer;
-  line-height: 1.2;
-}
-
-.field select:hover {
-  border-color: #d9d2c4;
-}
-
-/* ELTS checkbox */
-.elts-field {
-  display: flex;
-  align-items: flex-start;
-  gap: 9px;
-  font-size: 13.5px;
-  line-height: 1.4;
-  color: var(--text);
-  cursor: pointer;
-  margin: 2px 0 16px;
-  padding: 4px 0;
-}
-
-.elts-field input[type="checkbox"] {
-  flex: none;
-  width: 18px;
-  height: 18px;
-  margin: 1px 0 0;
-  accent-color: var(--accent-strong);
-  cursor: pointer;
-}
-
-/* Primary "Check" button — TYPO3 brand orange with DARK text (AA: 7.2:1). */
-#check-button {
   font-family: var(--sans);
-  font-size: 14.5px;
-  font-weight: 700;
-  letter-spacing: 0.01em;
-  color: var(--text);
-  background: var(--accent);
-  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  background: var(--bg);
+  border: 1px solid var(--control-bd);
   border-radius: var(--radius-control);
-  padding: 12px 18px;
+  min-height: 40px;
+  padding: 9px 38px 9px 14px;
   cursor: pointer;
-  transition: background 0.14s ease, box-shadow 0.14s ease, transform 0.05s ease;
-  box-shadow: 0 8px 18px -10px rgba(255, 135, 0, 0.85);
+  transition: border-color 140ms var(--ease-out);
 }
 
-#check-button:hover {
-  background: var(--accent-press);
+.selwrap svg {
+  position: absolute;
+  right: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--ink-2);
 }
 
-#check-button:active {
-  transform: translateY(1px);
+.elts-switch {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15.5px;
+  font-weight: 600;
+  color: var(--ink-2);
+  cursor: pointer;
+  min-height: 34px;
+  user-select: none;
 }
 
-/* Rail footer links pushed to the bottom */
-.t3-footer {
-  margin-top: auto;
+.elts-switch input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.elts-switch .track {
+  position: relative;
+  flex: none;
+  width: 40px;
+  height: 24px;
+  border-radius: 999px;
+  background: var(--bg);
+  border: 1px solid var(--control-bd);
+  transition: background 160ms var(--ease-out), border-color 160ms var(--ease-out);
+}
+
+.elts-switch .track::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--control-bd);
+  transition: transform 160ms var(--ease-out), background 160ms var(--ease-out);
+}
+
+.elts-switch input:checked + .track {
+  background: var(--org);
+  border-color: var(--org-edge);
+}
+
+.elts-switch input:checked + .track::after {
+  transform: translateX(16px);
+  background: var(--on-org);
+}
+
+.elts-switch input:focus-visible + .track {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* ---- Result ------------------------------------------------------------- */
+.t3-result {
+  display: block;
+  padding: 30px 0 0;
+}
+
+/* ---- Answer band -------------------------------------------------------- */
+.answer {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  padding: 28px;
+  background: var(--tone-bg);
+  border: 1px solid var(--tone-bd);
+  border-radius: 14px;
+}
+
+@media (min-width: 720px) {
+  .answer {
+    grid-template-columns: 1fr 244px;
+  }
+  .answer--solo {
+    grid-template-columns: 1fr;
+  }
+}
+
+.answer[data-tone="attention"] {
+  --tone: var(--rose);
+  --tone-bg: var(--rose-bg);
+  --tone-bd: var(--rose-bd);
+}
+
+.answer[data-tone="fine"] {
+  --tone: var(--sage);
+  --tone-bg: var(--sage-bg);
+  --tone-bd: var(--sage-bd);
+}
+
+.answer[data-tone="state"] {
+  --tone: var(--slate);
+  --tone-bg: var(--slate-bg);
+  --tone-bd: var(--slate-bd);
+}
+
+.tier {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 10px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--tone);
+}
+
+.tier svg {
+  display: block;
+  flex: none;
+}
+
+.answer h2 {
+  margin: 0 0 10px;
+  font-size: clamp(25px, 4vw, 32px);
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+  font-weight: 800;
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+.detail {
+  margin: 0;
+  max-width: 54ch;
+  font-size: 17.5px;
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+
+.concerns {
+  list-style: none;
+  margin: 18px 0 0;
+  padding: 16px 0 0;
+  border-top: 1px solid var(--tone-bd);
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.concerns li {
+  position: relative;
+  padding-left: 18px;
+  font-size: 15.5px;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+
+.concerns li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 9px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--tone);
+}
+
+.acts {
+  margin-top: 22px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.copy-link {
+  font-family: var(--sans);
+  font-size: 15.5px;
+  font-weight: 700;
+  color: var(--ink);
+  background: var(--bg);
+  border: 1px solid var(--control-bd);
+  border-radius: 8px;
+  min-height: 42px;
+  padding: 10px 18px;
+  cursor: pointer;
+  transition: transform 160ms var(--ease-out), background 160ms var(--ease-out);
+}
+
+.copy-link:active {
+  transform: scale(0.97);
+}
+
+.copy-status {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--sage);
+}
+
+/* ---- Stat panel --------------------------------------------------------- */
+.stat {
+  border-top: 1px solid var(--tone-bd);
   padding-top: 20px;
 }
 
-/* Attribution: "Made with ♥ by" + the plan2net wordmark, top-right in the header. */
-.made-by {
+@media (min-width: 720px) {
+  .stat {
+    border-top: 0;
+    border-left: 1px solid var(--tone-bd);
+    padding: 2px 0 2px 26px;
+  }
+}
+
+.stat-label {
+  margin: 0 0 3px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+.stat-num {
+  margin: 0;
+  font-size: 46px;
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+.stat-cap {
+  margin: 6px 0 0;
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--ink-2);
+}
+
+/* Decorative: the key below spells out every number in it. */
+.sevbar {
+  display: flex;
+  gap: 2px;
+  height: 8px;
+  margin: 18px 0 12px;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.sevbar span {
+  display: block;
+}
+
+.sevkey {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.sevkey li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.sevkey i {
+  flex: none;
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+}
+
+.sevkey b {
+  min-width: 22px;
+  text-align: right;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.s-critical { background: var(--sev-critical); }
+.s-high { background: var(--sev-high); }
+.s-medium { background: var(--sev-medium); }
+.s-low { background: var(--sev-low); }
+.s-unknown { background: var(--sev-unknown); }
+
+.split {
+  margin: 16px 0 0;
+  padding: 12px 13px;
+  background: var(--bg);
+  border: 1px solid var(--tone-bd);
+  border-radius: 8px;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+
+/* ---- Support lifecycle rail -------------------------------------------- */
+.lifecycle {
+  margin-top: 32px;
+  padding: 24px 26px 22px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-panel);
+}
+
+.lifecycle-head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.lifecycle-head h3 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.lifecycle-head p {
+  margin: 0;
+  font-size: 15.5px;
+  color: var(--ink-2);
+}
+
+.rail {
+  position: relative;
+}
+
+.flagrow {
+  position: relative;
+  height: 28px;
+}
+
+.flag {
+  position: absolute;
+  bottom: 7px;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 5px;
+}
+
+.flag::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -7px;
+  width: 1px;
+  height: 7px;
+  transform: translateX(-50%);
+}
+
+.flag-today {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.flag-today::after {
+  background: var(--ink);
+}
+
+/* Hangs below the track, so it cannot collide with "Today" when a release
+ * lands days before it. */
+.flag-rel {
+  bottom: auto;
+  top: 7px;
+  background: var(--soft);
+  border: 1px solid var(--line);
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.flag-rel::after {
+  bottom: auto;
+  top: -7px;
+  background: var(--control-bd);
+}
+
+.rail-track {
+  display: flex;
+  height: 30px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--soft);
+}
+
+.zone {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  padding: 0 11px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.zone-free {
+  background: var(--sage-bg);
+  color: var(--sage);
+  box-shadow: inset 0 0 0 1px var(--sage-bd);
+}
+
+.zone-elts {
+  background: var(--slate-bg);
+  color: var(--slate);
+  box-shadow: inset 0 0 0 1px var(--slate-bd);
+}
+
+.scale {
+  position: relative;
+  height: 20px;
+  margin-top: 28px;
+  font-size: 13px;
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.scale span {
+  position: absolute;
+  top: 0;
+  white-space: nowrap;
+}
+
+.scale .s-start {
+  left: 0;
+}
+
+.scale .s-end {
+  right: 0;
+}
+
+.scale .s-mid {
+  transform: translateX(-50%);
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* ---- Advisory groups ---------------------------------------------------- */
+.group {
+  margin-top: 36px;
+}
+
+.group-head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.group-head h3 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.severity-summary {
+  font-size: 15px;
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.advisories {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.advisory {
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+
+.advisory:last-child {
+  border-bottom: 0;
+}
+
+/* The flex display below would defeat the [hidden] attribute the collapsed
+ * tail relies on. */
+.advisory[hidden] {
+  display: none;
+}
+
+.advisory summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 13px 15px 13px 0;
+  list-style: none;
+  cursor: pointer;
+  border-left: 4px solid var(--rowsev, var(--sev-unknown));
+  transition: background 140ms var(--ease-out);
+}
+
+.advisory summary::-webkit-details-marker {
+  display: none;
+}
+
+.advisory[data-severity="critical"] { --rowsev: var(--sev-critical); }
+.advisory[data-severity="high"] { --rowsev: var(--sev-high); }
+.advisory[data-severity="medium"] { --rowsev: var(--sev-medium); }
+.advisory[data-severity="low"] { --rowsev: var(--sev-low); }
+
+.advisory-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 16.5px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--ink);
+}
+
+.chev {
+  flex: none;
+  color: var(--ink-2);
+  transition: transform 180ms var(--ease-out);
+}
+
+.advisory details[open] .chev,
+.advisory[open] .chev {
+  transform: rotate(180deg);
+}
+
+.advisory details[open] summary .chev {
+  transform: rotate(180deg);
+}
+
+.advisory-body {
+  padding: 2px 20px 18px 84px;
+  border-left: 4px solid var(--rowsev, var(--sev-unknown));
+}
+
+.advisory-body p {
+  margin: 0 0 10px;
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+
+.advisory-body .urgency {
+  font-size: 15.5px;
+  color: var(--dim);
+}
+
+.advisory-body .caveat {
+  font-size: 15px;
+  font-style: italic;
+  color: var(--dim);
+}
+
+/* Severity badge — text-carrying, so colour is never the only signal. */
+.badge {
+  flex: none;
+  margin-left: 12px;
+  min-width: 68px;
+  text-align: center;
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-radius: 4px;
+  border: 1px solid;
+  padding: 4px 8px;
+  color: var(--dim);
+  background: var(--soft);
+  border-color: var(--line);
+}
+
+.advisory[data-severity="critical"] .badge,
+.advisory[data-severity="high"] .badge {
+  color: var(--rose);
+  background: var(--rose-bg);
+  border-color: var(--rose-bd);
+}
+
+.advisory[data-severity="medium"] .badge {
+  color: var(--slate);
+  background: var(--slate-bg);
+  border-color: var(--slate-bd);
+}
+
+.advisory-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+  font-size: 14.5px;
+  color: var(--dim);
+}
+
+.advisory-meta code {
+  font-family: var(--mono);
+  font-size: 13.5px;
+  background: var(--soft);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 2px 7px;
+  color: var(--ink);
+}
+
+.advisory-meta a {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  font-size: 12.5px;
-  font-weight: 600;
-  color: var(--text-soft);
+  min-height: 24px; /* 2.5.8 */
+  color: var(--link);
+  font-weight: 700;
   text-decoration: none;
 }
 
-.made-by:hover {
-  color: var(--text);
+.advisory-meta a:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
-.made-by img {
-  height: 16px;
-  width: auto;
-  display: block;
+.show-all {
+  font-family: var(--sans);
+  font-size: 15.5px;
+  font-weight: 700;
+  color: var(--link);
+  background: var(--bg);
+  border: 1px solid var(--control-bd);
+  border-radius: 8px;
+  min-height: 42px;
+  padding: 10px 16px;
+  margin-top: 14px;
+  cursor: pointer;
+  transition: transform 160ms var(--ease-out), background 160ms var(--ease-out);
+}
+
+.show-all:active {
+  transform: scale(0.97);
+}
+
+/* ---- Developer hint ----------------------------------------------------- */
+.dev-hint {
+  margin: 36px 0 0;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+  max-width: 68ch;
+  font-size: 15.5px;
+  line-height: 1.6;
+  color: var(--dim);
+}
+
+.dev-hint code {
+  font-family: var(--mono);
+  font-size: 14px;
+  background: var(--soft);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 2px 6px;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+/* ---- Footer ------------------------------------------------------------- */
+.t3-footer {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 48px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
 }
 
 .footer-links {
   display: flex;
-  gap: 16px;
+  gap: 18px;
   flex-wrap: wrap;
 }
 
 .footer-links a {
-  font-size: 12.5px;
+  font-size: 15px;
   font-weight: 600;
-  color: var(--text);
+  color: var(--ink-2);
   text-decoration: none;
-  padding: 2px 0;
+  padding: 4px 0;
 }
 
 .footer-links a:hover {
@@ -369,474 +1040,85 @@ body {
   text-underline-offset: 2px;
 }
 
-/* ---- Right result pane -------------------------------------------------- */
-.t3-result {
-  padding: 26px 28px;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Empty state: before any verdict is rendered the pane is empty. */
-.t3-result:empty::before {
-  content: "";
-  flex: 1;
-  min-height: 220px;
-  display: block;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 24 24' fill='none' stroke='%23C9C2B2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: center;
-}
-
-/* ---- Verdict ------------------------------------------------------------ */
-.verdict {
-  animation: t3rise 0.32s ease both;
-}
-
-@keyframes t3rise {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .verdict {
-    animation: none;
-  }
-}
-
-/*
- * The banner: our markup emits .tier (eyebrow) + h2 (headline) + .detail as
- * siblings, then .concerns. We tint that leading run as one contiguous panel
- * (rounded top on .tier, the concerns/detail closing it), and float a
- * decorative tier icon as a chip via .tier::before.
- */
-.verdict .tier,
-.verdict h2,
-.verdict .detail,
-.verdict .concerns {
-  background: var(--tier-bg, var(--neutral-bg));
-  border-left: 1px solid var(--tier-bd, var(--neutral-bd));
-  border-right: 1px solid var(--tier-bd, var(--neutral-bd));
-  margin: 0;
-  padding-left: 70px; /* room for the icon chip */
-  padding-right: 22px;
-}
-
-.verdict .tier {
-  border-top: 1px solid var(--tier-bd, var(--neutral-bd));
-  border-top-left-radius: var(--radius-panel);
-  border-top-right-radius: var(--radius-panel);
-  padding-top: 22px;
-  padding-bottom: 4px;
-  position: relative;
-  font-size: 11.5px;
-  font-weight: 700;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  color: var(--tier-fg, var(--neutral-fg));
-}
-
-/* Decorative tier icon chip (aria-hidden by being a CSS pseudo-element). */
-.verdict .tier::before {
-  content: "";
-  position: absolute;
-  left: 22px;
-  top: 20px;
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  background-color: rgba(255, 255, 255, 0.75);
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 23px 23px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  background-image: var(--tier-icon);
-}
-
-.verdict h2 {
-  font-size: 20px;
-  line-height: 1.2;
-  letter-spacing: -0.015em;
-  font-weight: 800;
-  color: var(--text);
-  padding-top: 4px;
-  padding-bottom: 8px;
-}
-
-.verdict .detail {
-  font-size: 15px;
-  line-height: 1.55;
-  color: var(--text-soft);
-  padding-bottom: 20px;
-}
-
-/* When there are no concerns, .detail closes the banner — even when advisory groups or the share
- * row follow it. The renderer stamps .has-concerns on .detail when a concerns block follows
- * (a plain class keeps this working in browsers without :has()). */
-.verdict .detail:not(.has-concerns) {
-  border-bottom: 1px solid var(--tier-bd, var(--neutral-bd));
-  border-bottom-left-radius: var(--radius-panel);
-  border-bottom-right-radius: var(--radius-panel);
-}
-
-/* Secondary "concerns" list inside the banner, with a hairline divider. */
-.verdict .concerns {
-  list-style: none;
-  padding-top: 12px;
-  padding-bottom: 18px;
-  border-bottom: 1px solid var(--tier-bd, var(--neutral-bd));
-  border-bottom-left-radius: var(--radius-panel);
-  border-bottom-right-radius: var(--radius-panel);
-  display: flex;
-  flex-direction: column;
+.made-by {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
   gap: 7px;
-  position: relative;
-}
-
-.verdict .detail.has-concerns {
-  padding-bottom: 14px;
-}
-
-/* Divider line above concerns (drawn inside the tinted panel). */
-.verdict .concerns::before {
-  content: "";
-  position: absolute;
-  left: 70px;
-  right: 22px;
-  top: 0;
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
-}
-
-.verdict .concerns li {
-  font-size: 13px;
-  line-height: 1.5;
-  color: #3a3a3a;
-  padding-left: 18px;
-  position: relative;
-}
-
-.verdict .concerns li::before {
-  content: "•";
-  position: absolute;
-  left: 2px;
-  color: var(--tier-fg, var(--neutral-fg));
-  font-weight: 700;
-}
-
-/* ---- Tier → tint + icon map -------------------------------------------- */
-.verdict[data-tier="critical-missing-fix"],
-.verdict[data-tier="critical-unfixed"],
-.verdict[data-tier="critical-elts-only"],
-.verdict[data-tier="critical-eol"] {
-  --tier-fg: var(--crit-fg);
-  --tier-bg: var(--crit-bg);
-  --tier-bd: var(--crit-bd);
-  --tier-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='23' height='23' viewBox='0 0 24 24' fill='none' stroke='%23C8102E' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z'/%3E%3Cpath d='M12 9v4'/%3E%3Cpath d='M12 17h.01'/%3E%3C/svg%3E");
-}
-
-/* eol / elts-only lean on the clock (support-window framing). */
-.verdict[data-tier="critical-eol"],
-.verdict[data-tier="critical-elts-only"] {
-  --tier-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='23' height='23' viewBox='0 0 24 24' fill='none' stroke='%23C8102E' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 7v5l3 2'/%3E%3C/svg%3E");
-}
-
-.verdict[data-tier="soon-support-ending"] {
-  --tier-fg: var(--soon-fg);
-  --tier-bg: var(--soon-bg);
-  --tier-bd: var(--soon-bd);
-  --tier-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='23' height='23' viewBox='0 0 24 24' fill='none' stroke='%23B45309' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 7v5l3 2'/%3E%3C/svg%3E");
-}
-
-.verdict[data-tier="review-optional"] {
-  --tier-fg: var(--soon-fg);
-  --tier-bg: var(--soon-bg);
-  --tier-bd: var(--soon-bd);
-  --tier-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='23' height='23' viewBox='0 0 24 24' fill='none' stroke='%23B45309' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 11v5'/%3E%3Cpath d='M12 8h.01'/%3E%3C/svg%3E");
-}
-
-.verdict[data-tier="behind-maintenance"] {
-  --tier-fg: var(--minor-fg);
-  --tier-bg: var(--minor-bg);
-  --tier-bd: var(--minor-bd);
-  --tier-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='23' height='23' viewBox='0 0 24 24' fill='none' stroke='%231D4ED8' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 11v5'/%3E%3Cpath d='M12 8h.01'/%3E%3C/svg%3E");
-}
-
-.verdict[data-tier="all-good"] {
-  --tier-fg: var(--good-fg);
-  --tier-bg: var(--good-bg);
-  --tier-bd: var(--good-bd);
-  --tier-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='23' height='23' viewBox='0 0 24 24' fill='none' stroke='%231E7B34' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='m8.5 12.5 2.5 2.5 4.5-5'/%3E%3C/svg%3E");
-}
-
-/* stale-data: not a verdict about the site but about our own freshness — amber caution + a refresh mark. */
-.verdict[data-tier="stale-data"] {
-  --tier-fg: var(--soon-fg);
-  --tier-bg: var(--soon-bg);
-  --tier-bd: var(--soon-bd);
-  --tier-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='23' height='23' viewBox='0 0 24 24' fill='none' stroke='%23B45309' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8'/%3E%3Cpath d='M21 3v5h-5'/%3E%3Cpath d='M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16'/%3E%3Cpath d='M3 21v-5h5'/%3E%3C/svg%3E");
-}
-
-.verdict[data-tier="unknown-version"] {
-  --tier-fg: var(--neutral-fg);
-  --tier-bg: var(--neutral-bg);
-  --tier-bd: var(--neutral-bd);
-  --tier-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='23' height='23' viewBox='0 0 24 24' fill='none' stroke='%236B6B6B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E");
-}
-
-/* ---- Advisory groups ---------------------------------------------------- */
-.group {
-  margin-top: 22px;
-}
-
-.group h3 {
-  font-size: 13.5px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  margin: 0 0 12px;
-  color: var(--text);
-}
-
-/* "4 high · 17 medium" count line next to the group heading. */
-.group .severity-summary {
-  font-weight: 400;
-  font-size: 12.5px;
-  color: var(--muted);
-  margin-left: 4px;
-}
-
-/* Reveals the collapsed tail of a long advisory list. */
-.group .show-all {
-  font-family: var(--sans);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--link);
-  background: none;
-  border: none;
-  padding: 6px 0;
-  margin-top: 10px;
-  cursor: pointer;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-
-/* The optional group is visually quieter — never over-alarming. */
-.group.may-apply {
-  margin-top: 18px;
-}
-
-.group.may-apply h3 {
-  color: var(--muted);
-  font-weight: 600;
-}
-
-.advisories {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-/* The flex display above would defeat the [hidden] attribute the collapsed tail relies on. */
-.advisory[hidden] {
-  display: none;
-}
-
-.advisory {
-  border: 1px solid #e8e3d8;
-  border-radius: 11px;
-  padding: 14px;
-  display: flex;
-  flex-direction: column;
-  background: var(--card);
-}
-
-.group.may-apply .advisory {
-  background: var(--rail);
-}
-
-.advisory strong {
-  font-weight: 700;
-  font-size: 13.5px;
-  line-height: 1.45;
-  color: var(--text);
-}
-
-.advisory > p {
-  font-size: 13.5px;
-  line-height: 1.45;
-  margin: 6px 0 0;
-  color: var(--text);
-}
-
-/* Severity badge — text-carrying (colour is never the only signal). */
-.badge {
-  display: inline-block;
-  vertical-align: middle;
-  margin-left: 4px;
-  font-size: 10.5px;
-  font-weight: 700;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-  border-radius: 5px;
-  padding: 2px 7px;
-  color: var(--soon-fg);
-  background: var(--soon-bg);
-}
-
-.advisory[data-severity="critical"] .badge,
-.advisory[data-severity="high"] .badge {
-  color: var(--crit-fg);
-  background: var(--crit-bg);
-}
-
-.advisory[data-severity="medium"] .badge {
-  color: var(--soon-fg);
-  background: var(--soon-bg);
-}
-
-.advisory[data-severity="low"] .badge {
-  color: var(--minor-fg);
-  background: var(--minor-bg);
-}
-
-/* "How soon" urgency line */
-.advisory .urgency {
-  font-size: 12.5px;
-  line-height: 1.45;
-  margin: 8px 0 10px;
-  color: var(--muted);
-}
-
-.advisory .caveat {
-  font-size: 12px;
-  line-height: 1.4;
-  margin: 6px 0 0;
-  color: var(--muted);
-  font-style: italic;
-}
-
-.advisory a {
-  margin-top: auto;
-  padding-top: 8px;
-  border-top: 1px solid #f0ece2;
-  color: var(--link); /* darker orange clears 4.5:1 (5.77:1 on white) */
-  font-weight: 600;
-  text-decoration: none;
-  font-size: 12px;
-}
-
-.advisory a:hover {
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-
-.advisory a::after {
-  content: " \2197"; /* ↗ opens-in-new-tab affordance */
-}
-
-/* ---- Share / copy-link -------------------------------------------------- */
-.share {
-  margin-top: 22px;
-  padding-top: 16px;
-  border-top: 1px solid var(--hairline);
-}
-
-.copy-link {
-  font-family: var(--sans);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--dark-text);
-  background: var(--dark);
-  border: none;
-  border-radius: 8px;
-  padding: 9px 15px;
-  cursor: pointer;
+  /* The logo alone is only 16px tall (2.5.8). */
   min-height: 24px;
-  transition: background 0.14s ease;
-}
-
-.copy-link:hover {
-  background: #2c2c2c;
-}
-
-.share .status {
-  margin: 8px 0 0;
-  font-size: 12.5px;
+  padding: 4px 0;
+  font-size: 14px;
   font-weight: 600;
-  color: var(--good-fg);
-  min-height: 1em;
+  color: var(--ink-2);
+  text-decoration: none;
 }
 
-.share .hint {
-  margin: 6px 0 0;
+.made-by img {
+  display: block;
+  height: 16px;
+  width: auto;
+}
+
+/* Touch taps fire hover, so the state would stick after the finger lifts. */
+@media (hover: hover) and (pointer: fine) {
+  .advisory summary:hover {
+    background: var(--soft);
+  }
+  .gh-link:hover {
+    background: var(--org-hover);
+  }
+  .copy-link:hover,
+  .show-all:hover {
+    background: var(--soft);
+  }
+  .lang-toggle button:hover {
+    color: var(--ink);
+  }
+  .selwrap select:hover {
+    border-color: var(--ink-2);
+  }
+  .made-by:hover {
+    color: var(--ink);
+  }
 }
 
 /* ---- Responsive reflow (1.4.10) ---------------------------------------- */
 @media (max-width: 780px) {
   .t3-page {
-    padding: 22px 14px;
+    padding: 0 16px 40px;
   }
-  /* Give the title its full width back: the toggle + attribution drop to their own row. */
-  .t3-header {
+  /* No `order` on purpose: it would put visual sequence out of step with focus
+   * order (2.4.3 / 1.3.2). */
+  .t3-bar {
     flex-wrap: wrap;
   }
-  .header-side {
-    margin-left: 0;
-    width: 100%;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
+  .hero {
+    padding-top: 32px;
   }
-  .t3-card {
-    grid-template-columns: 1fr;
-    min-height: 0;
-  }
-  .t3-rail {
-    border-right: none;
-    border-bottom: 1px solid var(--hairline);
-  }
-  .t3-result {
+  .answer {
     padding: 22px 18px;
+  }
+  .lifecycle {
+    padding: 20px 18px 18px;
+  }
+  .advisory-body {
+    padding-left: 19px;
+  }
+  .badge {
+    min-width: 0;
   }
 }
 
-@media (max-width: 520px) {
-  .advisories {
-    grid-template-columns: 1fr;
+@media (prefers-reduced-motion: reduce) {
+  .seg button:active,
+  .copy-link:active,
+  .show-all:active {
+    transform: none;
   }
-  .t3-result {
-    padding: 18px 15px;
-  }
-  .t3-rail {
-    padding: 20px 16px;
-  }
-  /* Keep the verdict banner readable when the icon chip would crowd it. */
-  .verdict .tier,
-  .verdict h2,
-  .verdict .detail,
-  .verdict .concerns {
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-  .verdict .tier {
-    padding-top: 64px; /* icon chip sits above the eyebrow on narrow screens */
-  }
-  .verdict .tier::before {
-    left: 16px;
-    top: 16px;
-  }
-  .verdict .concerns::before {
-    left: 16px;
-    right: 16px;
-  }
-  .verdict .concerns li::before {
-    left: 0;
+  .chev,
+  .elts-switch .track,
+  .elts-switch .track::after {
+    transition: none;
   }
 }

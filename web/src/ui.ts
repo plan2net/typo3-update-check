@@ -1,12 +1,42 @@
-import type { Typo3Data, Verdict, AffectingAdvisory, Lang } from './types';
+import type { Typo3Data, Verdict, AffectingAdvisory, Lang, MajorInfo, Tier } from './types';
 import { computeVerdict, staleCheckedAt } from './verdict';
 import { parseVersion, majorKey, compareVersions } from './version';
-import { severityRank } from './format';
+import { severityCounts, fixSplit, splitAdvisoryTitle, supportTimeline } from './format';
 import { strings, type Strings } from './i18n';
 
 // Long advisory lists collapse to the most severe entries; the rest reveal on demand.
 const COLLAPSE_ABOVE = 10;
 const VISIBLE_WHEN_COLLAPSED = 8;
+
+const DEV_COMMAND = 'composer require --dev plan2net/typo3-update-check';
+
+// One mark per tone rather than one per tier: the tier word already names the state.
+const TONE_ICON: Record<Tone, string> = {
+  attention:
+    '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>',
+  fine:
+    '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/></svg>',
+  state:
+    '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+};
+
+const CHEVRON =
+  '<svg class="chev" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
+
+type Tone = 'attention' | 'fine' | 'state';
+
+const TONE: Record<Tier, Tone> = {
+  'critical-missing-fix': 'attention',
+  'critical-unfixed': 'attention',
+  'critical-eol': 'attention',
+  'critical-elts-only': 'state',
+  'soon-support-ending': 'state',
+  'review-optional': 'state',
+  'behind-maintenance': 'state',
+  'stale-data': 'state',
+  'unknown-version': 'state',
+  'all-good': 'fine',
+};
 
 function escapeHtml(s: string): string {
   return s.replace(/[&<>"']/g, (c) =>
@@ -21,7 +51,7 @@ function safeUrl(url: string): string {
 function advisoryItem(a: AffectingAdvisory, lang: Lang, m: Strings, hidden: boolean): string {
   const exp = a.advisory.explanation?.[lang];
   const sev = escapeHtml(a.advisory.severity);
-  const title = escapeHtml(a.advisory.title);
+  const { advisoryId, title } = splitAdvisoryTitle(a.advisory.title);
   const impact = exp ? escapeHtml(exp.plainImpact) : '';
   const urgency = exp ? escapeHtml(exp.urgency) : '';
   const caveat = a.optional
@@ -30,63 +60,187 @@ function advisoryItem(a: AffectingAdvisory, lang: Lang, m: Strings, hidden: bool
   // External link: accessible name conveys purpose + "opens in a new tab" (§11a).
   const cveLabel = a.advisory.cve ?? a.advisory.id;
   const linkName = `${m.ui.officialAdvisory} (${cveLabel}), ${m.ui.opensNewTab}`;
+  const meta = [
+    advisoryId ? `<code>${escapeHtml(advisoryId)}</code>` : '',
+    `<a href="${escapeHtml(safeUrl(a.advisory.link))}" target="_blank" rel="noopener" aria-label="${escapeHtml(linkName)}">${escapeHtml(m.ui.officialAdvisory)}</a>`,
+  ].filter(Boolean).join('<span aria-hidden="true">·</span>');
+
   return `<li class="advisory" data-severity="${sev}"${hidden ? ' hidden' : ''}>
-      <strong>${title}</strong> <span class="badge">${escapeHtml(m.severityLabel(a.advisory.severity))}</span>
-      ${impact ? `<p>${impact}</p>` : ''}
-      ${urgency ? `<p class="urgency">${urgency}</p>` : ''}
-      ${caveat}
-      <a href="${escapeHtml(safeUrl(a.advisory.link))}" target="_blank" rel="noopener" aria-label="${escapeHtml(linkName)}">${escapeHtml(m.ui.officialAdvisory)}</a>
+      <details>
+        <summary>
+          <span class="badge">${escapeHtml(m.severityLabel(a.advisory.severity))}</span>
+          <span class="advisory-title">${escapeHtml(title)}</span>
+          ${CHEVRON}
+        </summary>
+        <div class="advisory-body">
+          ${impact ? `<p>${impact}</p>` : ''}
+          ${urgency ? `<p class="urgency">${urgency}</p>` : ''}
+          ${caveat}
+          <div class="advisory-meta">${meta}</div>
+        </div>
+      </details>
     </li>`;
 }
 
-function renderVerdict(v: Verdict, lang: Lang, m: Strings): string {
-  const core = v.affecting.filter((a) => !a.optional);
-  const optional = v.affecting.filter((a) => a.optional);
+function statPanel(items: AffectingAdvisory[], version: string, tier: Tier, m: Strings): string {
+  if (!items.length) {
+    if (tier !== 'all-good') return '';
+    return `<aside class="stat">
+        <p class="stat-label">${escapeHtml(m.ui.openAdvisories)}</p>
+        <p class="stat-num">0</p>
+        <p class="stat-cap">${escapeHtml(m.nothingAffects(version))}</p>
+      </aside>`;
+  }
+
+  const counts = severityCounts(items.map((a) => a.advisory.severity));
+  const bar = counts
+    .map((c) => `<span class="s-${escapeHtml(c.severity)}" style="flex:${c.count}"></span>`)
+    .join('');
+  const key = counts
+    .map((c) => `<li><i class="s-${escapeHtml(c.severity)}"></i><b>${c.count}</b> ${escapeHtml(m.severityLabel(c.severity))}</li>`)
+    .join('');
+
+  const { free, eltsOnly } = fixSplit(items);
+  let split = '';
+  if (free > 0 && eltsOnly > 0) split = m.splitBoth(free, eltsOnly);
+  else if (free === 0 && eltsOnly > 0) split = m.splitEltsOnly(eltsOnly);
+  else if (free > 0) split = m.splitAllFree(free);
+
+  return `<aside class="stat">
+      <p class="stat-label">${escapeHtml(m.ui.openAdvisories)}</p>
+      <p class="stat-num">${items.length}</p>
+      <div class="sevbar" aria-hidden="true">${bar}</div>
+      <ul class="sevkey">${key}</ul>
+      ${split ? `<p class="split">${escapeHtml(split)}</p>` : ''}
+    </aside>`;
+}
+
+function lifecycle(major: MajorInfo, mk: string, version: string, m: Strings, now: Date): string {
+  const release = major.releases.find((r) => r.version === version);
+  const timeline = supportTimeline(major, release?.date ?? null, now);
+  if (!timeline) return '';
+
+  const ended = timeline.monthsToMaintained < 0;
+  const summary = ended
+    ? m.lifecycleEnded(Math.abs(timeline.monthsToMaintained), major.eltsUntil)
+    : m.lifecycleRunning(timeline.monthsToMaintained, major.eltsUntil);
+
+  const firstDated = major.releases
+    .filter((r) => r.date !== null)
+    .reduce((oldest, r) => (r.date! < oldest ? r.date! : oldest), major.releases.find((r) => r.date)!.date!);
+
+  const alt = m.timelineAlt({
+    major: mk,
+    firstIso: firstDated,
+    maintainedIso: major.maintainedUntil,
+    eltsIso: major.eltsUntil,
+    version,
+    releaseIso: release!.date!,
+    ageMonths: timeline.releaseAgeMonths,
+  });
+
+  const free = timeline.freePercent.toFixed(1);
+  return `<div class="lifecycle">
+      <div class="lifecycle-head">
+        <h3>${escapeHtml(m.lifecycleTitle(mk))}</h3>
+        <p>${escapeHtml(summary)}</p>
+      </div>
+      <div class="rail" role="img" aria-label="${escapeHtml(alt)}">
+        <div class="flagrow">
+          <span class="flag flag-today" style="left:${timeline.todayPercent.toFixed(1)}%">${escapeHtml(m.ui.today)}</span>
+        </div>
+        <div class="rail-track">
+          <div class="zone zone-free" style="width:${free}%"><span>${escapeHtml(m.ui.zoneFree)}</span></div>
+          <div class="zone zone-elts" style="width:${(100 - timeline.freePercent).toFixed(1)}%"><span>${escapeHtml(m.ui.zoneElts)}</span></div>
+        </div>
+        <div class="flagrow">
+          <span class="flag flag-rel" style="left:${timeline.releasePercent.toFixed(1)}%">${escapeHtml(m.releasedFlag(version, timeline.releaseAgeMonths))}</span>
+        </div>
+        <div class="scale">
+          <span class="s-start">${escapeHtml(fmtScale(firstDated))}</span>
+          <span class="s-mid" style="left:${free}%">${escapeHtml(fmtScale(major.maintainedUntil))}</span>
+          <span class="s-end">${escapeHtml(fmtScale(major.eltsUntil))}</span>
+        </div>
+      </div>
+    </div>`;
+}
+
+// Year alone keeps the three scale labels from colliding on a narrow screen.
+function fmtScale(iso: string): string {
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime()) ? iso : `${d.getUTCFullYear()}`;
+}
+
+function devHint(m: Strings): string {
+  return `<p class="dev-hint">${escapeHtml(m.ui.devHintLead)}
+      <code>${escapeHtml(DEV_COMMAND)}</code>
+      ${escapeHtml(m.ui.devHintTail)}</p>`;
+}
+
+function answerBand(v: Verdict, m: Strings, stat: string): string {
+  const tone = TONE[v.tier];
   const concerns = v.concerns.length
     ? `<ul class="concerns">${v.concerns.map((c) => `<li>${escapeHtml(c)}</li>`).join('')}</ul>`
     : '';
-  // "4 high · 17 medium" — the shape of the risk at a glance, most severe first.
-  const severitySummary = (items: AffectingAdvisory[]): string => {
-    const counts = new Map<string, number>();
-    for (const a of items) counts.set(a.advisory.severity, (counts.get(a.advisory.severity) ?? 0) + 1);
-    return [...counts.entries()]
-      .sort(([a], [b]) => severityRank(a) - severityRank(b))
-      .map(([severity, count]) => `${count} ${m.severityLabel(severity)}`)
-      .join(' · ');
-  };
-  const group = (items: AffectingAdvisory[], cls: string, heading: string): string => {
-    if (!items.length) return '';
-    const collapsed = items.length > COLLAPSE_ABOVE;
-    const showAll = collapsed
-      ? `<button type="button" class="show-all">${escapeHtml(m.showAllAdvisories(items.length))}</button>`
-      : '';
-    return `<section class="group ${cls}">
-        <h3>${escapeHtml(heading)} <span class="severity-summary">${escapeHtml(severitySummary(items))}</span></h3>
-        <ul class="advisories">${items.map((a, i) => advisoryItem(a, lang, m, collapsed && i >= VISIBLE_WHEN_COLLAPSED)).join('')}</ul>
-        ${showAll}
-      </section>`;
-  };
   const share = v.tier !== 'unknown-version'
-    ? `<div class="share">
+    ? `<div class="acts">
          <button type="button" class="copy-link">${escapeHtml(m.ui.copyLink)}</button>
-         <p class="status" role="status"></p>
-         <p class="hint">${escapeHtml(m.ui.shareHint)}</p>
+         <p class="copy-status" role="status"></p>
        </div>`
     : '';
-  return `
-    <div class="verdict" data-tier="${v.tier}">
-      <p class="tier">${escapeHtml(m.tierLabel[v.tier])}</p>
-      <h2>${escapeHtml(v.headline)}</h2>
-      <p class="detail${concerns ? ' has-concerns' : ''}">${escapeHtml(v.detail)}</p>
-      ${concerns}
-      ${group(core, 'affects', m.ui.affects)}
-      ${group(optional, 'may-apply', m.ui.mayApply)}
-      ${share}
+
+  return `<div class="answer${stat ? '' : ' answer--solo'}" data-tone="${tone}">
+      <div class="answer-main">
+        <p class="tier">${TONE_ICON[tone]}${escapeHtml(m.tierLabel[v.tier])}</p>
+        <h2>${escapeHtml(v.headline)}</h2>
+        <p class="detail">${escapeHtml(v.detail)}</p>
+        ${concerns}
+        ${share}
+      </div>
+      ${stat}
+    </div>`;
+}
+
+function group(items: AffectingAdvisory[], cls: string, heading: string, lang: Lang, m: Strings): string {
+  if (!items.length) return '';
+  const collapsed = items.length > COLLAPSE_ABOVE;
+  const hiddenCount = items.length - VISIBLE_WHEN_COLLAPSED;
+  const showAll = collapsed
+    ? `<button type="button" class="show-all">${escapeHtml(m.showRemaining(hiddenCount))}</button>`
+    : '';
+  const summary = severityCounts(items.map((a) => a.advisory.severity))
+    .map((c) => `${c.count} ${m.severityLabel(c.severity)}`)
+    .join(' · ');
+
+  return `<section class="group ${cls}">
+      <div class="group-head">
+        <h3>${escapeHtml(heading)}</h3>
+        <span class="severity-summary">${items.length} · ${escapeHtml(summary)}</span>
+      </div>
+      <ul class="advisories">${items.map((a, i) => advisoryItem(a, lang, m, collapsed && i >= VISIBLE_WHEN_COLLAPSED)).join('')}</ul>
+      ${showAll}
+    </section>`;
+}
+
+function renderVerdict(v: Verdict, version: string, data: Typo3Data, lang: Lang, m: Strings, now: Date): string {
+  const core = v.affecting.filter((a) => !a.optional);
+  const optional = v.affecting.filter((a) => a.optional);
+  const major = data.majors[majorKey(version)];
+  // Core only: folding in the conditional set would contradict the headline count.
+  const stat = statPanel(core, version, v.tier, m);
+
+  return `<div class="verdict" data-tier="${v.tier}">
+      ${answerBand(v, m, stat)}
+      ${major ? lifecycle(major, majorKey(version), version, m, now) : ''}
+      ${group(core, 'affects', m.ui.affects, lang, m)}
+      ${group(optional, 'may-apply', m.ui.mayApply, lang, m)}
+      ${devHint(m)}
     </div>`;
 }
 
 function renderFor(raw: string, hasElts: boolean, data: Typo3Data, lang: Lang): string {
   const m = strings(lang);
+  const now = new Date();
   // A security verdict needs the exact patch; major.minor only gets support info.
   if (!parseVersion(raw)) {
     const mk = majorKey(raw.replace(/^v/i, ''));
@@ -94,18 +248,20 @@ function renderFor(raw: string, hasElts: boolean, data: Typo3Data, lang: Lang): 
     const t = major ? m.unknownMajor(mk, major.maintainedUntil, major.eltsUntil) : m.unknownVersion();
     // Support dates come straight from the dataset, so they need the same staleness disclaimer
     // an exact-version verdict would carry.
-    const staleSince = staleCheckedAt(data, new Date());
-    const concerns = staleSince !== null
-      ? `<ul class="concerns"><li>${escapeHtml(m.concernMaybeNewer(staleSince))}</li></ul>`
-      : '';
-    return `<div class="verdict" data-tier="unknown-version">
-        <p class="tier">${escapeHtml(m.tierLabel['unknown-version'])}</p>
-        <h2>${escapeHtml(t.headline)}</h2>
-        <p class="detail${concerns ? ' has-concerns' : ''}">${escapeHtml(t.detail)}</p>
-        ${concerns}
-      </div>`;
+    const staleSince = staleCheckedAt(data, now);
+    const concerns = staleSince !== null ? [m.concernMaybeNewer(staleSince)] : [];
+    const verdict: Verdict = {
+      tier: 'unknown-version',
+      supportPhase: 'unknown',
+      recommendedVersion: null,
+      headline: t.headline,
+      detail: t.detail,
+      affecting: [],
+      concerns,
+    };
+    return `<div class="verdict" data-tier="unknown-version">${answerBand(verdict, m, '')}</div>`;
   }
-  return renderVerdict(computeVerdict(raw, hasElts, data, new Date(), lang), lang, m);
+  return renderVerdict(computeVerdict(raw, hasElts, data, now, lang), raw, data, lang, m, now);
 }
 
 function readLang(): Lang {
@@ -120,14 +276,12 @@ function localiseChrome(root: Document, lang: Lang): void {
     const el = root.getElementById(id);
     if (el) el.textContent = text;
   };
-  set('app-title', m.ui.title);
+  set('brand-text', m.ui.brand);
+  set('app-title', m.ui.heroTitle);
   set('app-tagline', m.ui.tagline);
-  set('version-label', m.ui.versionLabel);
-  set('version-hint', m.ui.versionHint);
-  set('major-label', m.ui.majorLabel);
+  set('pick-label', m.ui.pickLabel);
   set('version-select-label', m.ui.yourVersion);
-  set('elts-label', m.ui.eltsLabel);
-  set('check-button', m.ui.check);
+  set('elts-label', m.ui.eltsShort);
   set('made-by-text', m.ui.madeBy);
   // Landmark aria-labels are read by screen readers, so localise them too (data-i18n-label -> UiLabels key).
   root.querySelectorAll<HTMLElement>('[data-i18n-label]').forEach((el) => {
@@ -143,9 +297,9 @@ function localiseChrome(root: Document, lang: Lang): void {
   });
 }
 
-// Highest-major-first so the most relevant line is the default.
+// Ascending, so the segmented control reads left-to-right like a version line.
 function sortedMajorKeys(data: Typo3Data): string[] {
-  return Object.keys(data.majors).sort((a, b) => Number(b) - Number(a));
+  return Object.keys(data.majors).sort((a, b) => Number(a) - Number(b));
 }
 
 // Releases newest-first; ELTS releases tagged so a free user can tell them apart.
@@ -157,7 +311,7 @@ function releaseOptions(data: Typo3Data, mk: string, lang: Lang): string {
     .sort((a, b) => compareVersions(b.version, a.version))
     .map((r) => {
       const tags: string[] = [];
-      if (r.version === major.latestElts) tags.push(m.ui.tagLatest);
+      if (r.version === major.latestFree) tags.push(m.ui.tagLatest);
       if (r.type === 'security') tags.push(m.ui.tagSecurity);
       if (r.elts) tags.push(m.ui.tagElts);
       const label = tags.length ? `${r.version} — ${tags.join(' · ')}` : r.version;
@@ -167,59 +321,73 @@ function releaseOptions(data: Typo3Data, mk: string, lang: Lang): string {
 }
 
 export function initUi(root: Document, data: Typo3Data): void {
-  const form = root.getElementById('check-form') as HTMLFormElement;
-  const majorSelect = root.getElementById('major') as HTMLSelectElement;
+  const majorSeg = root.getElementById('major-seg') as HTMLElement;
   const versionSelect = root.getElementById('version') as HTMLSelectElement;
   const elts = root.getElementById('has-elts') as HTMLInputElement;
   const result = root.getElementById('result') as HTMLElement;
+  const announce = root.getElementById('result-announce') as HTMLElement;
   let lang = readLang();
 
   const majors = sortedMajorKeys(data);
-  majorSelect.innerHTML = majors
-    .map((mk) => `<option value="${escapeHtml(mk)}">TYPO3 ${escapeHtml(mk)}</option>`)
-    .join('');
+  // Default to the newest line even though the control lists them ascending.
+  let currentMajor = majors[majors.length - 1] ?? '';
+
+  const paintSegments = (): void => {
+    majorSeg.innerHTML = majors
+      .map((mk) => `<button type="button" data-major="${escapeHtml(mk)}" aria-pressed="${mk === currentMajor}">` +
+        `<span class="vh">TYPO3 </span>${escapeHtml(mk)}</button>`)
+      .join('');
+  };
 
   const populateVersions = (mk: string): void => {
     versionSelect.innerHTML = releaseOptions(data, mk, lang);
   };
-  populateVersions(majorSelect.value);
-
-  const currentVersion = (): string => versionSelect.value;
 
   const writeUrl = (raw: string, hasElts: boolean): void => {
     const params = new URLSearchParams({ v: raw, elts: hasElts ? '1' : '0', lang });
     history.replaceState(null, '', `${location.pathname}?${params.toString()}`);
   };
+
   const show = (raw: string, hasElts: boolean): void => {
     result.innerHTML = renderFor(raw, hasElts, data, lang);
+    const headline = result.querySelector('h2')?.textContent ?? '';
+    const detail = result.querySelector('.detail')?.textContent ?? '';
+    announce.textContent = `${headline} ${detail}`.trim();
     writeUrl(raw, hasElts); // shareable: version + ELTS + language (§2/§10)
   };
 
+  paintSegments();
+  populateVersions(currentMajor);
   localiseChrome(root, lang);
 
-  // Picking a line repopulates the version list (mockup: line buttons → patch select).
-  majorSelect.addEventListener('change', () => {
-    populateVersions(majorSelect.value);
+  majorSeg.addEventListener('click', (e) => {
+    const button = (e.target as HTMLElement).closest<HTMLButtonElement>('button[data-major]');
+    if (!button || button.dataset.major === undefined) return;
+    currentMajor = button.dataset.major;
+    paintSegments();
+    populateVersions(currentMajor);
+    // The button was replaced by paintSegments, so put focus back where it was.
+    majorSeg.querySelector<HTMLButtonElement>(`[data-major="${currentMajor}"]`)?.focus();
+    show(versionSelect.value, elts.checked);
   });
 
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    show(currentVersion(), elts.checked);
-  });
+  // No submit step: the dataset is already local, so there is nothing to wait for.
+  versionSelect.addEventListener('change', () => show(versionSelect.value, elts.checked));
+  elts.addEventListener('change', () => show(versionSelect.value, elts.checked));
 
   // Copy-link + show-all buttons (event delegation — re-rendered with every verdict).
   result.addEventListener('click', (e) => {
     const target = e.target as HTMLElement;
     if (target.classList.contains('copy-link')) {
       void navigator.clipboard?.writeText(location.href);
-      const status = target.parentElement?.querySelector('.status');
+      const status = target.parentElement?.querySelector('.copy-status');
       if (status) status.textContent = strings(lang).ui.copied;
     }
     if (target.classList.contains('show-all')) {
       const advisoryGroup = target.closest('.group');
-      const firstRevealedLink = advisoryGroup?.querySelector<HTMLElement>('li[hidden] a');
+      const firstRevealed = advisoryGroup?.querySelector<HTMLElement>('li[hidden] summary');
       advisoryGroup?.querySelectorAll('li[hidden]').forEach((item) => item.removeAttribute('hidden'));
-      firstRevealedLink?.focus(); // keep keyboard focus in the list once the button disappears
+      firstRevealed?.focus(); // keep keyboard focus in the list once the button disappears
       target.remove();
     }
   });
@@ -230,24 +398,27 @@ export function initUi(root: Document, data: Typo3Data): void {
     if (chosen !== 'en' && chosen !== 'de') return;
     lang = chosen;
     localiseChrome(root, lang);
-    const selected = currentVersion();
-    populateVersions(majorSelect.value); // re-localise the option tags
+    const selected = versionSelect.value;
+    populateVersions(currentMajor); // re-localise the option tags
     versionSelect.value = selected;
-    const raw = currentVersion();
-    if (raw) show(raw, elts.checked);
-    else writeUrl(raw, elts.checked);
+    if (versionSelect.value) show(versionSelect.value, elts.checked);
+    else writeUrl(versionSelect.value, elts.checked);
   });
 
-  // Deep link: prefill + auto-run from ?v=&elts=&lang=.
+  // Deep link: prefill + auto-run from ?v=&elts=&lang=. Without one, fall back
+  // to the newest release rather than an empty pane.
   const deepLinked = new URLSearchParams(location.search).get('v');
   if (deepLinked) {
     const mk = majorKey(deepLinked.replace(/^v/i, ''));
     if (data.majors[mk]) {
-      majorSelect.value = mk;
+      currentMajor = mk;
+      paintSegments();
       populateVersions(mk);
       versionSelect.value = deepLinked;
     }
     elts.checked = new URLSearchParams(location.search).get('elts') === '1';
     show(deepLinked, elts.checked);
+    return;
   }
+  show(versionSelect.value, elts.checked);
 }

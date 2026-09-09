@@ -8,18 +8,24 @@ interface TierText {
 
 export interface UiLabels {
   title: string;
+  brand: string;
+  heroTitle: string;
   tagline: string;
-  versionLabel: string;
-  versionHint: string;
+  pickLabel: string;
   majorLabel: string;
   yourVersion: string;
   tagLatest: string;
   tagSecurity: string;
   tagElts: string;
-  eltsLabel: string;
-  check: string;
+  eltsShort: string;
   affects: string;
   mayApply: string;
+  openAdvisories: string;
+  today: string;
+  zoneFree: string;
+  zoneElts: string;
+  devHintLead: string;
+  devHintTail: string;
   copyLink: string;
   copied: string;
   shareHint: string;
@@ -31,6 +37,16 @@ export interface UiLabels {
   resultLabel: string;
   resourcesLabel: string;
   madeBy: string;
+}
+
+export interface TimelineAltInfo {
+  major: string;
+  firstIso: string;
+  maintainedIso: string;
+  eltsIso: string;
+  version: string;
+  releaseIso: string;
+  ageMonths: number;
 }
 
 export interface Strings {
@@ -55,7 +71,16 @@ export interface Strings {
   concernAlsoBehind(count: number): string;
   concernNewerMajor(major: number): string;
   severityLabel(severity: string): string;
-  showAllAdvisories(total: number): string;
+  showRemaining(count: number): string;
+  nothingAffects(version: string): string;
+  splitBoth(free: number, eltsOnly: number): string;
+  splitEltsOnly(count: number): string;
+  splitAllFree(count: number): string;
+  lifecycleTitle(major: string): string;
+  lifecycleEnded(monthsAgo: number, eltsIso: string): string;
+  lifecycleRunning(monthsLeft: number, eltsIso: string): string;
+  releasedFlag(version: string, ageMonths: number): string;
+  timelineAlt(info: TimelineAltInfo): string;
   ui: UiLabels;
 }
 
@@ -140,21 +165,47 @@ const EN: Strings = {
   concernNewerMajor: (major) => `TYPO3 ${major} is available as a newer major version.`,
   // The data's severity values are already plain English; only "unknown" needs saying properly.
   severityLabel: (severity) => (severity === 'unknown' ? 'not rated' : severity),
-  showAllAdvisories: (total) => `Show all ${total}`,
+  showRemaining: (count) => `Show the remaining ${count} ${plural(count, 'advisory', 'advisories')}`,
+  nothingAffects: (version) => `Nothing published affects ${version} right now.`,
+  splitBoth: (free, eltsOnly) =>
+    `${free} of these a free update fixes. The other ${eltsOnly} ${plural(eltsOnly, 'is', 'are')} patched only in ELTS releases.`,
+  splitEltsOnly: (count) =>
+    `All ${count} ${plural(count, 'is', 'are')} patched only in ELTS releases. A free update will not clear ${plural(count, 'it', 'them')}.`,
+  splitAllFree: (count) => `All ${count} ${plural(count, 'is', 'are')} fixed by the free update above.`,
+  lifecycleTitle: (major) => `Where TYPO3 ${major} stands`,
+  lifecycleEnded: (monthsAgo, eltsIso) =>
+    `Free security updates ended ${monthsAgo} ${plural(monthsAgo, 'month', 'months')} ago. ` +
+    `Paid ELTS runs to ${fmtDate(eltsIso, 'en')}.`,
+  lifecycleRunning: (monthsLeft, eltsIso) =>
+    `Free security updates run for another ${monthsLeft} ${plural(monthsLeft, 'month', 'months')}, ` +
+    `then paid ELTS to ${fmtDate(eltsIso, 'en')}.`,
+  releasedFlag: (version, ageMonths) =>
+    `${version} released · ${ageMonths} ${plural(ageMonths, 'month', 'months')} old`,
+  timelineAlt: (info) =>
+    `Support timeline for TYPO3 ${info.major}. Free security updates from ${fmtDate(info.firstIso, 'en')} ` +
+    `to ${fmtDate(info.maintainedIso, 'en')}, then paid ELTS to ${fmtDate(info.eltsIso, 'en')}. ` +
+    `Your release ${info.version} came out ${fmtDate(info.releaseIso, 'en')}, ${info.ageMonths} ` +
+    `${plural(info.ageMonths, 'month', 'months')} ago.`,
   ui: {
     title: 'Is your TYPO3 up to date?',
-    tagline: 'Known vulnerabilities and support status for any TYPO3 version.',
-    versionLabel: 'Which TYPO3 version is your site running?',
-    versionHint: 'The exact version is in the backend top bar, or run composer show typo3/cms-core.',
-    majorLabel: 'Major version',
+    brand: 'TYPO3 Update Check',
+    heroTitle: 'Is your TYPO3 safe?',
+    tagline: 'Pick the version your site runs. We check it against every published TYPO3 security advisory and tell you whether a free update fixes it.',
+    pickLabel: 'My site runs',
+    majorLabel: 'TYPO3 major version',
     yourVersion: 'Installed version',
-    tagLatest: 'latest',
+    tagLatest: 'latest free release',
     tagSecurity: 'security release',
     tagElts: 'ELTS',
-    eltsLabel: 'This site has an ELTS subscription',
-    check: 'Check',
-    affects: 'Affects this version',
-    mayApply: 'May apply, depending on installed extensions',
+    eltsShort: 'We have ELTS',
+    affects: 'Affects your site',
+    mayApply: 'Only if you use these extensions',
+    openAdvisories: 'Open advisories',
+    today: 'Today',
+    zoneFree: 'Free security updates',
+    zoneElts: 'ELTS only, paid',
+    devHintLead: 'Developers: this check also runs inside Composer.',
+    devHintTail: 'It stops a TYPO3 core update that carries security fixes or breaking changes and asks before continuing.',
     copyLink: 'Copy link to this result',
     copied: 'Link copied',
     shareHint: 'The link carries the version and ELTS setting, so it reopens this exact result.',
@@ -250,21 +301,51 @@ const DE: Strings = {
   concernNewerMajor: (major) => `TYPO3 ${major} ist als neuere Major-Version verfügbar.`,
   severityLabel: (severity) =>
     ({ critical: 'kritisch', high: 'hoch', medium: 'mittel', low: 'niedrig', unknown: 'nicht eingestuft' })[severity] ?? severity,
-  showAllAdvisories: (total) => `Alle ${total} anzeigen`,
+  showRemaining: (count) =>
+    `Die ${plural(count, 'restliche Meldung', `restlichen ${count} Meldungen`)} anzeigen`,
+  nothingAffects: (version) => `Derzeit betrifft keine veröffentlichte Meldung ${version}.`,
+  splitBoth: (free, eltsOnly) =>
+    `${free} davon behebt ein kostenloses Update. Die ${plural(eltsOnly, 'andere ist', `anderen ${eltsOnly} sind`)} ` +
+    'nur in ELTS-Releases behoben.',
+  splitEltsOnly: (count) =>
+    `${plural(count, 'Sie ist', `Alle ${count} sind`)} nur in ELTS-Releases behoben. Ein kostenloses Update beseitigt ` +
+    `${plural(count, 'sie', 'sie')} nicht.`,
+  splitAllFree: (count) =>
+    `${plural(count, 'Sie wird', `Alle ${count} werden`)} durch das kostenlose Update oben behoben.`,
+  lifecycleTitle: (major) => `Wo TYPO3 ${major} steht`,
+  lifecycleEnded: (monthsAgo, eltsIso) =>
+    `Die kostenlosen Sicherheitsupdates endeten vor ${monthsAgo} ${plural(monthsAgo, 'Monat', 'Monaten')}. ` +
+    `Kostenpflichtiges ELTS läuft bis ${fmtDate(eltsIso, 'de')}.`,
+  lifecycleRunning: (monthsLeft, eltsIso) =>
+    `Kostenlose Sicherheitsupdates laufen noch ${monthsLeft} ${plural(monthsLeft, 'Monat', 'Monate')}, ` +
+    `danach kostenpflichtiges ELTS bis ${fmtDate(eltsIso, 'de')}.`,
+  releasedFlag: (version, ageMonths) =>
+    `${version} erschien · ${ageMonths} ${plural(ageMonths, 'Monat', 'Monate')} alt`,
+  timelineAlt: (info) =>
+    `Support-Zeitraum für TYPO3 ${info.major}. Kostenlose Sicherheitsupdates von ${fmtDate(info.firstIso, 'de')} ` +
+    `bis ${fmtDate(info.maintainedIso, 'de')}, danach kostenpflichtiges ELTS bis ${fmtDate(info.eltsIso, 'de')}. ` +
+    `Ihr Release ${info.version} erschien am ${fmtDate(info.releaseIso, 'de')}, vor ${info.ageMonths} ` +
+    `${plural(info.ageMonths, 'Monat', 'Monaten')}.`,
   ui: {
     title: 'Ist Ihre TYPO3-Installation aktuell?',
-    tagline: 'Bekannte Sicherheitslücken und Support-Status für jede TYPO3-Version.',
-    versionLabel: 'Welche TYPO3-Version läuft auf Ihrer Website?',
-    versionHint: 'Die genaue Version steht in der Backend-Kopfzeile oder liefert composer show typo3/cms-core.',
-    majorLabel: 'Major-Version',
+    brand: 'TYPO3 Update Check',
+    heroTitle: 'Ist Ihr TYPO3 sicher?',
+    tagline: 'Wählen Sie die Version, die auf Ihrer Website läuft. Wir prüfen sie gegen alle veröffentlichten TYPO3-Sicherheitsmeldungen und sagen Ihnen, ob ein kostenloses Update genügt.',
+    pickLabel: 'Meine Website nutzt',
+    majorLabel: 'TYPO3 Major-Version',
     yourVersion: 'Installierte Version',
-    tagLatest: 'neueste',
+    tagLatest: 'neuestes kostenloses Release',
     tagSecurity: 'Sicherheitsrelease',
     tagElts: 'ELTS',
-    eltsLabel: 'Diese Website hat ein ELTS-Abo',
-    check: 'Prüfen',
-    affects: 'Betrifft diese Version',
-    mayApply: 'Kann zutreffen, je nach installierten Erweiterungen',
+    eltsShort: 'Wir haben ELTS',
+    affects: 'Betrifft Ihre Website',
+    mayApply: 'Nur bei diesen Erweiterungen',
+    openAdvisories: 'Offene Meldungen',
+    today: 'Heute',
+    zoneFree: 'Kostenlose Sicherheitsupdates',
+    zoneElts: 'Nur ELTS, kostenpflichtig',
+    devHintLead: 'Für Entwickler: Diese Prüfung läuft auch direkt in Composer.',
+    devHintTail: 'Sie hält ein TYPO3-Core-Update mit Sicherheitsfixes oder Breaking Changes an und fragt vor dem Fortfahren nach.',
     copyLink: 'Link zu diesem Ergebnis kopieren',
     copied: 'Link kopiert',
     shareHint: 'Der Link enthält Version und ELTS-Einstellung und öffnet genau dieses Ergebnis wieder.',
