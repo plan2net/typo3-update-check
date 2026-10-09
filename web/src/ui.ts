@@ -324,6 +324,8 @@ export function initUi(root: Document, data: Typo3Data): void {
   const majorSeg = root.getElementById('major-seg') as HTMLElement;
   const versionSelect = root.getElementById('version') as HTMLSelectElement;
   const elts = root.getElementById('has-elts') as HTMLInputElement;
+  const eltsSwitch = root.getElementById('elts-switch') as HTMLElement;
+  const eltsNote = root.getElementById('elts-note') as HTMLElement;
   const result = root.getElementById('result') as HTMLElement;
   const announce = root.getElementById('result-announce') as HTMLElement;
   let lang = readLang();
@@ -349,6 +351,14 @@ export function initUi(root: Document, data: Typo3Data): void {
   };
 
   const show = (raw: string, hasElts: boolean): void => {
+    // A line still in free maintenance has no ELTS yet: swap the switch for a note, but keep its
+    // state (and the URL flag) so it still applies after switching back to an ELTS line.
+    const mk = majorKey(raw.replace(/^v/i, ''));
+    const major = data.majors[mk];
+    const eltsApplies = !major || new Date(major.maintainedUntil) <= new Date();
+    eltsSwitch.hidden = !eltsApplies;
+    eltsNote.hidden = eltsApplies;
+    eltsNote.textContent = major && !eltsApplies ? strings(lang).eltsNotYet(mk, major.maintainedUntil) : '';
     result.innerHTML = renderFor(raw, hasElts, data, lang);
     const headline = result.querySelector('h2')?.textContent ?? '';
     const detail = result.querySelector('.detail')?.textContent ?? '';

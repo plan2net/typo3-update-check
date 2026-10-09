@@ -66,6 +66,9 @@ export function computeVerdict(
   const eltsMs = new Date(major.eltsUntil).getTime();
   const supportPhase: SupportPhase =
     nowMs < maintainedMs ? 'active' : nowMs < eltsMs ? 'elts-only' : 'eol';
+  // ELTS only exists once free maintenance has ended; before that the flag means nothing.
+  const eltsApplies = supportPhase !== 'active';
+  hasElts = hasElts && eltsApplies;
 
   const target = hasElts ? major.latestElts : major.latestFree;
   const horizonMs = hasElts ? eltsMs : maintainedMs;
@@ -130,7 +133,7 @@ export function computeVerdict(
     text = m.behind(canonical, target);
   } else {
     tier = 'all-good';
-    text = m.allGood(hasElts);
+    text = m.allGood(eltsApplies && !hasElts);
   }
 
   // Secondary concerns the headline doesn't already cover.
