@@ -96,6 +96,12 @@ describe('computeVerdict', () => {
     expect(v.affecting.length).toBe(0);
   });
 
+  it('ignores the ELTS flag on a major still in free maintenance', () => {
+    const withElts = computeVerdict('13.4.31', true, data, NOW);
+    expect(withElts.detail).toBe(computeVerdict('13.4.31', false, data, NOW).detail);
+    expect(withElts.detail).not.toMatch(/free/);
+  });
+
   it('reports behind-maintenance when secure but not on the latest free release', () => {
     const v = computeVerdict('13.4.30', false, data, NOW);
     expect(v.tier).toBe('behind-maintenance');

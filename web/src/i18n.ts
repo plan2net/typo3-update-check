@@ -59,7 +59,7 @@ export interface Strings {
   soon(major: string, endsIso: string, hasElts: boolean): TierText;
   reviewOptional(count: number): TierText;
   behind(version: string, target: string): TierText;
-  allGood(hasElts: boolean): TierText;
+  allGood(free: boolean): TierText;
   stale(updatedIso: string): TierText;
   unknownVersion(): TierText;
   unknownMajor(major: string, maintainedIso: string, eltsIso: string): TierText;
@@ -79,6 +79,7 @@ export interface Strings {
   lifecycleTitle(major: string): string;
   lifecycleEnded(monthsAgo: number, eltsIso: string): string;
   lifecycleRunning(monthsLeft: number, eltsIso: string): string;
+  eltsNotYet(major: string, maintainedIso: string): string;
   releasedFlag(version: string, ageMonths: number): string;
   timelineAlt(info: TimelineAltInfo): string;
   ui: UiLabels;
@@ -133,9 +134,9 @@ const EN: Strings = {
     headline: 'Secure, but a newer release is available.',
     detail: `Updating ${version} → ${target} is low-risk and recommended.`,
   }),
-  allGood: (hasElts) => ({
+  allGood: (free) => ({
     headline: 'Up to date.',
-    detail: `This is the latest ${hasElts ? '' : 'free '}release of a supported version. Nothing to do right now.`,
+    detail: `This is the latest ${free ? 'free ' : ''}release of a supported version. Nothing to do right now.`,
   }),
   stale: (updatedIso) => ({
     headline: 'This result is unconfirmed.',
@@ -179,6 +180,8 @@ const EN: Strings = {
   lifecycleRunning: (monthsLeft, eltsIso) =>
     `Free security updates run for another ${monthsLeft} ${plural(monthsLeft, 'month', 'months')}, ` +
     `then paid ELTS to ${fmtDate(eltsIso, 'en')}.`,
+  eltsNotYet: (major, maintainedIso) =>
+    `TYPO3 ${major} is actively maintained until ${fmtDate(maintainedIso, 'en')}. ELTS is not available yet.`,
   releasedFlag: (version, ageMonths) =>
     `${version} released · ${ageMonths} ${plural(ageMonths, 'month', 'months')} old`,
   timelineAlt: (info) =>
@@ -269,9 +272,9 @@ const DE: Strings = {
     headline: 'Sicher, aber ein neueres Release ist verfügbar.',
     detail: `Das Update ${version} → ${target} ist risikoarm und empfohlen.`,
   }),
-  allGood: (hasElts) => ({
+  allGood: (free) => ({
     headline: 'Aktueller Stand.',
-    detail: `Das ist das aktuellste ${hasElts ? '' : 'kostenlose '}Release einer unterstützten Version. Nichts zu tun.`,
+    detail: `Das ist das aktuellste ${free ? 'kostenlose ' : ''}Release einer unterstützten Version. Nichts zu tun.`,
   }),
   stale: (updatedIso) => ({
     headline: 'Dieses Ergebnis ist unbestätigt.',
@@ -319,6 +322,8 @@ const DE: Strings = {
   lifecycleRunning: (monthsLeft, eltsIso) =>
     `Kostenlose Sicherheitsupdates laufen noch ${monthsLeft} ${plural(monthsLeft, 'Monat', 'Monate')}, ` +
     `danach kostenpflichtiges ELTS bis ${fmtDate(eltsIso, 'de')}.`,
+  eltsNotYet: (major, maintainedIso) =>
+    `TYPO3 ${major} wird bis ${fmtDate(maintainedIso, 'de')} aktiv gepflegt. ELTS ist noch nicht verfügbar.`,
   releasedFlag: (version, ageMonths) =>
     `${version} erschien · ${ageMonths} ${plural(ageMonths, 'Monat', 'Monate')} alt`,
   timelineAlt: (info) =>

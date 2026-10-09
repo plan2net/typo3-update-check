@@ -350,6 +350,17 @@ body {
   user-select: none;
 }
 
+/* inline-flex above would otherwise defeat [hidden] on active (pre-ELTS) majors. */
+.elts-switch[hidden] {
+  display: none;
+}
+
+.elts-note {
+  flex: 1 1 220px;
+  font-size: 14px;
+  color: var(--ink-2);
+}
+
 .elts-switch input {
   position: absolute;
   opacity: 0;
