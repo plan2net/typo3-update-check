@@ -17,6 +17,7 @@ export function compareVersions(a: string, b: string): -1 | 0 | 1 {
   return 0;
 }
 
+// Accepts raw user input too ("v12.4.10"), so callers needn't strip the prefix.
 export function majorKey(version: string): string {
-  return version.split('.')[0] ?? '';
+  return version.trim().replace(/^v/i, '').split('.')[0] ?? '';
 }

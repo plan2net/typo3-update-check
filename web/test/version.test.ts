@@ -23,5 +23,7 @@ describe('compareVersions', () => {
 describe('majorKey', () => {
   it('returns the integer major as a string', () => {
     expect(majorKey('12.4.10')).toBe('12');
+    expect(majorKey('v12.4.10')).toBe('12');
+    expect(majorKey(' v12.4.10')).toBe('12');
   });
 });
