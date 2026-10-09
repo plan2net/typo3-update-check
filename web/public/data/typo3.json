@@ -1,12 +1,18 @@
 {
-    "generatedAt": "2026-10-09T09:34:48+00:00",
+    "generatedAt": "2026-10-09T12:38:59+00:00",
     "majors": {
         "12": {
             "maintainedUntil": "2026-04-30T00:00:00+02:00",
             "eltsUntil": "2030-04-30T00:00:00+02:00",
             "latestFree": "12.4.45",
-            "latestElts": "12.4.49",
+            "latestElts": "12.4.50",
             "releases": [
+                {
+                    "version": "12.4.50",
+                    "date": "2026-10-09T11:14:30+02:00",
+                    "type": "regular",
+                    "elts": true
+                },
                 {
                     "version": "12.4.49",
                     "date": "2026-09-08T09:23:00+02:00",
