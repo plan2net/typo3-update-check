@@ -243,7 +243,7 @@ function renderFor(raw: string, hasElts: boolean, data: Typo3Data, lang: Lang): 
   const now = new Date();
   // A security verdict needs the exact patch; major.minor only gets support info.
   if (!parseVersion(raw)) {
-    const mk = majorKey(raw.replace(/^v/i, ''));
+    const mk = majorKey(raw);
     const major = data.majors[mk];
     const t = major ? m.unknownMajor(mk, major.maintainedUntil, major.eltsUntil) : m.unknownVersion();
     // Support dates come straight from the dataset, so they need the same staleness disclaimer
@@ -353,7 +353,7 @@ export function initUi(root: Document, data: Typo3Data): void {
   const show = (raw: string, hasElts: boolean): void => {
     // A line still in free maintenance has no ELTS yet: swap the switch for a note, but keep its
     // state (and the URL flag) so it still applies after switching back to an ELTS line.
-    const mk = majorKey(raw.replace(/^v/i, ''));
+    const mk = majorKey(raw);
     const major = data.majors[mk];
     const eltsApplies = !major || new Date(major.maintainedUntil) <= new Date();
     eltsSwitch.hidden = !eltsApplies;
@@ -419,7 +419,7 @@ export function initUi(root: Document, data: Typo3Data): void {
   // to the newest release rather than an empty pane.
   const deepLinked = new URLSearchParams(location.search).get('v');
   if (deepLinked) {
-    const mk = majorKey(deepLinked.replace(/^v/i, ''));
+    const mk = majorKey(deepLinked);
     if (data.majors[mk]) {
       currentMajor = mk;
       paintSegments();
