@@ -417,8 +417,10 @@ export function initUi(root: Document, data: Typo3Data): void {
 
   // Deep link: prefill + auto-run from ?v=&elts=&lang=. Without one, fall back
   // to the newest release rather than an empty pane.
-  const deepLinked = new URLSearchParams(location.search).get('v');
-  if (deepLinked) {
+  const linked = new URLSearchParams(location.search).get('v');
+  if (linked) {
+    // Canonicalise ("v13.4.35" -> "13.4.35") so the select, timeline and URL all match the dataset.
+    const deepLinked = parseVersion(linked)?.join('.') ?? linked;
     const mk = majorKey(deepLinked);
     if (data.majors[mk]) {
       currentMajor = mk;
