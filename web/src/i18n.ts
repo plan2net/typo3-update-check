@@ -98,19 +98,20 @@ const EN: Strings = {
   missingFix: (version, target, count, severity, hasElts) => ({
     headline: `Update to TYPO3 ${target} now.`,
     detail: `${count} known ${plural(count, 'vulnerability affects', 'vulnerabilities affect')} ${version}` +
-      `${severity ? `, including a ${severity}-severity one` : ''}. ` +
+      `${severity ? plural(count, `, rated ${EN.severityLabel(severity)}`, `, including a ${EN.severityLabel(severity)}-severity one`) : ''}. ` +
       `${hasElts ? 'A patched release is available.' : 'A free patched release is available.'}`,
   }),
   // Stale variant: target-neutral, so a possibly-obsolete version is never named in the headline.
   missingFixStale: (version, count, severity) => ({
     headline: 'Security update needed.',
     detail: `${count} known ${plural(count, 'vulnerability affects', 'vulnerabilities affect')} ${version}` +
-      `${severity ? `, including a ${severity}-severity one` : ''}. A patched release is available.`,
+      `${severity ? plural(count, `, rated ${EN.severityLabel(severity)}`, `, including a ${EN.severityLabel(severity)}-severity one`) : ''}. ` +
+      'A patched release is available.',
   }),
   unfixed: (version, major, count, severity) => ({
     headline: 'Known vulnerability with no fix yet.',
     detail: `${count} known ${plural(count, 'vulnerability affects', 'vulnerabilities affect')} ${version}` +
-      `${severity ? ` (up to ${severity}-severity)` : ''} with no released fix for the ${major} line yet. ` +
+      `${severity ? plural(count, ` (rated ${EN.severityLabel(severity)})`, ` (up to ${EN.severityLabel(severity)} severity)`) : ''} with no released fix for the ${major} line yet. ` +
       'Apply the official mitigations and watch for the next release.',
   }),
   eltsOnly: (major, gated) => ({
@@ -120,7 +121,7 @@ const EN: Strings = {
       'Further patches require an ELTS subscription or an upgrade to a newer major.',
   }),
   eol: (major, eltsUntilIso) => ({
-    headline: `TYPO3 ${major} is end of life.`,
+    headline: `TYPO3 ${major} has reached end of life.`,
     detail: `Security support ended on ${fmtDate(eltsUntilIso, 'en')}. No further fixes are published, ` +
       'even with ELTS. An upgrade to a supported version is required.',
   }),
@@ -171,10 +172,10 @@ const EN: Strings = {
   showRemaining: (count) => `Show the remaining ${count} ${plural(count, 'advisory', 'advisories')}`,
   nothingAffects: (version) => `Nothing published affects ${version} right now.`,
   splitBoth: (free, eltsOnly) =>
-    `${free} of these a free update fixes. The other ${eltsOnly} ${plural(eltsOnly, 'is', 'are')} patched only in ELTS releases.`,
+    `A free update fixes ${free} of these. The other ${eltsOnly} ${plural(eltsOnly, 'is', 'are')} patched only in ELTS releases.`,
   splitEltsOnly: (count) =>
-    `All ${count} ${plural(count, 'is', 'are')} patched only in ELTS releases. A free update will not clear ${plural(count, 'it', 'them')}.`,
-  splitAllFree: (count) => `All ${count} ${plural(count, 'is', 'are')} fixed by the free update above.`,
+    `${plural(count, 'It is', `All ${count} are`)} patched only in ELTS releases. A free update will not fix ${plural(count, 'it', 'them')}.`,
+  splitAllFree: (count) => `A free update fixes ${plural(count, 'it', 'all of them')}.`,
   lifecycleTitle: (major) => `Where TYPO3 ${major} stands`,
   lifecycleEnded: (monthsAgo, eltsIso) =>
     `Free security updates ended ${monthsAgo} ${plural(monthsAgo, 'month', 'months')} ago. ` +
@@ -239,19 +240,21 @@ const DE: Strings = {
   missingFix: (version, target, count, severity, hasElts) => ({
     headline: `Jetzt auf TYPO3 ${target} aktualisieren.`,
     detail: `${count} bekannte ${plural(count, 'Sicherheitslücke betrifft', 'Sicherheitslücken betreffen')} ${version}` +
-      `${severity ? `, darunter eine mit Schweregrad „${severity}“` : ''}. ` +
-      `${hasElts ? 'Ein gepatchtes Release ist verfügbar.' : 'Ein kostenloses gepatchtes Release ist verfügbar.'}`,
+      `${severity ? plural(count, `, Schweregrad „${DE.severityLabel(severity)}“`, `, darunter eine mit Schweregrad „${DE.severityLabel(severity)}“`) : ''}. ` +
+      `${hasElts ? 'Ein Update ist verfügbar.' : 'Ein kostenloses Update ist verfügbar.'}`,
   }),
   // Stale-Variante: ohne konkrete Zielversion, damit kein möglicherweise veraltetes Release genannt wird.
   missingFixStale: (version, count, severity) => ({
     headline: 'Sicherheitsupdate erforderlich.',
     detail: `${count} bekannte ${plural(count, 'Sicherheitslücke betrifft', 'Sicherheitslücken betreffen')} ${version}` +
-      `${severity ? `, darunter eine mit Schweregrad „${severity}“` : ''}. Ein gepatchtes Release ist verfügbar.`,
+      `${severity ? plural(count, `, Schweregrad „${DE.severityLabel(severity)}“`, `, darunter eine mit Schweregrad „${DE.severityLabel(severity)}“`) : ''}. ` +
+      'Ein Update ist verfügbar.',
   }),
   unfixed: (version, major, count, severity) => ({
     headline: 'Bekannte Sicherheitslücke, noch ohne Fix.',
     detail: `${count} bekannte ${plural(count, 'Sicherheitslücke betrifft', 'Sicherheitslücken betreffen')} ${version}` +
-      `${severity ? ` (bis Schweregrad „${severity}“)` : ''} und es gibt noch kein Release für die ${major}er-Linie. ` +
+      `${severity ? plural(count, ` (Schweregrad „${DE.severityLabel(severity)}“)`, ` (bis Schweregrad „${DE.severityLabel(severity)}“)`) : ''}. ` +
+      `Für TYPO3 ${major} gibt es noch kein Release mit Fix. ` +
       'Wenden Sie die offiziellen Gegenmaßnahmen an und warten Sie auf das nächste Release.',
   }),
   eltsOnly: (major, gated) => ({
@@ -261,7 +264,7 @@ const DE: Strings = {
       'Weitere Patches erfordern ein ELTS-Abo oder ein Upgrade auf eine neuere Major-Version.',
   }),
   eol: (major, eltsUntilIso) => ({
-    headline: `TYPO3 ${major} hat das Lebensende erreicht.`,
+    headline: `TYPO3 ${major} wird nicht mehr unterstützt.`,
     detail: `Der Sicherheitssupport endete am ${fmtDate(eltsUntilIso, 'de')}. Es werden keine Fixes mehr ` +
       'veröffentlicht, auch nicht über ELTS. Ein Upgrade auf eine unterstützte Version ist erforderlich.',
   }),
@@ -270,16 +273,16 @@ const DE: Strings = {
     detail: `Der ${hasElts ? 'ELTS-' : 'kostenlose '}Sicherheitssupport für TYPO3 ${major} endet am ${fmtDate(endsIso, 'de')}.`,
   }),
   reviewOptional: (count) => ({
-    headline: 'Keine Kernprobleme. Prüfen Sie die optionalen Erweiterungen.',
-    detail: `${count} ${plural(count, 'Hinweis betrifft', 'Hinweise betreffen')} eventuell installierte Erweiterungen.`,
+    headline: 'Der Core ist nicht betroffen. Prüfen Sie die optionalen Erweiterungen.',
+    detail: `${count} ${plural(count, 'Meldung kann', 'Meldungen können')} zutreffen, je nachdem, welche Erweiterungen installiert sind.`,
   }),
   behind: (version, target) => ({
     headline: 'Sicher, aber ein neueres Release ist verfügbar.',
     detail: `Das Update ${version} → ${target} ist risikoarm und empfohlen.`,
   }),
   allGood: (free) => ({
-    headline: 'Aktueller Stand.',
-    detail: `Das ist das aktuellste ${free ? 'kostenlose ' : ''}Release einer unterstützten Version. Nichts zu tun.`,
+    headline: 'Auf dem neuesten Stand.',
+    detail: `Das ist das aktuellste ${free ? 'kostenlose ' : ''}Release einer unterstützten Version. Derzeit ist nichts zu tun.`,
   }),
   stale: (updatedIso) => ({
     headline: 'Dieses Ergebnis ist unbestätigt.',
@@ -292,20 +295,20 @@ const DE: Strings = {
   }),
   unknownMajor: (major, maintainedIso, eltsIso) => ({
     headline: `Bitte die vollständige Version angeben, z. B. ${major}.4.10`,
-    detail: `TYPO3 ${major} wird unterstützt bis ${fmtDate(maintainedIso, 'de')} (kostenlos) / ` +
-      `${fmtDate(eltsIso, 'de')} (ELTS). Für die Sicherheitsprüfung brauchen wir die genaue Patch-Version.`,
+    detail: `TYPO3 ${major} wird bis ${fmtDate(maintainedIso, 'de')} kostenlos und bis ` +
+      `${fmtDate(eltsIso, 'de')} über ELTS unterstützt. Für die Sicherheitsprüfung brauchen wir die genaue Patch-Version.`,
   }),
   concernOptional: (count, packages) =>
-    `${count} ${plural(count, 'Hinweis betrifft', 'Hinweise betreffen')} eventuell installierte Erweiterungen (${packages.join(', ')}).`,
+    `${count} ${plural(count, 'Meldung kann', 'Meldungen können')} außerdem zutreffen, je nachdem, welche Erweiterungen installiert sind (${packages.join(', ')}).`,
   concernSeparateUnfixed: () => 'Ein weiteres bekanntes Problem hat noch keinen Fix, das Update behebt es also nicht.',
   concernStale: (updatedIso) =>
     `Basiert auf Sicherheitsdaten vom ${fmtDate(updatedIso, 'de')} und ist möglicherweise nicht mehr aktuell. Prüfen Sie vor dem Update das aktuelle Release.`,
   concernMaybeNewer: (updatedIso) =>
     `Unsere Release-Daten wurden zuletzt am ${fmtDate(updatedIso, 'de')} geprüft, diese Version könnte also neuer sein als unsere Daten.`,
   concernEltsGatedRemain: (count) =>
-    `${count} ${plural(count, 'Kernproblem ist', 'Kernprobleme sind')} nur in ELTS-Releases behoben. Ein kostenloses Update beseitigt ` +
+    `${count} ${plural(count, 'Sicherheitsproblem im Core ist', 'Sicherheitsprobleme im Core sind')} nur in ELTS-Releases behoben. Ein kostenloses Update beseitigt ` +
     `${plural(count, 'es', 'sie')} nicht; dafür braucht es ein ELTS-Abo oder eine neuere Major-Version.`,
-  concernAlsoBehind: (count) => `Diese Version ist außerdem ${count} ${plural(count, 'kostenloses Release', 'kostenlose Releases')} im Rückstand.`,
+  concernAlsoBehind: (count) => `Diese Version liegt außerdem ${count} ${plural(count, 'kostenloses Release', 'kostenlose Releases')} zurück.`,
   concernNewerMajor: (major) => `TYPO3 ${major} ist als neuere Major-Version verfügbar.`,
   severityLabel: (severity) =>
     ({ critical: 'kritisch', high: 'hoch', medium: 'mittel', low: 'niedrig', unknown: 'nicht eingestuft' })[severity] ?? severity,
@@ -313,14 +316,12 @@ const DE: Strings = {
     `Die ${plural(count, 'restliche Meldung', `restlichen ${count} Meldungen`)} anzeigen`,
   nothingAffects: (version) => `Derzeit betrifft keine veröffentlichte Meldung ${version}.`,
   splitBoth: (free, eltsOnly) =>
-    `${free} davon behebt ein kostenloses Update. Die ${plural(eltsOnly, 'andere ist', `anderen ${eltsOnly} sind`)} ` +
+    `Ein kostenloses Update behebt ${free} davon. Die ${plural(eltsOnly, 'andere ist', `anderen ${eltsOnly} sind`)} ` +
     'nur in ELTS-Releases behoben.',
   splitEltsOnly: (count) =>
-    `${plural(count, 'Sie ist', `Alle ${count} sind`)} nur in ELTS-Releases behoben. Ein kostenloses Update beseitigt ` +
-    `${plural(count, 'sie', 'sie')} nicht.`,
-  splitAllFree: (count) =>
-    `${plural(count, 'Sie wird', `Alle ${count} werden`)} durch das kostenlose Update oben behoben.`,
-  lifecycleTitle: (major) => `Wo TYPO3 ${major} steht`,
+    `${plural(count, 'Sie ist', `Alle ${count} sind`)} nur in ELTS-Releases behoben. Ein kostenloses Update behebt sie nicht.`,
+  splitAllFree: (count) => `Ein kostenloses Update behebt ${plural(count, 'sie', 'alle')}.`,
+  lifecycleTitle: (major) => `Supportstatus von TYPO3 ${major}`,
   lifecycleEnded: (monthsAgo, eltsIso) =>
     `Die kostenlosen Sicherheitsupdates endeten vor ${monthsAgo} ${plural(monthsAgo, 'Monat', 'Monaten')}. ` +
     `Kostenpflichtiges ELTS läuft bis ${fmtDate(eltsIso, 'de')}.`,
@@ -330,7 +331,7 @@ const DE: Strings = {
   eltsNotYet: (major, maintainedIso) =>
     `TYPO3 ${major} wird bis ${fmtDate(maintainedIso, 'de')} aktiv gepflegt. ELTS ist noch nicht verfügbar.`,
   releasedFlag: (version, ageMonths) =>
-    `${version} erschien · ${ageMonths} ${plural(ageMonths, 'Monat', 'Monate')} alt`,
+    `${version} veröffentlicht ·${ageMonths} ${plural(ageMonths, 'Monat', 'Monate')} alt`,
   timelineAlt: (info) =>
     `Support-Zeitraum für TYPO3 ${info.major}. Kostenlose Sicherheitsupdates von ${fmtDate(info.firstIso, 'de')} ` +
     `bis ${fmtDate(info.maintainedIso, 'de')}, danach kostenpflichtiges ELTS bis ${fmtDate(info.eltsIso, 'de')}. ` +
@@ -342,7 +343,7 @@ const DE: Strings = {
     heroTitle: 'Ist Ihr TYPO3 sicher?',
     tagline: 'Wählen Sie die Version, die auf Ihrer Website läuft. Wir prüfen sie gegen alle veröffentlichten TYPO3-Sicherheitsmeldungen und sagen Ihnen, ob ein kostenloses Update genügt.',
     pickLabel: 'Meine Website nutzt',
-    majorLabel: 'TYPO3 Major-Version',
+    majorLabel: 'TYPO3-Major-Version',
     yourVersion: 'Installierte Version',
     tagLatest: 'neuestes kostenloses Release',
     tagSecurity: 'Sicherheitsrelease',
@@ -359,9 +360,9 @@ const DE: Strings = {
     copyLink: 'Link zu diesem Ergebnis kopieren',
     copied: 'Link kopiert',
     shareHint: 'Der Link enthält Version und ELTS-Einstellung und öffnet genau dieses Ergebnis wieder.',
-    officialAdvisory: 'Offizieller Hinweis',
+    officialAdvisory: 'Offizielle Meldung',
     opensNewTab: 'öffnet in einem neuen Tab',
-    onlyIfUses: 'Nur relevant, wenn die Website nutzt:',
+    onlyIfUses: 'Betrifft nur Websites mit',
     loadError: 'Die Update-Daten konnten nicht geladen werden. Bitte neu laden.',
     langNavLabel: 'Sprache',
     resultLabel: 'Ergebnis',
