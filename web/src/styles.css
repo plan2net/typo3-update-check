@@ -1071,6 +1071,13 @@ body {
   width: auto;
 }
 
+.ai-disclaimer {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: 13px;
+  color: var(--ink-2);
+}
+
 /* Touch taps fire hover, so the state would stick after the finger lifts. */
 @media (hover: hover) and (pointer: fine) {
   .advisory summary:hover {

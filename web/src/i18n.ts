@@ -37,6 +37,8 @@ export interface UiLabels {
   resultLabel: string;
   resourcesLabel: string;
   madeBy: string;
+  imprint: string;
+  aiDisclaimer: string;
 }
 
 export interface TimelineAltInfo {
@@ -220,6 +222,9 @@ const EN: Strings = {
     resultLabel: 'Result',
     resourcesLabel: 'Resources',
     madeBy: 'Made with ♥ by',
+    imprint: 'Imprint',
+    aiDisclaimer:
+      'The advisory explanations are generated with AI. We assume no responsibility for these texts; the official advisory is authoritative.',
   },
 };
 
@@ -362,6 +367,9 @@ const DE: Strings = {
     resultLabel: 'Ergebnis',
     resourcesLabel: 'Ressourcen',
     madeBy: 'Mit ♥ gemacht von',
+    imprint: 'Impressum',
+    aiDisclaimer:
+      'Die Erläuterungen zu den Sicherheitsmeldungen werden mit KI erstellt. Für diese Texte übernehmen wir keine Gewähr; maßgeblich ist die offizielle Meldung.',
   },
 };
 
