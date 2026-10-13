@@ -1,5 +1,5 @@
 {
-    "generatedAt": "2026-10-13T11:55:16+00:00",
+    "generatedAt": "2026-10-13T12:02:43+00:00",
     "majors": {
         "12": {
             "maintainedUntil": "2026-04-30T00:00:00+02:00",
@@ -799,7 +799,16 @@
                     "fixedInElts": false
                 }
             },
-            "explanation": null
+            "explanation": {
+                "en": {
+                    "plainImpact": "If a logged-in backend user opens a prepared link, the site can be made to download and install outside extensions from the public extension repository without the user meaning to. In the worst case, this lets an attacker run their own code on the server.",
+                    "urgency": "Schedule this soon, since one click on a link in an email by a logged-in backend user is enough. The risk from simply visiting a bad website applies only if the backend's check of where a request comes from is switched off and its cookie protection is relaxed."
+                },
+                "de": {
+                    "plainImpact": "Wer im Verwaltungsbereich angemeldet ist und auf einen präparierten Link klickt, löst damit unbemerkt Aktionen in der Erweiterungsverwaltung aus. So können Angreifer fremde Erweiterungen aus dem offiziellen Verzeichnis herunterladen und installieren lassen und im schlimmsten Fall eigenen Programmcode auf dem Server ausführen.",
+                    "urgency": "Bald einplanen, denn ein angemeldeter Redakteur muss nur einen Link etwa aus einer E-Mail öffnen. Über fremde Webseiten klappt der Angriff nur, wenn die Prüfung der Herkunftsseite abgeschaltet ist und die Cookie-Einstellung für den Verwaltungsbereich zu locker gesetzt ist."
+                }
+            }
         },
         {
             "id": "PKSA-27mn-p368-8rxc",
@@ -849,7 +858,16 @@
                     "fixedInElts": false
                 }
             },
-            "explanation": null
+            "explanation": {
+                "en": {
+                    "plainImpact": "Someone can put their own code into a page address so that it is saved with the page and then runs in the browser of every visitor who opens it. This only works on pages that have not been saved yet as a ready-made copy, and on sites set to work out link addresses automatically, or with custom code that relies on the site's own address and path.",
+                    "urgency": "Act soon if the site uses automatic link addresses or custom code that reads the site's address, especially on Apache or Microsoft web servers that hand PHP to a separate process. Sites where PHP runs built into Apache could not be attacked, and nginx may also be affected."
+                },
+                "de": {
+                    "plainImpact": "Jemand kann über eine präparierte Adresse eigenen Code in eine Seite einschleusen, die noch nicht zwischengespeichert ist. Dieser Code wird dann mitgespeichert und läuft im Browser jedes weiteren Besuchers.",
+                    "urgency": "Zeitnah einplanen, wenn die Website ihre Adressen automatisch mit dem passenden Pfad-Anfang versehen lässt oder eigener Code die Adresse der Website aus der Anfrage ermittelt. Betroffen sind vor allem Apache- und IIS-Server, auf denen PHP als eigener Prozess läuft, möglicherweise auch nginx."
+                }
+            }
         },
         {
             "id": "PKSA-2ssc-6m7w-s9xh",
@@ -1005,7 +1023,16 @@
                     "fixedInElts": false
                 }
             },
-            "explanation": null
+            "explanation": {
+                "en": {
+                    "plainImpact": "When someone resets their password through the password recovery feature, anyone already logged in to that account stays logged in. This applies to both website visitor accounts and editor accounts.",
+                    "urgency": "Plan this for the next regular update if the site uses password recovery for visitors or editors. It matters most where a reset is meant to lock out someone who already got into an account."
+                },
+                "de": {
+                    "plainImpact": "Wenn jemand sein Passwort über die Funktion »Passwort vergessen« neu setzt, bleiben bereits bestehende Anmeldungen für dieses Konto weiter gültig. Wer schon eingeloggt war, etwa mit einem gestohlenen Passwort, bleibt also trotz neuem Passwort angemeldet – im Backend wie im Frontend.",
+                    "urgency": "Mit dem nächsten regulären Update einplanen, wenn die Seite das Zurücksetzen von Passwörtern für Redakteure oder Website-Benutzer anbietet. Ohne diese Funktion ist das Problem gering."
+                }
+            }
         },
         {
             "id": "PKSA-443h-dk5w-qm2g",
@@ -1060,7 +1087,16 @@
                     "fixedInElts": false
                 }
             },
-            "explanation": null
+            "explanation": {
+                "en": {
+                    "plainImpact": "Logged-in backend users can see pages listed in the page tree that they should not have access to. They cannot change these pages; they only see that they exist.",
+                    "urgency": "Low priority; include it in the next regular update. It only matters if backend users have starting points set to pages their user or group may not open, or have no starting points while pages are open to everybody."
+                },
+                "de": {
+                    "plainImpact": "Angemeldete Redakteure im Verwaltungsbereich können in der Seitenübersicht Seiten sehen, für die sie eigentlich keine Rechte haben. Ändern können sie diese Seiten nicht.",
+                    "urgency": "Geringe Dringlichkeit, beim nächsten regulären Update einplanen. Betrifft nur Seiten, deren Startpunkte für Benutzer auf gesperrte Seiten zeigen, oder Benutzer ohne eingerichtete Startpunkte, wenn Seiten für alle freigegeben sind."
+                }
+            }
         },
         {
             "id": "PKSA-54yn-xn5g-k3j9",
@@ -1189,7 +1225,16 @@
                     "fixedInElts": false
                 }
             },
-            "explanation": null
+            "explanation": {
+                "en": {
+                    "plainImpact": "If a logged-in backend user opens a prepared link, someone else can change that user's dashboard setup without the user meaning to. The change is limited to the dashboard layout and its contents.",
+                    "urgency": "Plan this for a regular update; it only works if a backend user with an active login clicks a planted link. The risk is higher if the site has turned off the backend's check of where requests come from and relaxed its login cookie settings."
+                },
+                "de": {
+                    "plainImpact": "Ein Angreifer kann die Übersichtsseite (Dashboard) eines Redakteurs im Verwaltungsbereich verändern, ohne dass dieser es merkt. Dafür muss der Redakteur angemeldet sein und auf einen präparierten Link klicken, etwa aus einer E-Mail.",
+                    "urgency": "Mit normaler Priorität beim nächsten Wartungstermin einplanen, da nur die Dashboard-Einstellungen betroffen sind. Dringender wird es, wenn die Prüfung der Herkunft von Anfragen im Verwaltungsbereich abgeschaltet ist und die Cookie-Einstellung für den Verwaltungsbereich gelockert wurde, weil dann schon der Besuch einer manipulierten Webseite reicht."
+                }
+            }
         },
         {
             "id": "PKSA-72zd-w89p-dd55",
@@ -1330,7 +1375,16 @@
                     "fixedInElts": false
                 }
             },
-            "explanation": null
+            "explanation": {
+                "en": {
+                    "plainImpact": "Someone who can enter content can write it in a special way so the built-in cleaning filter misses harmful code, which then runs in the browser of people viewing the page. A second gap affects only sites with custom filter rules that allow certain normally blocked page elements, such as embedded scripts, styles or frames.",
+                    "urgency": "Schedule this in your next regular update cycle, sooner if untrusted users can enter rich text. Sites with custom filter rules that allow those blocked elements are more exposed and should update promptly."
+                },
+                "de": {
+                    "plainImpact": "Wer Inhalte auf der Seite einbringen kann, kommt mit einer bestimmten Zeichenfolge am eingebauten Schutzfilter vorbei. Der eingeschleuste Code läuft dann im Browser der Besucher dieser Seite.",
+                    "urgency": "Zeitnah einplanen, da die Lücke im Filter auch ohne Anpassungen besteht. Besonders dringend ist es, wenn eigene Filterregeln bestimmte sonst gesperrte Elemente erlauben, denn deren Inhalt wurde gar nicht geprüft."
+                }
+            }
         },
         {
             "id": "PKSA-83hy-ynvj-7pfq",
@@ -1865,7 +1919,16 @@
                     "fixedInElts": false
                 }
             },
-            "explanation": null
+            "explanation": {
+                "en": {
+                    "plainImpact": "A check that should only let the backend and the Install Tool accept requests coming from themselves stopped working, so any page on the site's own domains is now trusted too. Someone who manages to run their own script on such a page can make the browser of a logged-in editor or administrator perform backend and Install Tool actions with that person's rights.",
+                    "urgency": "Schedule this soon, since it turns any flaw that lets someone run code on a page of your site into control over the backend. The risk is highest if those domains host content or extensions where others could inject code."
+                },
+                "de": {
+                    "plainImpact": "Eine alte Schutzprüfung greift nicht mehr: Das Backend und das Installationswerkzeug nehmen Anfragen von jeder Seite auf den eigenen Domains an, auch von normalen Webseiten. Wer dort eigenen Programmcode ausführen kann, kann damit im Namen eines angemeldeten Redakteurs oder Administrators Aktionen im Backend auslösen.",
+                    "urgency": "Bald einplanen, vor allem wenn auf den eigenen Domains fremder Code laufen könnte, etwa durch eine andere Lücke oder eingebundene Skripte. Die Lücke wirkt nur zusammen mit einer solchen Möglichkeit und einem angemeldeten Benutzer."
+                }
+            }
         },
         {
             "id": "PKSA-hf6f-qcwd-7279",
@@ -2065,7 +2128,16 @@
                     "fixedInElts": false
                 }
             },
-            "explanation": null
+            "explanation": {
+                "en": {
+                    "plainImpact": "If a logged-in backend user opens a prepared link, someone else can make the site delete entries in the Indexed Search module without the user meaning to. The user only has to click the link, for example one sent by email.",
+                    "urgency": "Schedule this soon if the site uses the Indexed Search module and editors are logged into the backend. The risk is higher if the backend's check of where a request comes from is turned off and its login cookie is set to be sent from other sites."
+                },
+                "de": {
+                    "plainImpact": "Ein Angreifer kann einen angemeldeten Redakteur dazu bringen, über einen präparierten Link ungewollt Einträge im Suchindex-Modul des Backends zu löschen. Der Redakteur merkt davon nichts, die Aktion läuft mit seinen Rechten.",
+                    "urgency": "Mit dem nächsten regulären Update einplanen, wenn die Erweiterung für die interne Suche genutzt wird. Es braucht einen angemeldeten Backend-Nutzer, der einen fremden Link öffnet; über manipulierte Webseiten geht es nur, wenn die Herkunftsprüfung für Backend-Anfragen abgeschaltet und die Cookie-Einstellung des Backends gelockert ist."
+                }
+            }
         },
         {
             "id": "PKSA-npmp-rd1w-2fyt",
@@ -2248,7 +2320,16 @@
                     "fixedInElts": false
                 }
             },
-            "explanation": null
+            "explanation": {
+                "en": {
+                    "plainImpact": "Someone can build a link that starts on your TYPO3 site but sends visitors on to any outside website of their choosing. This can be used to lure people to fake pages that ask for passwords or other details.",
+                    "urgency": "Plan this into your next regular update, since the description names no special setup, so any site on an affected version is exposed. Act sooner if your site is a likely target for fake login or payment pages."
+                },
+                "de": {
+                    "plainImpact": "Jemand kann einen präparierten Link auf Ihre Website bauen, der Besucher unbemerkt auf eine beliebige fremde Seite weiterleitet. Das lässt sich nutzen, um Besucher auf gefälschte Seiten zu locken und ihnen dort zum Beispiel Zugangsdaten abzufragen.",
+                    "urgency": "Planen Sie das Update zeitnah im normalen Wartungszyklus ein. Die Weiterleitung greift nur, wenn jemand den präparierten Link tatsächlich anklickt."
+                }
+            }
         },
         {
             "id": "PKSA-q3vc-jr63-rrrj",
@@ -2276,7 +2357,16 @@
                     "fixedInElts": true
                 }
             },
-            "explanation": null
+            "explanation": {
+                "en": {
+                    "plainImpact": "Someone who can already change the stored cache data or the database table where the system keeps saved settings can plant prepared data there. When TYPO3 reads it back, this can make the server run that person's own code.",
+                    "urgency": "This only matters if an attacker already has direct write access to the database or the file system where the cache is stored. Include it in the next regular update, sooner if other people or services share write access to that storage."
+                },
+                "de": {
+                    "plainImpact": "Wer schon direkt in die Datenbank oder in die Zwischenspeicher-Dateien schreiben kann, kann dort präparierte Daten ablegen, die TYPO3 ungeprüft wieder einliest. Dadurch kann im schlimmsten Fall eigener Programmcode auf dem Server ausgeführt werden.",
+                    "urgency": "Im normalen Wartungszyklus einplanen, da ein Angreifer bereits direkten Schreibzugriff auf Datenbank oder Dateisystem braucht. Früher handeln, wenn mehrere Parteien oder Dienste Zugriff auf diese Speicher haben."
+                }
+            }
         },
         {
             "id": "PKSA-q3vc-nbpk-d1gk",
@@ -2299,7 +2389,16 @@
                     "fixedInElts": false
                 }
             },
-            "explanation": null
+            "explanation": {
+                "en": {
+                    "plainImpact": "Backend users can upload any kind of file, including programs for desktop computers or files whose name does not match their real content. These files cannot run on the web server, but virus scanners or other outside services may flag the site and block visitors, hurting its availability and reputation.",
+                    "urgency": "Schedule this in a normal update cycle; it only matters if people can upload files through the backend file management. The risk is higher if many or less trusted editors have upload rights."
+                },
+                "de": {
+                    "plainImpact": "Wer im Redaktionsbereich Dateien hochladen darf, kann beliebige Dateiarten ablegen, etwa Programme für Windows oder Dateien, deren Endung nicht zum echten Inhalt passt. Diese Dateien laufen auf dem Server nicht, aber Virenscanner und ähnliche Prüfdienste können die Website deshalb als verdächtig melden oder für Besucher sperren.",
+                    "urgency": "Mit dem nächsten regulären Update einplanen. Wichtiger wird es, wenn viele oder wenig vertrauenswürdige Personen im Redaktionsbereich Dateien hochladen dürfen."
+                }
+            }
         },
         {
             "id": "PKSA-q52p-kj6f-r4yz",
@@ -2647,7 +2746,16 @@
                     "fixedInElts": false
                 }
             },
-            "explanation": null
+            "explanation": {
+                "en": {
+                    "plainImpact": "If a logged-in backend user opens a prepared link, someone can make their account delete entries from the backend log without them noticing. The user must already be logged in to the backend when the link is opened.",
+                    "urgency": "Schedule this with your next regular update; the risk is higher if backend users may click links from emails. It also matters if the site has turned off the backend check of where a request comes from and allows its login cookie to be sent from other websites."
+                },
+                "de": {
+                    "plainImpact": "Ein Angreifer kann einen angemeldeten Backend-Benutzer dazu bringen, unbemerkt Einträge im Protokoll-Modul zu löschen. Dafür reicht es, dass der Benutzer einen präparierten Link öffnet, etwa aus einer E-Mail.",
+                    "urgency": "Mit dem nächsten regulären Update einplanen; ein Angriff setzt voraus, dass ein Redakteur im Backend angemeldet ist und auf einen solchen Link hereinfällt. Über manipulierte Webseiten klappt das nur, wenn die Herkunftsprüfung für Backend-Aufrufe abgeschaltet ist und die Cookie-Einstellung des Backends Aufrufe von fremden Seiten zulässt."
+                }
+            }
         },
         {
             "id": "PKSA-y4y2-63tg-bjxn",
@@ -2665,7 +2773,16 @@
                     "fixedInElts": false
                 }
             },
-            "explanation": null
+            "explanation": {
+                "en": {
+                    "plainImpact": "When the install tool password was stored with an incorrect hashing method, the password was written into the log in readable form. Anyone who can read those logs can see it.",
+                    "urgency": "Low priority, but update at the next regular maintenance. It only matters if the install tool password uses an incorrect hashing method; if so, also change that password and clean old log files."
+                },
+                "de": {
+                    "plainImpact": "Wenn das Passwort für das Installationswerkzeug mit einem falschen Verfahren verschlüsselt war, wurde es lesbar in die Protokolldateien geschrieben. Wer diese Protokolle lesen kann, erfährt so das Passwort.",
+                    "urgency": "Betrifft nur Seiten, bei denen das Passwort für das Installationswerkzeug mit einem falschen Verfahren verschlüsselt wurde. In dem Fall beim nächsten regulären Update einplanen und die Protokolle prüfen."
+                }
+            }
         },
         {
             "id": "PKSA-zz7z-6zsy-d2hc",
@@ -2725,7 +2842,16 @@
                     "fixedInElts": false
                 }
             },
-            "explanation": null
+            "explanation": {
+                "en": {
+                    "plainImpact": "Someone who can enter content that the site's cleaning filter is supposed to make safe can get code past that filter, and the code then runs in the browser of anyone who views the page. One of the two flaws only applies when the filter is set to let some content through without cleaning it.",
+                    "urgency": "Schedule this soon if editors, users or imports can add content that the site relies on this filter to clean. The second flaw does not depend on any special setting, so most sites using the filter are affected."
+                },
+                "de": {
+                    "plainImpact": "Jemand kann trotz des eingebauten Schutzfilters Code in Inhalte einschleusen, der dann im Browser von Besuchern oder Redakteuren ausgeführt wird. Der Filter erkennt bestimmte trickreich geschriebene Inhalte nicht als gefährlich und lässt sie durch.",
+                    "urgency": "Zeitnah einplanen, da eine der beiden Lücken ohne besondere Einstellung ausgenutzt werden kann. Die zweite betrifft nur Seiten, auf denen der Filter so eingestellt ist, dass er bestimmte Rohtext-Inhalte unverändert durchlässt."
+                }
+            }
         }
     ]
 }
