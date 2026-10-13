@@ -1,5 +1,5 @@
 {
-    "generatedAt": "2026-10-13T09:36:10+00:00",
+    "generatedAt": "2026-10-13T11:55:16+00:00",
     "majors": {
         "12": {
             "maintainedUntil": "2026-04-30T00:00:00+02:00",
@@ -769,12 +769,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "A backend user could work with redirects in the module even when they should not have access to it. This lets them see or change redirect entries beyond their intended permissions.",
-                    "urgency": "Schedule this in a normal update cycle; it only matters if editors with limited rights have backend access and the redirects module is in use."
+                    "plainImpact": "Backend users who can use the redirects module and edit redirect records can read, create and change every redirect on the installation, not just those in the parts of the site they are allowed to manage. They can point any redirect to an outside address, for example a fake login page meant to trick visitors.",
+                    "urgency": "Plan this update soon if backend users with access to the redirects module are limited to certain parts of the site or are not fully trusted; if only full administrators manage redirects, it can go into the next regular update."
                 },
                 "de": {
-                    "plainImpact": "Ein angemeldeter Backend-Nutzer kann im Bereich für Weiterleitungen auf Dinge zugreifen oder Änderungen vornehmen, die eigentlich außerhalb seiner Berechtigung liegen. Betroffen ist damit die Verwaltung von Weiterleitungen durch Redakteure mit eingeschränkten Rechten.",
-                    "urgency": "Mit dem nächsten geplanten Wartungsfenster einspielen, vor allem wenn es Backend-Nutzer mit eingeschränkten Rechten und das Weiterleitungs-Modul gibt."
+                    "plainImpact": "Backend-Benutzer, die das Weiterleitungs-Modul nutzen dürfen und Schreibrechte auf Weiterleitungen haben, können alle Weiterleitungen der Installation sehen, anlegen und ändern, auch für Seitenbereiche, für die sie eigentlich keine Rechte haben. So können sie Besucher auf beliebige fremde Seiten umleiten, etwa auf gefälschte Seiten, die Zugangsdaten abgreifen.",
+                    "urgency": "Zeitnah einplanen, wenn Backend-Benutzer mit eingeschränkten Seitenbereichen Zugriff auf das Weiterleitungs-Modul haben; haben nur Administratoren oder voll vertrauenswürdige Redakteure diesen Zugriff, ist das Risiko gering."
                 }
             }
         },
@@ -799,16 +799,7 @@
                     "fixedInElts": false
                 }
             },
-            "explanation": {
-                "en": {
-                    "plainImpact": "A logged-in administrator could be tricked into visiting a prepared page or link that quietly sends actions to the extension manager on their behalf. This could cause changes to installed extensions without the administrator meaning to do so.",
-                    "urgency": "Schedule this soon, since it targets administrators and any site with backend access could be affected."
-                },
-                "de": {
-                    "plainImpact": "Ein Angreifer kann einen angemeldeten Administrator dazu bringen, unbemerkt Aktionen im Verwaltungsbereich für Erweiterungen auszulösen. Dazu genügt es, dass der Administrator eine vom Angreifer vorbereitete Seite öffnet, während er im Backend angemeldet ist.",
-                    "urgency": "Bald einplanen, da es Administratoren mit Zugriff auf die Erweiterungsverwaltung betrifft."
-                }
-            }
+            "explanation": null
         },
         {
             "id": "PKSA-27mn-p368-8rxc",
@@ -833,12 +824,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "A logged-in backend user could reach parts of the administration area they should not have access to. This lets them view or use functions beyond what their permissions were meant to allow.",
-                    "urgency": "Schedule this in a normal update cycle; it matters most if you have backend users with limited or restricted permissions."
+                    "plainImpact": "A logged-in backend user can call certain background functions of backend modules directly, even though they were not given access to those modules. This lets them use parts of the backend that their permissions should keep them out of.",
+                    "urgency": "Schedule this in a regular update cycle; it only matters if the site has backend users with restricted module access, and it is more pressing the more such users you have or the less you trust them."
                 },
                 "de": {
-                    "plainImpact": "Ein angemeldeter Benutzer im Verwaltungsbereich kann auf Bereiche zugreifen, die eigentlich nicht für ihn freigegeben sind. So kann jemand mehr sehen oder tun, als seine Rolle erlauben sollte.",
-                    "urgency": "Bald einplanen, wenn es mehrere Redakteure oder eingeschränkte Benutzerkonten im Verwaltungsbereich gibt; bei nur wenigen vertrauenswürdigen Administratoren ist das Risiko geringer."
+                    "plainImpact": "Angemeldete Backend-Benutzer können bestimmte Funktionen im Hintergrund direkt aufrufen, obwohl ihnen das zugehörige Backend-Modul nicht freigegeben ist. Sie können damit also Dinge tun, die ihre Rechte eigentlich nicht erlauben.",
+                    "urgency": "Zeitnah einplanen, wenn es Backend-Benutzer mit eingeschränkten Rechten gibt; haben nur voll vertrauenswürdige Administratoren Zugang zum Backend, ist das Risiko gering."
                 }
             }
         },
@@ -858,16 +849,7 @@
                     "fixedInElts": false
                 }
             },
-            "explanation": {
-                "en": {
-                    "plainImpact": "Someone can save harmful code into the site so it runs in the browser of every visitor who opens the affected page. This can be used to take over the session of a logged-in editor.",
-                    "urgency": "Schedule this soon, as it affects the normal frontend that visitors see."
-                },
-                "de": {
-                    "plainImpact": "Jemand kann Schadcode auf einer Seite hinterlegen, der dann im Browser jedes Besuchers ausgeführt wird, der diese Seite öffnet. Das reicht aus, um die Sitzung eines angemeldeten Redakteurs zu übernehmen.",
-                    "urgency": "Bald einplanen, da die Anzeige von Seiten im Frontend jede öffentliche TYPO3-Seite betrifft."
-                }
-            }
+            "explanation": null
         },
         {
             "id": "PKSA-2ssc-6m7w-s9xh",
@@ -892,12 +874,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "A backend user with limited rights can raise their own access to the highest maintainer level. From there they can control the whole system and change any setting.",
-                    "urgency": "Schedule this soon, especially on sites with several backend users who should not be fully trusted."
+                    "plainImpact": "A backend user who already has an administrator account can give themselves system maintainer rights. Those are the highest rights in the installation, which administrators are normally not meant to have.",
+                    "urgency": "Schedule this soon if the site has administrator accounts that are deliberately kept without system maintainer rights; if every administrator is already a system maintainer, there is nothing extra to gain."
                 },
                 "de": {
-                    "plainImpact": "Ein Nutzer im Backend mit eingeschränkten Rechten kann sich höhere Rechte verschaffen und so zum System-Verwalter werden. Damit hätte er vollen Zugriff auf die Einstellungen und Verwaltung der gesamten Installation.",
-                    "urgency": "Bald einplanen, vor allem wenn es im Backend mehrere Redakteure oder Nutzer mit begrenzten Rechten gibt."
+                    "plainImpact": "Ein Backend-Benutzer mit Administratorrechten kann sich selbst die Rechte eines System-Maintainers geben, obwohl ihm diese nicht zugeteilt wurden. Damit erhält er Zugriff auf Bereiche und Einstellungen, die nur System-Maintainern vorbehalten sind.",
+                    "urgency": "Zeitnah einplanen, wenn es Administratoren gibt, die bewusst keine System-Maintainer sind; ein Angreifer braucht dafür ein gültiges Administratorkonto."
                 }
             }
         },
@@ -929,12 +911,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "Someone could reach parts of the form feature they are not meant to use, letting them view or act on things that should be off limits.",
-                    "urgency": "Schedule this soon if the site uses the form framework; without it the exposure is limited."
+                    "plainImpact": "A backend user who is allowed to use the form editor can load a specially prepared file as a form, even if it is not a proper form file. Through that file they can run their own database commands, for example to create a new administrator account for themselves.",
+                    "urgency": "Schedule this soon if any backend users who are not fully trusted have access to the form editor; if only administrators can use it, the exposure is limited."
                 },
                 "de": {
-                    "plainImpact": "Jemand kann über das Formular-System auf Dinge zugreifen, die eigentlich geschützt sein sollten. So lassen sich Daten oder Funktionen erreichen, die für den Betreffenden nicht vorgesehen sind.",
-                    "urgency": "Bald einplanen, wenn die Seite das Formular-System nutzt; ohne dessen Einsatz ist die Gefahr gering."
+                    "plainImpact": "Ein Backend-Benutzer mit Zugriff auf das Formular-Modul kann eine präparierte Datei als Formular laden lassen, auch wenn sie nicht auf .form.yaml endet. Damit kann er beliebige Befehle direkt in der Datenbank ausführen und sich zum Beispiel ein eigenes Administrator-Konto anlegen.",
+                    "urgency": "Bald einplanen, wenn Backend-Benutzer ohne Administratorrechte Zugriff auf das Formular-Modul haben; gibt es solche Benutzer nicht, ist das Risiko gering."
                 }
             }
         },
@@ -966,12 +948,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "A logged-in backend user can use the clipboard feature to reach or act on content they should not have access to. This lets someone see or handle items beyond their normal permissions.",
-                    "urgency": "Schedule this in a normal update cycle; it only matters for sites with backend users who have limited permissions."
+                    "plainImpact": "A logged-in backend user can put records and files into the clipboard even when they are not allowed to see them. This lets them learn details about records and files their permissions should hide from them.",
+                    "urgency": "Plan this for the next regular update if several people with different permission levels work in the backend. If only fully trusted users have backend access, the risk is small."
                 },
                 "de": {
-                    "plainImpact": "Ein angemeldeter Redakteur kann über die Zwischenablage auf Inhalte oder Dateien zugreifen oder mit ihnen arbeiten, für die er eigentlich keine Berechtigung hat. So kann jemand mehr sehen oder verändern, als seine Rolle im Backend erlauben sollte.",
-                    "urgency": "In den nächsten Wartungsplan aufnehmen; betrifft vor allem Installationen mit mehreren Backend-Nutzern und abgestuften Berechtigungen."
+                    "plainImpact": "Angemeldete Backend-Benutzer können beliebige Datensätze und Dateien in die Zwischenablage von TYPO3 legen, auch wenn sie diese gar nicht sehen dürfen. So erfahren sie Dinge über Inhalte und Dateien, für die sie keine Leserechte haben.",
+                    "urgency": "Zeitnah einplanen, wenn es Backend-Benutzer mit eingeschränkten Rechten gibt; arbeiten nur voll berechtigte Administratoren im Backend, ist die Gefahr gering."
                 }
             }
         },
@@ -998,12 +980,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "An attacker can craft a link that looks like it points to your site but sends the visitor to an outside site instead. This can be used to send people to a page the attacker controls while making the link appear trustworthy.",
-                    "urgency": "Schedule this in a normal update cycle; it matters most if your site passes web addresses through redirects that visitors can influence."
+                    "plainImpact": "If custom code reads a web address from outside (for example from a link parameter) with TYPO3's address parser and checks which site it points to, a specially written address can pass that check but still lead somewhere else. Visitors can then be sent to a foreign site, or the server can be made to call addresses it should not.",
+                    "urgency": "Schedule this soon if your own or third-party code checks addresses supplied by visitors before redirecting to them or fetching them; otherwise it can go into the next regular update."
                 },
                 "de": {
-                    "plainImpact": "Ein Angreifer kann einen Link so gestalten, dass ein Nutzer nach dem Klick unbemerkt auf eine fremde, vom Angreifer gewählte Website weitergeleitet wird. Das lässt sich nutzen, um Nutzer auf gefälschte oder schädliche Seiten zu lenken.",
-                    "urgency": "In absehbarer Zeit einplanen; das Risiko besteht vor allem, wenn Links mit Weiterleitungszielen an Nutzer verschickt oder auf der Seite verarbeitet werden."
+                    "plainImpact": "Wenn eigener Code eine von außen übergebene Adresse (etwa aus einem Link-Parameter) mit der TYPO3-Klasse für Adressen zerlegt und dann prüft, auf welchen Server sie zeigt, kann diese Prüfung ausgetrickst werden. Dann werden Besucher auf eine fremde Seite weitergeleitet, oder der Server ruft selbst eine Adresse auf, die er nicht aufrufen sollte.",
+                    "urgency": "Zeitnah einplanen, wenn eigene oder fremde Erweiterungen von außen kommende Adressen mit dieser Klasse zerlegen, den Server-Namen prüfen und die Adresse danach weiterverwenden; ohne solchen Code ist die Website nicht betroffen."
                 }
             }
         },
@@ -1023,16 +1005,7 @@
                     "fixedInElts": false
                 }
             },
-            "explanation": {
-                "en": {
-                    "plainImpact": "When someone changes their password, older login sessions are not ended. Someone who was already signed in on another device or browser can stay signed in even after the password is reset.",
-                    "urgency": "Schedule this in a normal update cycle; it mainly matters if you rely on password resets to lock out access after an account is compromised."
-                },
-                "de": {
-                    "plainImpact": "Wenn ein Nutzer sein Passwort zurücksetzt, bleiben ältere Anmeldungen weiterhin gültig, statt beendet zu werden. Dadurch kann jemand mit einer alten Sitzung auch nach der Passwortänderung noch eingeloggt bleiben.",
-                    "urgency": "Mit dem nächsten geplanten Update einspielen; besonders relevant, wenn Passwörter zurückgesetzt werden, um alte Zugänge zu sperren."
-                }
-            }
+            "explanation": null
         },
         {
             "id": "PKSA-443h-dk5w-qm2g",
@@ -1057,12 +1030,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "Someone can craft a link to the image display function that causes code to run in the browser of a person who opens it. This could be used to act in the context of a logged-in user who follows such a link.",
-                    "urgency": "Schedule this in a normal update cycle; it only matters where this image display feature is reachable and requires tricking a user into opening a prepared link."
+                    "plainImpact": "A backend user who can edit files can put code into a file's details, such as its title or description. That code then runs in the browser of anyone who opens the image through the full-size image view.",
+                    "urgency": "Schedule this with your next regular update; it only matters if backend users you do not fully trust can edit files, because a valid backend account with access to files is required."
                 },
                 "de": {
-                    "plainImpact": "Ein Angreifer kann über die Bildanzeige eigenen Code einschleusen, der dann im Browser eines Besuchers ausgeführt wird. Damit lassen sich zum Beispiel Eingaben abgreifen oder die Sitzung eines angemeldeten Nutzers missbrauchen.",
-                    "urgency": "Bald einplanen, wenn die Bildanzeige des Systems genutzt wird; ohne deren Einsatz ist das Risiko gering."
+                    "plainImpact": "Wer ein Konto im TYPO3-Backend hat und Dateien bearbeiten darf, kann in den Angaben zu einer Datei Code verstecken. Dieser Code läuft dann im Browser von jedem, der das Bild über die Bildanzeige von TYPO3 (die Seite, die ein Bild einzeln anzeigt) öffnet.",
+                    "urgency": "In einem der nächsten regulären Updates einplanen; dringender ist es nur, wenn Personen, denen Sie nicht voll vertrauen, Backend-Zugang mit Rechten auf Dateien haben."
                 }
             }
         },
@@ -1087,16 +1060,7 @@
                     "fixedInElts": false
                 }
             },
-            "explanation": {
-                "en": {
-                    "plainImpact": "A logged-in backend user could see the names or structure of pages in the page tree that they were not meant to see. No page content is changed and nothing is exposed to outside visitors.",
-                    "urgency": "Low priority; only relevant if you have backend users whose access to parts of the page tree is meant to be restricted."
-                },
-                "de": {
-                    "plainImpact": "Ein angemeldeter Redakteur kann im Seitenbaum Angaben zu Seiten sehen, die eigentlich nicht für ihn bestimmt sind. Es geht dabei nur um das Anzeigen solcher Angaben, nicht um das Ändern von Inhalten oder Zugängen.",
-                    "urgency": "Das Update kann bei Gelegenheit eingeplant werden und ist vor allem dann sinnvoll, wenn mehrere Redakteure mit unterschiedlichen Rechten im Backend arbeiten."
-                }
-            }
+            "explanation": null
         },
         {
             "id": "PKSA-54yn-xn5g-k3j9",
@@ -1126,12 +1090,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "A logged-in backend user can reach or act on records they should not be allowed to edit. This lets them view or change content beyond the permissions their account was meant to have.",
-                    "urgency": "Schedule this in a normal update cycle; it only matters where backend accounts have limited permissions that are meant to keep users apart."
+                    "plainImpact": "A backend user who may only edit some fields of a table can still fill in fields they are not allowed to touch when creating a new record. They do this by passing preset values along when the new record is opened.",
+                    "urgency": "Schedule this in a normal update cycle if backend users have restricted field permissions on tables they can write to; if all backend users are fully trusted or there are no such restrictions, the exposure is small."
                 },
                 "de": {
-                    "plainImpact": "Ein angemeldeter Redakteur kann Inhalte im Bearbeitungsbereich ansehen oder ändern, für die er eigentlich keine Berechtigung hat. Möglich ist das nur für Personen, die bereits Zugang zum Backend haben.",
-                    "urgency": "Die Aktualisierung sollte in absehbarer Zeit eingeplant werden, vor allem wenn mehrere Redakteure mit unterschiedlichen Rechten am System arbeiten."
+                    "plainImpact": "Ein angemeldeter Backend-Benutzer kann beim Anlegen eines neuen Datensatzes Werte in Felder schreiben, die für ihn eigentlich gesperrt sind. Das betrifft nur Tabellen, in denen er ohnehin schon einige Felder bearbeiten darf.",
+                    "urgency": "Zeitnah einplanen, wenn es Backend-Benutzer mit eingeschränkten Feldrechten gibt, denen nicht voll vertraut wird; arbeiten nur Administratoren oder voll berechtigte Redakteure im Backend, ist die Gefahr gering."
                 }
             }
         },
@@ -1158,12 +1122,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "A logged-in backend user can change their password without the change being properly checked. This makes it easier for someone using an already-open editor session to reset the password and keep access.",
-                    "urgency": "Low priority; schedule with your normal update cycle, and it only matters where backend users can log in and manage their own passwords."
+                    "plainImpact": "In the backend user management, an administrator can change their own password or another user's password without typing the current password. If someone gets hold of an admin's logged-in session, or finds one left open, they can set a new password without knowing the old one.",
+                    "urgency": "Low priority: include it in the next regular update, since it only matters if someone already has access to a logged-in administrator session."
                 },
                 "de": {
-                    "plainImpact": "Ein bereits angemeldeter Redakteur oder Administrator kann sein Passwort ändern, ohne dass die Änderung noch einmal bestätigt werden muss. Dadurch fehlt eine zusätzliche Sicherheitsprüfung beim Wechsel des Passworts.",
-                    "urgency": "Die Bedeutung ist gering; das Update kann im regulären Wartungsfenster eingeplant werden, da nur bereits angemeldete Backend-Nutzer betroffen sind."
+                    "plainImpact": "Im Backend kann ein Administrator sein eigenes Passwort und die Passwörter anderer Benutzer ändern, ohne das aktuelle Passwort einzugeben. Wer an eine offene oder fremd übernommene Admin-Sitzung kommt, kann so Passwörter ändern und die echten Besitzer aussperren.",
+                    "urgency": "Geringe Dringlichkeit; im normalen Wartungszyklus einplanen, besonders wenn Admin-Sitzungen oft unbeaufsichtigt offen bleiben."
                 }
             }
         },
@@ -1195,12 +1159,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "Someone can reach parts of the form feature they are not supposed to reach, letting them see or do things that should be blocked. This can expose form data or actions meant only for permitted users.",
-                    "urgency": "Schedule this soon if the site uses the form framework; without it the exposure is limited."
+                    "plainImpact": "A backend user who is allowed to upload files can get a specially prepared form definition file past the upload block by writing its file ending in capital letters. That file can then run any database command, for example to create a new administrator account and gain full control of the backend.",
+                    "urgency": "Schedule this soon if any backend users who are not fully trusted can upload files; if only trusted administrators have file write permissions, the exposure is limited."
                 },
                 "de": {
-                    "plainImpact": "Über das Formular-System kann jemand auf Funktionen oder Daten zugreifen, die eigentlich nicht für ihn bestimmt sind. Die nötigen Rechte werden dabei nicht richtig geprüft.",
-                    "urgency": "Bald einplanen, wenn die Seite das Formular-System nutzt; ohne dessen Einsatz ist die Gefahr gering."
+                    "plainImpact": "Ein Backend-Benutzer, der Dateien hochladen darf, kann eine präparierte Formular-Datei hochladen, indem er die Dateiendung anders schreibt, zum Beispiel in Großbuchstaben (.FORM.YAML). Über diese Datei kann er beliebige Befehle direkt in der Datenbank ausführen und sich so ein Administrator-Konto im Backend anlegen.",
+                    "urgency": "Bald einplanen, wenn Backend-Benutzer ohne Administratorrechte Dateien hochladen dürfen; gibt es solche Benutzer nicht, ist das Risiko gering."
                 }
             }
         },
@@ -1225,16 +1189,7 @@
                     "fixedInElts": false
                 }
             },
-            "explanation": {
-                "en": {
-                    "plainImpact": "An attacker can trick a logged-in backend user into triggering unwanted actions in the Dashboard module without meaning to, for example by getting them to open a prepared link or page. This can lead to changes being made to their dashboard on their behalf.",
-                    "urgency": "Schedule this at the next regular update; it only matters for sites where editors use the Dashboard module."
-                },
-                "de": {
-                    "plainImpact": "Ein Angreifer kann einen eingeloggten Redakteur dazu bringen, ungewollt eine Aktion im Dashboard-Modul auszulösen, ohne dass dieser es bemerkt. Das geschieht, indem der Redakteur eine vom Angreifer vorbereitete Seite oder einen Link öffnet.",
-                    "urgency": "Mit mittlerer Dringlichkeit einplanen, aber nur relevant, wenn das Dashboard-Modul im Backend genutzt wird."
-                }
-            }
+            "explanation": null
         },
         {
             "id": "PKSA-72zd-w89p-dd55",
@@ -1254,12 +1209,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "Someone with access to edit the site configuration could pull out internal system details that should stay hidden, such as settings or values from the server environment.",
-                    "urgency": "Schedule this in a normal update cycle; it only matters if untrusted people can edit the site configuration."
+                    "plainImpact": "A backend administrator can enter special placeholder values in the site settings module and use them to read internal information, such as the system configuration or the web requests of other visitors.",
+                    "urgency": "Plan this for a regular update cycle; it only matters if someone with an administrator account could misuse it, so act sooner if admin accounts are shared or held by people who should not see system configuration."
                 },
                 "de": {
-                    "plainImpact": "Über die Site-Konfiguration lassen sich interne Werte auslesen, die eigentlich verborgen bleiben sollten. Ein Angreifer kann so an vertrauliche Informationen des Systems gelangen.",
-                    "urgency": "In absehbarer Zeit einplanen, besonders wenn mehrere Personen Zugriff auf die Site-Konfiguration haben."
+                    "plainImpact": "Ein Administrator im Backend kann über spezielle Platzhalter in der Seitenkonfiguration interne Daten auslesen, etwa die Systemeinstellungen oder die Anfragen anderer Besucher der Website.",
+                    "urgency": "Nur relevant, wenn Sie nicht jedem Backend-Administrator voll vertrauen, da ein Administratorkonto nötig ist; dann zeitnah einplanen, sonst im normalen Wartungszyklus."
                 }
             }
         },
@@ -1291,12 +1246,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "A logged-in backend user could see content they are not meant to access through the tool that copies content between languages. This exposes information but does not let them change or take over anything.",
-                    "urgency": "Schedule this in a normal update cycle; it only matters for sites with backend users who work with multiple languages."
+                    "plainImpact": "A backend user with few rights can use the translation wizard in the backend to see information about records and content elements they are not allowed to access. The description names reading such information, not changing it.",
+                    "urgency": "Schedule this in the next regular update cycle; it only matters if people you do not fully trust have backend accounts, even ones with limited rights."
                 },
                 "de": {
-                    "plainImpact": "Ein angemeldeter Benutzer im Backend kann über den Übersetzungs-Assistenten an Informationen gelangen, die eigentlich nicht für ihn bestimmt sind.",
-                    "urgency": "Bei Gelegenheit einplanen; betroffen sind nur Installationen mit mehreren Backend-Benutzern, die unterschiedliche Rechte haben."
+                    "plainImpact": "Ein angemeldeter Backend-Benutzer mit wenigen Rechten kann über den Übersetzungs-Assistenten im Backend Angaben zu Datensätzen und Inhaltselementen abrufen, für die er keine Berechtigung hat. Das System prüft bei mehreren Anfragen dieses Assistenten nicht, ob der Benutzer diese Daten sehen darf.",
+                    "urgency": "Zeitnah einplanen, wenn es Backend-Benutzer mit eingeschränkten Rechten gibt, denen nicht alle Inhalte zugänglich sein sollen; ohne solche Konten ist das Risiko gering."
                 }
             }
         },
@@ -1318,12 +1273,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "Someone can place their own content into the record history view, so an editor looking at that history sees altered or unexpected content on the page. The effect is limited to what shows up in the history module.",
-                    "urgency": "Low priority; only relevant for sites where editors use the history module in the backend."
+                    "plainImpact": "Someone with a backend login can put their own markup into the history view of the backend, which changes what other editors see there. Scripts do not run because the browser's security rules block them, so the effect is limited to altered page content, such as misleading text or links.",
+                    "urgency": "Low priority: it only matters if you do not fully trust everyone who has a backend account, so include it in your next regular update."
                 },
                 "de": {
-                    "plainImpact": "Jemand kann eigenen Inhalt in das Verlaufs-Modul einschleusen, der dann angezeigt wird, wenn ein Redakteur diesen Bereich öffnet. Dabei kann fremder Inhalt in die Seite des Backends eingefügt werden.",
-                    "urgency": "Kann bei nächster Gelegenheit eingeplant werden; betrifft nur den Backend-Bereich und Redakteure, die das Verlaufs-Modul nutzen."
+                    "plainImpact": "Ein Backend-Benutzer kann im Verlaufs-Modul (Änderungsverlauf) eigenes HTML einfügen, das dann anderen Backend-Benutzern angezeigt wird. Das verändert die Anzeige der Seite; Skripte werden dabei durch die Sicherheitsregeln des Browsers nicht ausgeführt.",
+                    "urgency": "Beim nächsten regulären Update mit einplanen, denn ausnutzen kann das nur jemand mit einem gültigen Backend-Zugang."
                 }
             }
         },
@@ -1350,12 +1305,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "The extra login step meant to add a second check on backend accounts does not work as it should. An attacker could get past this second check and reach the backend as a logged-in user.",
-                    "urgency": "Schedule this soon if you rely on the second login step to protect backend accounts; without it turned on the risk is lower."
+                    "plainImpact": "Someone who already has a backend user's password can skip the second login step (the extra code from an app or device) and get into the backend anyway. This happens because not all backend pages check whether that second step was completed.",
+                    "urgency": "Act soon if backend users rely on the second login step for protection, since a stolen or guessed password is then enough to get in; if no one uses that second step, this changes nothing."
                 },
                 "de": {
-                    "plainImpact": "Die zusätzliche Anmeldeprüfung im Backend über einen zweiten Faktor funktioniert nicht richtig. Ein Angreifer kann diese zweite Prüfung umgehen und sich so Zugang zum Backend verschaffen, obwohl der zweite Faktor ihn eigentlich aufhalten sollte.",
-                    "urgency": "Bald einplanen, wenn im Backend die Anmeldung mit einem zweiten Faktor genutzt wird; ohne diese Funktion ist die Gefahr gering."
+                    "plainImpact": "Wer das Passwort eines Backend-Benutzers kennt, kann die zweite Sicherheitsabfrage beim Login (zum Beispiel den Code aus einer App) überspringen. Er kommt dann trotzdem ins Backend, weil nicht alle Backend-Seiten prüfen, ob diese Abfrage bestanden wurde.",
+                    "urgency": "Bald einplanen, wenn Backend-Benutzer die zweite Sicherheitsabfrage beim Login nutzen, denn sie schützt dann nicht mehr vor gestohlenen Passwörtern; ohne diese Abfrage ändert sich am Schutz nichts."
                 }
             }
         },
@@ -1375,16 +1330,7 @@
                     "fixedInElts": false
                 }
             },
-            "explanation": {
-                "en": {
-                    "plainImpact": "The built-in filter that is supposed to strip dangerous code from content can be tricked. This means someone could get harmful code past it and have it run in the browser of people who view the affected page.",
-                    "urgency": "Schedule this in a normal update cycle; it matters wherever the site relies on the built-in content cleaning to handle untrusted input."
-                },
-                "de": {
-                    "plainImpact": "Der eingebaute Schutz, der schädlichen Code aus Inhalten entfernen soll, lässt sich in bestimmten Fällen umgehen. Dadurch kann eingeschleuster Code im Browser von Besuchern ausgeführt werden.",
-                    "urgency": "Bald einplanen, wenn die Seite auf diese Filterfunktion für Inhalte angewiesen ist; sonst ist die Gefahr geringer."
-                }
-            }
+            "explanation": null
         },
         {
             "id": "PKSA-83hy-ynvj-7pfq",
@@ -1404,12 +1350,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "Under certain conditions the system may pick the wrong site configuration and show content that was meant for a different site. This can reveal small pieces of information that were not supposed to be visible in that context.",
-                    "urgency": "Low priority; handle it in a regular update cycle, and it mainly matters if you run several sites in one installation."
+                    "plainImpact": "On installations that run several sites, a visitor can add page and language numbers to the address of a public site and get pages shown that belong to a different site, such as an internal one. This only reveals page content that the visitor was not supposed to reach through that site.",
+                    "urgency": "Include this in the next regular update if the installation hosts more than one site, especially internal sites alongside public ones; single-site installations are not affected by this scenario."
                 },
                 "de": {
-                    "plainImpact": "Unter bestimmten Bedingungen kann jemand Seiteninhalte sehen, die eigentlich einer anderen Site zugeordnet sind und nicht angezeigt werden sollten. Es geht dabei um das Anzeigen von Inhalten, nicht um das Verändern oder Übernehmen von Konten.",
-                    "urgency": "Da es sich um ein geringes Risiko handelt, kann das Update bei der nächsten geplanten Wartung eingespielt werden, vor allem wenn mehrere Sites in einer Installation betrieben werden."
+                    "plainImpact": "Bei Installationen mit mehreren Websites kann ein Besucher über die öffentliche Website Inhalte einer anderen Website anzeigen lassen, etwa einer internen. Dazu muss er nur die Werte für die Seitennummer (id) und die Sprache (L) in der Adresse ändern und durchprobieren.",
+                    "urgency": "Das betrifft nur Installationen mit mehreren Websites, von denen eine nicht öffentlich sein soll; dann beim nächsten regulären Update einplanen, sonst ist es kaum relevant."
                 }
             }
         },
@@ -1436,12 +1382,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "Someone with access to the form manager in the backend can place code that then runs in the browser of another logged-in editor who opens it. This could be used to act with that editor's rights.",
-                    "urgency": "Schedule this update in a normal maintenance window; it only matters if editors use the form manager module, and an attacker needs backend access to exploit it."
+                    "plainImpact": "A logged-in backend user with access to the form module can put code into the form manager that then runs in the browser of other backend users who open it.",
+                    "urgency": "Plan this for the next regular update; it only matters if backend users you do not fully trust have access to the form module."
                 },
                 "de": {
-                    "plainImpact": "Ein angemeldeter Redakteur kann im Formular-Manager schädlichen Code hinterlegen, der dann im Browser anderer Bearbeiter ausgeführt wird, wenn diese den Bereich öffnen. Damit lassen sich Aktionen im Namen dieser Bearbeiter auslösen.",
-                    "urgency": "Bald einplanen, wenn im Backend mehrere Personen mit dem Formular-Manager arbeiten; sonst ist die Gefahr gering."
+                    "plainImpact": "Jemand mit einem Backend-Zugang und Zugriff auf das Formular-Modul kann dort Code einschleusen, der dann im Browser anderer Backend-Benutzer ausgeführt wird, die dieses Modul öffnen.",
+                    "urgency": "Zeitnah einplanen, wenn Backend-Benutzer Zugriff auf das Formular-Modul haben, denen Sie nicht voll vertrauen; ohne solche Zugänge ist die Gefahr gering."
                 }
             }
         },
@@ -1468,12 +1414,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "A logged-in backend user can misuse the bookmark toolbar to overload the system, which can make the backend slow or unavailable for others.",
-                    "urgency": "Schedule this in a normal update cycle; it only matters where backend users can log in and is limited since it requires an existing account."
+                    "plainImpact": "A backend user with administrator rights can save tampered data in the bookmark toolbar. This causes an unhandled error that makes the backend unusable.",
+                    "urgency": "Include this in the next regular update, since only administrator-level backend users can trigger it and the website itself is not mentioned as affected."
                 },
                 "de": {
-                    "plainImpact": "Ein angemeldeter Redakteur kann über die Lesezeichen-Leiste im Backend eine Störung auslösen, die den Backend-Bereich lahmlegt oder unbrauchbar macht. Es geht dabei nur um die Verfügbarkeit, nicht um den Diebstahl von Daten.",
-                    "urgency": "Mittelfristig einplanen; betrifft nur Installationen mit Zugang zum Backend, da ein gültiger Login nötig ist."
+                    "plainImpact": "Ein Backend-Benutzer mit Administratorrechten kann veränderte Daten in der Lesezeichen-Leiste speichern. Danach bricht ein Fehler die Backend-Oberfläche ab, sodass sie nicht mehr nutzbar ist.",
+                    "urgency": "Mit dem nächsten regulären Update einplanen; es betrifft nur Konten mit Administratorrechten im Backend und ist daher vor allem dann wichtig, wenn diesen Konten nicht voll vertraut wird."
                 }
             }
         },
@@ -1500,12 +1446,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "A logged-in backend user can change or save file and folder records they should not be allowed to touch. This lets them act on files beyond the permissions they were given.",
-                    "urgency": "Schedule this soon, especially if you have backend users with limited file permissions who should not have full access."
+                    "plainImpact": "A logged-in backend user can create file records directly and point them at files in the public web folder that lie outside the configured file storages. That lets them read the names and contents of those files, even without permission to access them.",
+                    "urgency": "Schedule this soon if the site has backend users you do not fully trust; it requires a valid backend account, so sites with only a few trusted editors are less exposed."
                 },
                 "de": {
-                    "plainImpact": "Ein angemeldeter Redakteur kann über die Verwaltung von Inhalten auch Datei-Einträge ändern oder speichern, für die er eigentlich keine Berechtigung hat. So lassen sich Beschränkungen umgehen, die den Zugriff auf bestimmte Dateien und Ordner eigentlich einschränken sollen.",
-                    "urgency": "Bald einplanen, wenn es auf der Website mehrere Redakteure mit unterschiedlichen Rechten gibt; bei nur wenigen voll vertrauenswürdigen Bearbeitern ist die Gefahr geringer."
+                    "plainImpact": "Ein angemeldeter Backend-Benutzer kann Dateien im öffentlichen Webverzeichnis ansprechen, die außerhalb der eingerichteten Dateispeicher liegen, und so deren Dateinamen und Inhalte auslesen. Das geht auch dann, wenn er auf diese Dateien eigentlich keinen Zugriff haben sollte.",
+                    "urgency": "Bald einplanen, vor allem wenn es Backend-Benutzer gibt, denen nicht voll vertraut wird; ohne gültiges Backend-Konto lässt sich die Lücke nicht ausnutzen."
                 }
             }
         },
@@ -1532,12 +1478,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "A logged-in backend user could use the bookmark toolbar to cause the backend to stop responding for that session. This is a disruption only, with no access to data or accounts.",
-                    "urgency": "Low priority; only relevant for sites where backend users have access to the bookmark toolbar."
+                    "plainImpact": "A backend user with administrator rights can save altered data in the bookmark toolbar of the backend. The backend then breaks with an error and can no longer be used until the data is fixed.",
+                    "urgency": "Low priority: include it in your next regular update, since only someone who already has an administrator account in the backend can cause this."
                 },
                 "de": {
-                    "plainImpact": "Ein angemeldeter Redakteur kann über die Lesezeichen-Leiste im Backend eine Eingabe machen, die den Bereich stört oder unbrauchbar macht. Es geht nur um eine Beeinträchtigung der Bedienung, nicht um Datenverlust oder Kontenübernahme.",
-                    "urgency": "Kann bei Gelegenheit eingeplant werden; betrifft nur Installationen, in denen Redakteure Zugang zum Backend haben."
+                    "plainImpact": "Ein Administrator kann manipulierte Daten in der Lesezeichen-Leiste des Backends speichern. Danach zeigt das Backend nur noch einen Fehler, und man kommt nicht mehr hinein.",
+                    "urgency": "Geringe Dringlichkeit, da dafür ein Administrator-Konto im Backend nötig ist; mit dem nächsten regulären Update einplanen."
                 }
             }
         },
@@ -1564,12 +1510,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "In some cases the system may show records that were meant to stay hidden from the current user. An attacker could see limited data they should not have access to.",
-                    "urgency": "This is a low-severity issue, so include it in your regular update cycle rather than treating it as urgent."
+                    "plainImpact": "When a database query reads from several tables at once, the check for which logged-in website visitors may see a record is only applied to the last table. Records from the other tables in that query can then be shown to visitors who should not see them.",
+                    "urgency": "Include this in your next regular update; it only matters if the site restricts content to certain frontend user groups and uses code, such as custom extensions, that queries several tables in one database query."
                 },
                 "de": {
-                    "plainImpact": "Unter bestimmten Umständen können Daten sichtbar werden, die eigentlich verborgen bleiben sollten. Es geht um das Anzeigen von Inhalten, nicht um Änderungen oder Übernahme von Konten.",
-                    "urgency": "Die Aktualisierung kann mit dem regulären Wartungszyklus eingeplant werden; das Risiko ist gering."
+                    "plainImpact": "Wenn eine Datenbankabfrage mehrere Tabellen verbindet, prüft das System die Rechte von Website-Benutzern nur für die letzte Tabelle. Daten aus den anderen Tabellen der Abfrage können so Besuchern angezeigt werden, die sie eigentlich nicht sehen dürfen.",
+                    "urgency": "Beim nächsten regulären Update einplanen; früher nur, wenn eigene oder fremde Erweiterungen Abfragen über mehrere Tabellen stellen, deren Inhalte auf bestimmte Benutzergruppen beschränkt sind."
                 }
             }
         },
@@ -1601,12 +1547,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "A backend user could reach records in the recycler that they should not be allowed to see or restore. This lets someone view or bring back deleted content outside their normal permissions.",
-                    "urgency": "Schedule this in a normal update cycle; it only matters if you have backend users with limited permissions who can access the recycler."
+                    "plainImpact": "A backend user who can open the Recycler module can bring back deleted records on pages or in tables they are not allowed to change. This lets them undo deletions outside their permitted area.",
+                    "urgency": "Schedule this with your next regular update if backend users with limited rights have access to the Recycler; if only fully trusted users can open it, the risk is small."
                 },
                 "de": {
-                    "plainImpact": "Ein angemeldeter Redakteur kann über den Papierkorb auf gelöschte Inhalte zugreifen oder diese wiederherstellen, für die er eigentlich keine Berechtigung hat. So können Inhalte aus Bereichen sichtbar oder wieder aktiv werden, die dem Nutzer sonst verschlossen bleiben.",
-                    "urgency": "Bald einplanen, wenn im Backend mehrere Redakteure mit eingeschränkten Rechten arbeiten und der Papierkorb genutzt wird; sonst ist das Risiko gering."
+                    "plainImpact": "Backend-Benutzer mit Zugriff auf das Modul „Papierkorb“ (Recycler) können gelöschte Datensätze wiederherstellen, auch auf Seiten oder in Tabellen, die sie eigentlich nicht bearbeiten dürfen. Dadurch können entfernte Inhalte ohne Berechtigung wieder auftauchen.",
+                    "urgency": "Betrifft nur Seiten, auf denen Backend-Benutzer mit eingeschränkten Rechten das Papierkorb-Modul nutzen dürfen; dann im normalen Update-Zyklus einplanen, sonst ist die Gefahr gering."
                 }
             }
         },
@@ -1628,12 +1574,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "Someone can get the site to run their own commands on the server through the form framework. This can give them full control over the site and the data it holds.",
-                    "urgency": "Schedule this update quickly if the site uses the form framework; without forms the exposure is limited."
+                    "plainImpact": "A logged-in backend user with access to the form editor can enter instructions in a form that the server then runs as program code. This gives that user control over the server beyond what their account should allow.",
+                    "urgency": "Schedule this soon if backend users who are not fully trusted can use the form module and the site has form-specific TypoScript settings for individual forms; without both, it cannot be exploited."
                 },
                 "de": {
-                    "plainImpact": "Ein Angreifer kann über das Formular-System eigene Befehle auf dem Server ausführen lassen. Damit lässt sich der Server weitgehend übernehmen und auf gespeicherte Daten zugreifen.",
-                    "urgency": "Bald einplanen, wenn die Seite das Formular-System nutzt; ohne dieses ist das Risiko geringer."
+                    "plainImpact": "Ein Backend-Benutzer mit Zugriff auf das Formular-Modul kann über den Formular-Editor eigene Befehle einschleusen, die der Server dann als PHP-Code ausführt. Damit kann er auf dem Server beliebigen Code laufen lassen.",
+                    "urgency": "Bald einplanen, wenn Backend-Benutzer das Formular-Modul nutzen dürfen und für einzelne Formulare eigene TypoScript-Anweisungen (formDefinitionOverrides) existieren; fehlt eines davon, lässt sich die Lücke nicht ausnutzen."
                 }
             }
         },
@@ -1655,12 +1601,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "Someone using a form can upload files that the system should not accept. This could let them place unwanted files on the server.",
-                    "urgency": "Schedule this in your normal update cycle; it only matters if the site uses the form framework with file uploads."
+                    "plainImpact": "Visitors can upload files of any type through form upload fields, even when the form is set up to accept only certain file types, because the server never checks the file type. Uploading PHP files is still blocked.",
+                    "urgency": "Plan this update for the next regular maintenance window if the site uses forms with file or image upload fields that limit allowed file types; sites without such fields are not affected."
                 },
                 "de": {
-                    "plainImpact": "Über ein Formular können Dateien hochgeladen werden, ohne dass der Dateityp ausreichend geprüft wird. Ein Angreifer kann so unerwünschte Dateien auf den Server bringen.",
-                    "urgency": "Zeitnah einplanen, wenn die Website das Formular-Framework mit Datei-Uploads nutzt; sonst ist die Gefahr gering."
+                    "plainImpact": "Über Formulare mit Datei- oder Bild-Upload, bei denen nur bestimmte Dateiarten erlaubt sind, können trotzdem Dateien jeder Art hochgeladen werden, weil der Server diese Einschränkung nicht prüft. PHP-Dateien lassen sich dabei nicht hochladen.",
+                    "urgency": "Planen Sie das Update zeitnah ein, wenn die Seite Formulare mit Datei- oder Bild-Upload und einer festgelegten Liste erlaubter Dateiarten nutzt; sonst betrifft Sie das Problem nicht."
                 }
             }
         },
@@ -1687,12 +1633,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "An attacker can read the site's secret encryption key through the Install Tool. Once known, that key can be used to weaken other protections that rely on it.",
-                    "urgency": "Schedule this in your normal update cycle; it matters most where the Install Tool is reachable and not tightly locked down."
+                    "plainImpact": "The Install Tool showed the site's secret key in plain text in its editing forms. Someone who can see it can use it to create valid check values, so the site accepts request parameters from them as genuine.",
+                    "urgency": "Plan this for a regular update cycle; it only matters if someone untrusted has, or could get, an administrator account with system maintainer rights."
                 },
                 "de": {
-                    "plainImpact": "Unter bestimmten Umständen kann ein Angreifer den geheimen Schlüssel der Installation auslesen. Mit diesem Schlüssel lassen sich Schutzmechanismen umgehen, die auf ihm aufbauen.",
-                    "urgency": "Bald einplanen, da der Schlüssel eine zentrale Rolle in der Sicherheit der Installation spielt."
+                    "plainImpact": "Im Install Tool wurde der geheime Schlüssel der Installation offen in den Bearbeitungsformularen angezeigt. Wer ihn kennt, kann selbst Prüfwerte erzeugen, mit denen TYPO3 sonst erkennt, ob Werte in einer Anfrage echt und unverändert sind.",
+                    "urgency": "Mit dem nächsten regulären Update einplanen, denn ausnutzen kann das nur jemand mit einem Administrator-Konto, das zusätzlich die Rechte eines Systemverwalters hat."
                 }
             }
         },
@@ -1714,12 +1660,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "A setting in the form part of TYPO3 is not safe by default. This could let someone misuse a form in a way the site owner did not intend, for example reaching data or actions that were meant to stay closed off.",
-                    "urgency": "Plan this update in your normal cycle; it only matters if the site uses the form framework."
+                    "plainImpact": "Files that visitors upload through a form can end up in the default public upload folder instead of the restricted folder the form was set up to use. Anyone who knows or finds the file address can then open these files directly, without the access checks the restricted folder would apply.",
+                    "urgency": "Schedule this soon if any form with file or image upload fields saves files to a custom, non-public folder, and check the default upload folder for files that landed there; forms using the default upload folder are not affected."
                 },
                 "de": {
-                    "plainImpact": "Eine falsche Grundeinstellung im Bereich der Formulare kann dazu führen, dass das Formular-Werkzeug nicht so sicher arbeitet wie vorgesehen. Dadurch könnte ein Angreifer eine vorhandene Schwachstelle leichter ausnutzen.",
-                    "urgency": "Zeitnah einplanen, wenn die Seite das Formular-Werkzeug verwendet; ohne Formulare besteht keine Gefahr."
+                    "plainImpact": "Dateien, die Besucher über ein Formular hochladen, landen im allgemeinen Standardordner statt im eingestellten geschützten Ordner. Dort kann sie jeder ohne Zugriffsprüfung direkt abrufen, wenn er den Pfad kennt.",
+                    "urgency": "Nur relevant, wenn ein Formular mit Datei- oder Bild-Upload einen eigenen Speicherort eingestellt hat; dann bald aktualisieren und prüfen, welche Dateien bereits im Standardordner liegen."
                 }
             }
         },
@@ -1751,12 +1697,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "Someone can reach files they should not be allowed to see or use. This can expose files that were meant to stay private or restricted.",
-                    "urgency": "Schedule this soon, especially if the site stores files with limited access for certain users or groups."
+                    "plainImpact": "Backend users without admin rights who have access to a file mount can move, delete or rename the top folder of that mount, even though they should not be allowed to. This can break or remove the folder that other editors and the site rely on for their files.",
+                    "urgency": "Schedule this soon if non-admin backend users have file mounts; sites where only admins work with files are not affected by this."
                 },
                 "de": {
-                    "plainImpact": "Ein Angreifer kann auf Dateien zugreifen, für die er eigentlich keine Berechtigung hat. So können geschützte Dateien gelesen oder verändert werden, obwohl das nicht erlaubt sein sollte.",
-                    "urgency": "Bald einplanen, vor allem wenn auf der Website Dateien mit eingeschränktem Zugriff verwaltet werden."
+                    "plainImpact": "Backend-Benutzer ohne Administratorrechte, die Zugriff auf eine Dateifreigabe haben, können den obersten Ordner dieser Freigabe verschieben, umbenennen oder löschen, obwohl sie das nicht dürfen. Dadurch können ganze Ordner mit allen Dateien darin verschwinden oder an einer anderen Stelle landen.",
+                    "urgency": "Zeitnah einplanen, wenn Redakteure ohne Administratorrechte im Backend mit Dateifreigaben arbeiten; ohne solche Benutzer besteht kein Handlungsdruck."
                 }
             }
         },
@@ -1788,12 +1734,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "Someone could reach files through the file handling layer that they were not meant to see or use. Because this is rated low, the effect is limited access to files rather than a wider break-in.",
-                    "urgency": "Low priority; include it in your normal update cycle, and give it more attention if the site relies heavily on restricted file storage."
+                    "plainImpact": "A backend administrator who can manage file storages could set up a new file storage that points to a folder outside the project, as long as that folder's name starts with the same text as the project folder (for example \"html-other\" next to \"html\"). Files in that folder could then be reached through the backend.",
+                    "urgency": "Low priority: it can only be used by administrators who already have file storage access, and only matters if the server has folders next to the project whose names start like the project folder, so include it in the next regular update."
                 },
                 "de": {
-                    "plainImpact": "Ein angemeldeter Nutzer kann auf Dateien oder Ordner zugreifen, die eigentlich nicht für ihn freigegeben sind. Der Fehler betrifft die Verwaltung von Dateien im Backend.",
-                    "urgency": "Die Einstufung ist niedrig; das Update kann bei Gelegenheit eingeplant werden, vor allem wenn mehrere Redakteure mit eingeschränkten Rechten Dateien verwalten."
+                    "plainImpact": "Ein Administrator mit Zugriff auf die Dateiverwaltung kann einen neuen Dateispeicher anlegen, der auf ein Verzeichnis außerhalb des Projektordners zeigt. Die Prüfung erkennt nicht, dass etwa ein Ordner wie „/var/www/html-other“ nicht zum Projektordner „/var/www/html“ gehört, nur weil der Name gleich beginnt.",
+                    "urgency": "Kann mit dem nächsten regulären Update eingeplant werden; betroffen ist nur, wer Administratoren mit Zugriff auf die Dateiverwaltung hat und neben dem Projektordner Verzeichnisse mit gleich beginnendem Namen liegen."
                 }
             }
         },
@@ -1825,12 +1771,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "A logged-in backend user can reach parts of the backend interface they should not have access to. This lets them see or use functions beyond their assigned permissions.",
-                    "urgency": "Schedule this in a normal update cycle; it matters most if you have backend users with limited permissions who should be kept apart."
+                    "plainImpact": "A logged-in backend user can read information about files they are not allowed to access, such as files outside their own file areas or storages. This works through several backend routes that do not check that user's file permissions.",
+                    "urgency": "Schedule this in your next regular update, sooner if backend users with limited file access should not see details about other files; sites with only fully trusted backend users are less exposed."
                 },
                 "de": {
-                    "plainImpact": "Ein angemeldeter Nutzer im Backend kann auf Funktionen oder Daten zugreifen, für die er eigentlich keine Berechtigung hat. Die Grenzen zwischen den Zugriffsrechten greifen an dieser Stelle nicht wie vorgesehen.",
-                    "urgency": "In absehbarer Zeit einplanen, besonders wenn es im Backend mehrere Nutzer mit unterschiedlichen Rechten gibt."
+                    "plainImpact": "Angemeldete Backend-Benutzer können über einige Schnittstellen des Backends Angaben zu Dateien abrufen, auf die sie eigentlich keinen Zugriff haben, also Dateien außerhalb ihrer freigegebenen Ordner oder Speicherorte. Abrufbar sind dabei die Angaben zu den Dateien, laut Beschreibung nicht die Dateien selbst.",
+                    "urgency": "Mit dem nächsten regulären Update einplanen; wichtiger wird es, wenn viele oder nicht voll vertrauenswürdige Personen einen Backend-Zugang mit eingeschränkten Dateirechten haben."
                 }
             }
         },
@@ -1857,12 +1803,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "Someone can view content or draft changes in the workspaces area that they should not be allowed to see. This can expose unpublished work and other internal information.",
-                    "urgency": "Schedule this soon if the site uses workspaces for staged or draft content; sites without workspaces are not affected."
+                    "plainImpact": "A backend user without access to the Workspaces module can call one of its background requests directly and read sensitive information that the module would normally hide from them. The description does not say exactly which information is exposed.",
+                    "urgency": "Schedule this soon if the site uses the Workspaces extension and has backend users who should not see everything; only people with a backend login can do this, not anonymous visitors."
                 },
                 "de": {
-                    "plainImpact": "Ein angemeldeter Nutzer kann über das Workspaces-Modul Inhalte oder Angaben einsehen, die eigentlich nicht für ihn bestimmt sind. So gelangen interne Daten an Personen, die keinen Zugriff darauf haben sollten.",
-                    "urgency": "Bald einplanen, wenn die Website mit Arbeitsumgebungen (Workspaces) arbeitet; ohne diese Funktion ist die Gefahr gering."
+                    "plainImpact": "Ein angemeldeter Backend-Benutzer kann eine bestimmte Adresse des Arbeitsbereiche-Moduls direkt aufrufen und dabei vertrauliche Informationen sehen, auf die er eigentlich keinen Zugriff hat. Das System prüft dort nicht, ob er die nötigen Rechte besitzt.",
+                    "urgency": "Bald einplanen, wenn das Arbeitsbereiche-Paket installiert ist und es Backend-Benutzer mit eingeschränkten Rechten gibt; ohne solche Benutzer ist das Risiko gering."
                 }
             }
         },
@@ -1889,12 +1835,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "Someone can use a special internal link to reach files or resources they should not have access to. This can reveal content that was meant to stay restricted.",
-                    "urgency": "Plan this update in a normal maintenance window; the risk is moderate and depends on the site using access restrictions on linked resources."
+                    "plainImpact": "A logged-in backend user can use TYPO3's internal link format (links starting with t3://) to reach files, folders, pages and records they are not allowed to access. Records are only affected if a matching link setup is configured.",
+                    "urgency": "Plan this update in your next regular cycle; it only matters if people you do not fully trust have backend accounts, because a valid backend login is required."
                 },
                 "de": {
-                    "plainImpact": "Über spezielle interne Verweise können Nutzer auf Dateien oder Inhalte zugreifen, die eigentlich nicht für sie freigegeben sind. So können geschützte Ressourcen sichtbar werden, für die eine Berechtigung fehlt.",
-                    "urgency": "In nächster Zeit einplanen, besonders wenn die Seite mit Zugriffsbeschränkungen auf Dateien oder Inhalte arbeitet."
+                    "plainImpact": "Ein angemeldeter Backend-Benutzer kann über interne TYPO3-Links (beginnend mit „t3://“) auf Dateien, Ordner und Seiten zugreifen, für die er keine Rechte hat. Bei Datensätzen geht das nur, wenn für sie eine passende Link-Konfiguration eingerichtet ist.",
+                    "urgency": "Zeitnah einplanen, wenn es Backend-Benutzer mit eingeschränkten Rechten gibt, denen Sie nicht voll vertrauen. Ohne gültiges Backend-Konto ist diese Lücke nicht ausnutzbar."
                 }
             }
         },
@@ -1919,16 +1865,7 @@
                     "fixedInElts": false
                 }
             },
-            "explanation": {
-                "en": {
-                    "plainImpact": "Someone could reach parts of the backend or the install tool that should be off limits to them. This can let them see or change settings they are not supposed to access.",
-                    "urgency": "Schedule this soon, especially if the backend or install tool is reachable by users who should not have full access."
-                },
-                "de": {
-                    "plainImpact": "Ein angemeldeter Nutzer kann auf Bereiche im Backend und im Installations-Werkzeug zugreifen, die ihm eigentlich nicht offenstehen. Dadurch lassen sich Funktionen oder Einstellungen nutzen, für die er keine Berechtigung hat.",
-                    "urgency": "Bald einplanen, wenn Personen Zugang zum Backend haben; ohne Backend-Nutzer ist die Gefahr gering."
-                }
-            }
+            "explanation": null
         },
         {
             "id": "PKSA-hf6f-qcwd-7279",
@@ -1948,12 +1885,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "The login process for website visitors has a weakness that makes it easier for an attacker to break in and take over a front-end user account.",
-                    "urgency": "Schedule this in your normal update cycle; it only matters if the site lets visitors log in on the front end."
+                    "plainImpact": "When frontend users are kept in separate storage folders to limit who can log in where, that limit can be sidestepped. Someone who knows the username and password of a user in one folder can use a same-named account to log in to a different account than intended.",
+                    "urgency": "Schedule this soon if the site splits frontend users across several storage folders and relies on that to restrict logins; otherwise it matters little, and an attacker always needs valid login details."
                 },
                 "de": {
-                    "plainImpact": "Die Anmeldung im Frontend prüft die Nutzer nicht streng genug. Dadurch kann sich jemand unter Umständen leichter Zugang zu einem Benutzerkonto im Frontend verschaffen.",
-                    "urgency": "Bald einplanen, wenn die Website eine Anmeldung im Frontend nutzt; ohne einen solchen Login-Bereich ist das Problem nicht relevant."
+                    "plainImpact": "Wenn Frontend-Benutzer in verschiedenen Speicherordnern liegen und der Login auf bestimmte Ordner beschränkt ist, lässt sich diese Beschränkung umgehen. Bei gleichen Benutzernamen in mehreren Ordnern kann sich jemand so in ein anderes Konto einloggen, muss dafür aber dessen Zugangsdaten kennen.",
+                    "urgency": "Nur relevant, wenn Frontend-Benutzer auf mehrere Speicherordner verteilt sind und der Login darauf eingeschränkt wird; dann im nächsten regulären Update-Zyklus einplanen."
                 }
             }
         },
@@ -1975,12 +1912,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "Someone can gain more access rights than they should have, and can also feed their own commands into the site's database. This lets them read or change data they were never meant to reach.",
-                    "urgency": "Schedule this soon if the site uses the form framework; without it the risk is limited."
+                    "plainImpact": "A backend user who is allowed to write to the table that stores form definitions can create, change or delete forms directly, skipping the checks the form editor normally applies. With that, they can put harmful settings into a form that let them send their own commands to the database or give themselves more rights than they should have.",
+                    "urgency": "Schedule this soon if any backend users who are not fully trusted have write access to the form definition table; if only administrators have that access, the exposure is smaller."
                 },
                 "de": {
-                    "plainImpact": "Ein Angreifer kann über das Formular-System mehr Rechte erlangen, als ihm zustehen, und eigene Befehle an die Datenbank schicken. Damit lassen sich Daten auslesen oder verändern, an die er eigentlich nicht herankommen dürfte.",
-                    "urgency": "Zeitnah einplanen, wenn die Seite das Formular-System nutzt; ohne dessen Einsatz ist die Gefahr geringer."
+                    "plainImpact": "Backend-Benutzer mit Schreibrecht auf die Tabelle für Formulardefinitionen können Formulare direkt anlegen, ändern oder löschen und dabei die Prüfungen des Formular-Systems umgehen. So können sie beliebige Formular-Einstellungen einschleusen, damit eigene Befehle an die Datenbank schicken und sich mehr Rechte verschaffen, als ihnen zustehen.",
+                    "urgency": "Bald einplanen, wenn Backend-Benutzer, die nicht volle Administratoren sind, Schreibrecht auf die Tabelle für Formulardefinitionen haben; ohne solche Benutzer ist das Risiko gering."
                 }
             }
         },
@@ -2002,12 +1939,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "A user's password is kept in plain, readable form in the user settings area of the backend. Someone who can see that stored value could read the password and use it to log in as that user.",
-                    "urgency": "Schedule this soon, since it affects the backend user settings that most installations use."
+                    "plainImpact": "When a backend user changes their password in their personal user settings, the new password is also saved in readable form in the database, next to their display settings. Anyone who can read the backend user table, for example through a database copy or backup, can see these passwords.",
+                    "urgency": "Act soon if the site ran this release and backend users changed their password in their user settings during that time, because those stored passwords stay readable in the database until they are removed; if no one changed their password there, nothing was stored."
                 },
                 "de": {
-                    "plainImpact": "In den Benutzereinstellungen im Backend wird ein Passwort im Klartext gespeichert. Wer Zugriff auf diese gespeicherten Daten erhält, kann das Passwort im Klartext lesen und damit ein Konto übernehmen.",
-                    "urgency": "Betrifft nur Installationen mit der genau angegebenen Version; dort sollte das Update zeitnah eingeplant werden."
+                    "plainImpact": "Wenn ein Backend-Benutzer sein Passwort in den eigenen Benutzereinstellungen ändert, wird es unverschlüsselt in der Datenbank gespeichert, zusammen mit den Anzeige-Einstellungen. Wer Zugriff auf die Datenbank oder ein Backup davon hat, kann diese Passwörter direkt lesen.",
+                    "urgency": "Zeitnah handeln, wenn die Seite mit genau dieser Version lief und Benutzer dort ihr Passwort in den Benutzereinstellungen geändert haben; dann sollten auch die betroffenen Passwörter geändert und die gespeicherten Klartext-Daten entfernt werden."
                 }
             }
         },
@@ -2034,12 +1971,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "A logged-in backend user can see the scrambled (hashed) version of stored passwords through the backend forms. This does not reveal the passwords directly, but the hashed values could be used to try to work out the real passwords.",
-                    "urgency": "Schedule this update in your normal cycle; it only matters where backend users you do not fully trust have access to the affected forms."
+                    "plainImpact": "The stored, scrambled form of user passwords was shown inside the backend editing forms. A logged-in backend user could copy it and try huge numbers of guesses offline until the real password is found.",
+                    "urgency": "Plan this update in your next regular cycle, sooner if many people have backend accounts or not all of them are fully trusted, since only someone with a valid backend login can use this."
                 },
                 "de": {
-                    "plainImpact": "Über Formulare im Backend können die verschlüsselten Passwörter von Benutzern sichtbar werden. Ein Angreifer könnte diese Werte auslesen und versuchen, daraus die echten Passwörter zu ermitteln.",
-                    "urgency": "Sollte zeitnah eingeplant werden, betrifft aber vor allem Installationen mit mehreren Backend-Benutzern."
+                    "plainImpact": "Im Bearbeitungsformular des TYPO3-Backends wird die verschlüsselte Form von Passwörtern mit ausgegeben. Ein angemeldeter Backend-Benutzer kann diese abgreifen und durch massenhaftes Ausprobieren das echte Passwort herausfinden.",
+                    "urgency": "Zeitnah einplanen, wenn es viele oder nicht voll vertrauenswürdige Backend-Benutzer gibt, denn ausnutzen kann das nur, wer ein gültiges Backend-Konto hat."
                 }
             }
         },
@@ -2061,12 +1998,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "A weakness in how login sessions are handled could let someone stay logged in or reuse a session when they should not be able to. This may allow access to an account that is not their own.",
-                    "urgency": "Schedule this in your normal update cycle; it affects any site where users log in."
+                    "plainImpact": "Someone with a valid login for one site in a TYPO3 installation can reuse that login on another site in the same installation without logging in again there. This mainly affects website visitor logins, not the backend.",
+                    "urgency": "Schedule this update in the normal cycle if one installation runs two or more sites with separate visitor logins; installations with a single site are not affected."
                 },
                 "de": {
-                    "plainImpact": "Die Verwaltung der Anmelde-Sitzungen ist zu schwach abgesichert. Dadurch könnte jemand unter Umständen eine fremde angemeldete Sitzung übernehmen und im Namen dieses Nutzers handeln.",
-                    "urgency": "Zeitnah einplanen, vor allem wenn es Nutzer gibt, die sich am System anmelden."
+                    "plainImpact": "Wer auf einer Website der Installation angemeldet ist, kann sein Anmelde-Cookie auf einer anderen Website derselben Installation weiterverwenden und ist dort ohne erneute Anmeldung eingeloggt. Das betrifft vor allem den öffentlichen Teil der Websites und setzt ein gültiges Benutzerkonto voraus.",
+                    "urgency": "Planen Sie das Update zeitnah ein, wenn eine Installation mindestens zwei Websites mit Benutzeranmeldung im öffentlichen Teil betreibt; bei nur einer Website ist das Problem nicht relevant."
                 }
             }
         },
@@ -2098,12 +2035,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "A logged-in backend user can reach records they are not allowed to see or restore through the Recycler module, working around the normal access limits. This lets them view or bring back content outside their own area of responsibility.",
-                    "urgency": "Schedule this soon if editors with limited permissions use the backend; it only matters where the Recycler module is in use."
+                    "plainImpact": "A backend user who can open the recycler module can permanently delete records from any table the system manages, even tables they are not allowed to touch. This can wipe important site data and take the website offline.",
+                    "urgency": "Schedule this soon if any backend users who are not fully trusted have access to the recycler module; if only trusted administrators can use it, the exposure is limited."
                 },
                 "de": {
-                    "plainImpact": "Ein angemeldeter Benutzer kann über das Recycler-Modul auf gelöschte Inhalte zugreifen oder diese wiederherstellen, für die er eigentlich keine Berechtigung hat. So kann jemand Daten sehen oder verändern, die außerhalb seines eigenen Bereichs liegen.",
-                    "urgency": "Bald einplanen, wenn im Backend mehrere Benutzer mit unterschiedlichen Rechten arbeiten und das Recycler-Modul verfügbar ist."
+                    "plainImpact": "Backend-Benutzer mit Zugriff auf das Papierkorb-Modul können Daten aus jeder Datenbanktabelle des Systems endgültig löschen, auch aus Tabellen, für die sie keine Rechte haben. Damit lassen sich wichtige Inhalte der Website zerstören, sodass die Website nicht mehr nutzbar ist.",
+                    "urgency": "Bald einplanen, wenn Backend-Benutzer ohne volle Rechte Zugriff auf das Papierkorb-Modul haben; ohne solche Benutzer ist das Risiko gering."
                 }
             }
         },
@@ -2128,16 +2065,7 @@
                     "fixedInElts": false
                 }
             },
-            "explanation": {
-                "en": {
-                    "plainImpact": "An attacker can trick a logged-in backend user into triggering an action in the indexed search module without meaning to, by getting them to open a prepared link or page. This can cause the module to carry out a request on the user's behalf.",
-                    "urgency": "Schedule this in a normal update cycle; it only matters if the site uses the indexed search module and depends on tricking a logged-in user."
-                },
-                "de": {
-                    "plainImpact": "Ein Angreifer kann einen angemeldeten Redakteur dazu bringen, ohne es zu merken eine Aktion in der Suchfunktion auszulösen. Dazu muss das Opfer eine vom Angreifer vorbereitete Seite öffnen, während es angemeldet ist.",
-                    "urgency": "Bald einplanen, wenn die indizierte Suche im System genutzt wird; andernfalls ist die Gefahr gering."
-                }
-            }
+            "explanation": null
         },
         {
             "id": "PKSA-npmp-rd1w-2fyt",
@@ -2162,12 +2090,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "Someone could use the CSV download feature to see data they should not have access to. This exposes information in the backend to users who lack the proper permissions.",
-                    "urgency": "Schedule this update in your normal patch cycle; it mainly matters for sites where backend users have limited permissions and could reach the CSV download."
+                    "plainImpact": "A logged-in backend user can use the CSV download to read records from any database table in their assigned page tree, even tables they have not been given access to. This exposes data they should not see, but they cannot change anything.",
+                    "urgency": "Schedule this in your next regular update if backend users have different access rights to tables; if all backend users are fully trusted admins, it matters little."
                 },
                 "de": {
-                    "plainImpact": "Beim Herunterladen einer CSV-Datei im Backend können Daten sichtbar werden, die eigentlich nicht angezeigt werden sollten. Ein angemeldeter Nutzer könnte so an Informationen gelangen, für die er keine Berechtigung hat.",
-                    "urgency": "In absehbarer Zeit einplanen, vor allem wenn im Backend mit CSV-Exporten gearbeitet wird und mehrere Nutzer mit unterschiedlichen Rechten Zugriff haben."
+                    "plainImpact": "Angemeldete Backend-Benutzer können über den CSV-Download Daten aus beliebigen Datenbanktabellen herunterladen, die in ihren freigegebenen Seitenbereichen liegen, auch wenn sie für diese Tabellen keine Rechte haben. Sie sehen so Inhalte, die ihnen eigentlich verborgen bleiben sollten.",
+                    "urgency": "Zeitnah einplanen, wenn mehrere Backend-Benutzer mit unterschiedlichen Rechten arbeiten; gibt es nur voll berechtigte Administratoren, ist das Risiko gering."
                 }
             }
         },
@@ -2194,12 +2122,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "An error message can reveal internal details about the system that are meant to stay hidden. An attacker could use these details to learn more about how the site is set up.",
-                    "urgency": "Schedule this in a normal update cycle; it lets someone gather information but does not by itself give them control."
+                    "plainImpact": "When a file action in the backend fails, the error message can show the full path of files on the server. Any logged-in backend user can see these paths, which reveals how the server's folders are laid out.",
+                    "urgency": "Include this in your next regular update; it only matters if people you do not fully trust have a backend login."
                 },
                 "de": {
-                    "plainImpact": "Wenn ein Fehler auftritt, kann die Fehlermeldung interne Angaben preisgeben, die eigentlich nicht sichtbar sein sollten. Ein Angreifer kann so an Informationen über das System kommen, die ihm weitere Angriffe erleichtern.",
-                    "urgency": "Bei nächster Gelegenheit einplanen; das Risiko besteht überall, wo Fehlermeldungen an Besucher ausgegeben werden."
+                    "plainImpact": "Wenn beim Arbeiten mit Dateien im Backend ein Vorgang auf dem Server scheitert, zeigt die Fehlermeldung den vollständigen Pfad der Datei auf dem Server an. Angemeldete Backend-Benutzer erfahren so, wie die Verzeichnisse auf dem Server aufgebaut sind.",
+                    "urgency": "Nur Personen mit Backend-Zugang können das ausnutzen, daher reicht es, das Update mit der nächsten regulären Wartung einzuplanen; früher, wenn viele oder wenig vertrauenswürdige Personen Backend-Zugang haben."
                 }
             }
         },
@@ -2226,12 +2154,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "An attacker can trick a logged-in editor into triggering an unwanted action in the form module without the editor meaning to. This could change or create form settings behind the editor's back.",
-                    "urgency": "Plan this update in a normal cycle, and give it priority if editors regularly work with the form module in the backend."
+                    "plainImpact": "If a logged-in backend user opens a prepared link, someone else can make the backend change or delete saved forms in the Form module without the user noticing.",
+                    "urgency": "Plan this for the next regular update if editors use the Form module. The risk is higher when backend users might click links from emails, or when the referrer check is turned off and the backend cookie setting is \"lax\" or \"none\"."
                 },
                 "de": {
-                    "plainImpact": "Ein Angreifer kann einen angemeldeten Redakteur dazu bringen, ohne dessen Wissen eine Aktion im Formular-Modul auszulösen. So können im Namen des Redakteurs ungewollte Änderungen an Formularen vorgenommen werden.",
-                    "urgency": "Mit mittlerer Dringlichkeit einplanen, und nur relevant, wenn auf der Seite das Formular-Modul genutzt wird."
+                    "plainImpact": "Ein Angreifer kann einen eingeloggten Backend-Benutzer dazu bringen, über einen präparierten Link ungewollt gespeicherte Formulare zu ändern oder zu löschen. Dafür muss der Benutzer gerade im Backend angemeldet sein und den Link öffnen, etwa aus einer E-Mail.",
+                    "urgency": "Zeitnah einplanen, wenn Redakteure das Formular-Modul im Backend nutzen; über manipulierte Webseiten klappt der Angriff nur, wenn die Referrer-Prüfung im Backend ausgeschaltet ist und das Backend-Cookie auf „lax“ oder „none“ steht, über Links etwa in E-Mails dagegen auch ohne diese Einstellungen."
                 }
             }
         },
@@ -2258,12 +2186,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "Someone can put code into a search that then runs in the browser of anyone who views the search results. This could be used to run actions in the browser of a visitor or logged-in editor.",
-                    "urgency": "Schedule this in a normal update cycle, and sooner if the site uses the indexed search feature; without it there is no exposure."
+                    "plainImpact": "A backend editor who can create or change pages can put code into a page title. That code is saved in the search index and runs in the browser of every visitor who sees the page in the site's search results.",
+                    "urgency": "Plan this update in the normal cycle if the site uses the Indexed Search plugin in the frontend and has editors you do not fully trust; without that plugin, this issue does not apply."
                 },
                 "de": {
-                    "plainImpact": "Über die interne Suche kann jemand schädlichen Code einschleusen, der dann im Browser anderer Besucher ausgeführt wird. Damit lässt sich zum Beispiel die laufende Sitzung eines angemeldeten Nutzers übernehmen.",
-                    "urgency": "Bald einplanen, wenn die Website die interne Suche (Indexed Search) nutzt; ohne diese Funktion besteht keine Gefahr."
+                    "plainImpact": "Ein Redakteur, der Seiteninhalte anlegen oder ändern darf, kann Code in einen Seitentitel schreiben. Dieser Code landet im Suchindex und läuft dann im Browser von jedem, der den Titel in den Suchergebnissen der Website sieht.",
+                    "urgency": "Betrifft nur Websites, die die Suchergebnisse der eingebauten Seitensuche (Indexed Search) im Frontend anzeigen und Redakteuren nicht voll vertrauen; dann zeitnah einplanen, sonst im normalen Wartungszyklus."
                 }
             }
         },
@@ -2290,12 +2218,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "An attacker can make the site run their own commands through the Install Tool. This gives them a high level of control over the site and its server.",
-                    "urgency": "Schedule this quickly, especially if the Install Tool is reachable or its access is not tightly locked down."
+                    "plainImpact": "Someone with an administrator account that also has system maintainer rights can enter their own commands in the Install Tool settings that hold the paths to server programs. Those commands then run on the server.",
+                    "urgency": "Schedule this soon; the risk depends on who holds administrator accounts with system maintainer rights and how well those accounts are protected, since nobody without such an account can use this."
                 },
                 "de": {
-                    "plainImpact": "Über das Installationswerkzeug von TYPO3 kann jemand eigenen Programmcode auf dem Server ausführen lassen. Damit lässt sich der betroffene Server vollständig übernehmen.",
-                    "urgency": "Zeitnah einplanen, besonders wenn das Installationswerkzeug erreichbar ist."
+                    "plainImpact": "Im Install Tool gibt es mehrere Einstellungen für den Pfad zu Systemprogrammen. Wer dort Zugriff hat, kann darüber eigene Befehle auf dem Server ausführen lassen.",
+                    "urgency": "Zeitnah einplanen, wenn es Backend-Konten mit Administrator- und Systemverwalter-Rechten gibt, die nicht voll vertrauenswürdig sind oder deren Zugang gestohlen werden könnte; nur solche Konten können die Lücke nutzen."
                 }
             }
         },
@@ -2320,16 +2248,7 @@
                     "fixedInElts": false
                 }
             },
-            "explanation": {
-                "en": {
-                    "plainImpact": "An attacker can craft a link that looks like it points to your site but quietly sends the visitor on to another website they control. This can be used to trick people into landing on a page that appears trusted.",
-                    "urgency": "Schedule this in a normal update cycle; it mainly matters where links or redirects can be built from values in the web address."
-                },
-                "de": {
-                    "plainImpact": "Ein Angreifer kann einen Link auf Ihrer Seite so vorbereiten, dass Besucher unbemerkt auf eine fremde Webseite weitergeleitet werden. Das lässt sich für Täuschungsversuche nutzen, weil der Link zunächst wie ein Link zu Ihrer Seite aussieht.",
-                    "urgency": "Zeitnah einplanen, vor allem wenn Ihre Seite Weiterleitungen über Links mit veränderbaren Zieladressen einsetzt."
-                }
-            }
+            "explanation": null
         },
         {
             "id": "PKSA-q3vc-jr63-rrrj",
@@ -2357,16 +2276,7 @@
                     "fixedInElts": true
                 }
             },
-            "explanation": {
-                "en": {
-                    "plainImpact": "An attacker can send specially crafted data that the system reads and turns back into active objects. Depending on what is available in the code, this can let them trigger unintended actions on the server.",
-                    "urgency": "Schedule this in your normal patch cycle; the risk is higher if untrusted data can reach the affected part of the core."
-                },
-                "de": {
-                    "plainImpact": "Ein Angreifer kann speziell vorbereitete Daten an die betroffene Schnittstelle schicken, die das System dann falsch verarbeitet. Dadurch kann er das Verhalten des Systems stören oder unerwartete Abläufe auslösen.",
-                    "urgency": "In üblichem Wartungsrhythmus einplanen; wie stark das System betroffen ist, hängt davon ab, ob und wie die betroffene Schnittstelle genutzt wird."
-                }
-            }
+            "explanation": null
         },
         {
             "id": "PKSA-q3vc-nbpk-d1gk",
@@ -2389,16 +2299,7 @@
                     "fixedInElts": false
                 }
             },
-            "explanation": {
-                "en": {
-                    "plainImpact": "Someone with upload access can put files onto the server that should not be allowed. This could let them place unwanted or harmful files in the file storage.",
-                    "urgency": "Schedule this update in your normal cycle; it mainly matters if users who are not fully trusted can upload files."
-                },
-                "de": {
-                    "plainImpact": "Ein Angreifer kann Dateien hochladen, die eigentlich nicht erlaubt sein sollten. Solche Dateien können später Schaden anrichten, etwa wenn sie auf dem Server ausgeführt oder von anderen geöffnet werden.",
-                    "urgency": "Bald einplanen, vor allem wenn Nutzer oder Redakteure Dateien hochladen können."
-                }
-            }
+            "explanation": null
         },
         {
             "id": "PKSA-q52p-kj6f-r4yz",
@@ -2423,12 +2324,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "Someone with access to the webhook feature could make the server send requests to addresses it should not reach. This is a minor weakness with limited effect.",
-                    "urgency": "Low priority; only matters if the site uses the webhooks feature and lets untrusted people configure it."
+                    "plainImpact": "Someone with an administrator account in the backend can set up a webhook that makes the TYPO3 server send requests to the server itself or to other machines on the internal network that are normally not reachable from outside. The attacker does not get to see the answers to these requests.",
+                    "urgency": "Low priority: this only matters if the webhooks feature is installed and you do not fully trust everyone with an administrator backend account, so it can go into the next regular update."
                 },
                 "de": {
-                    "plainImpact": "Ein Angreifer mit Zugriff auf die Webhook-Funktion kann das System dazu bringen, Anfragen an interne Adressen zu senden, die sonst von außen nicht erreichbar wären. Der mögliche Schaden ist gering.",
-                    "urgency": "Kann bei Gelegenheit eingeplant werden und betrifft nur Installationen, die die Webhook-Funktion nutzen."
+                    "plainImpact": "Wer ein Administrator-Konto im Backend hat, kann über Webhooks den Server dazu bringen, Anfragen an interne Systeme zu schicken, etwa an den Server selbst oder an andere Dienste im lokalen Netz. Die Antworten sieht er dabei nicht, er kann diese Systeme aber erreichen, obwohl sie von außen sonst nicht erreichbar wären.",
+                    "urgency": "Das Update kann mit der nächsten regulären Wartung eingeplant werden, denn ein Angriff setzt ein Administrator-Konto im Backend voraus. Etwas mehr Gewicht hat es, wenn im lokalen Netz des Servers Dienste ohne eigenen Zugriffsschutz laufen."
                 }
             }
         },
@@ -2460,12 +2361,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "An attacker who can place or change files in the mail spool folder could get the system to run their own commands. This depends on the site being set up to store outgoing mail as files on disk.",
-                    "urgency": "Schedule this in your normal update cycle; it only matters if the site is configured to spool mail to files and an attacker can reach that folder."
+                    "plainImpact": "Someone who already has access to the server and can write files into the folder where TYPO3 queues outgoing emails can place a prepared file there. When TYPO3 sends the queued emails, it reads that file and runs the attacker's own code on the web server.",
+                    "urgency": "This only matters if emails are queued as files and a scheduler task or cron job sends that queue, and only if untrusted people can write to that folder on the server, so check that setup and plan the update in your next regular maintenance window."
                 },
                 "de": {
-                    "plainImpact": "Wenn E-Mails über die Datei-Warteschlange verschickt werden, kann ein Angreifer unter bestimmten Umständen eigene Befehle einschleusen, die dann auf dem Server ausgeführt werden. Das kann die Kontrolle über die Website beeinträchtigen.",
-                    "urgency": "In absehbarer Zeit einplanen, aber nur wichtig, wenn der E-Mail-Versand über die Datei-Warteschlange genutzt wird."
+                    "plainImpact": "Wer direkt auf dem Server Dateien in den Ordner schreiben kann, in dem TYPO3 wartende E-Mails ablegt, kann dort eine präparierte Datei hinterlegen. Beim Versenden der wartenden E-Mails liest TYPO3 diese Datei ein und führt dabei eigenen PHP-Code des Angreifers auf dem Webserver aus.",
+                    "urgency": "Zeitnah einplanen, wenn E-Mails in Dateien zwischengespeichert werden (Einstellung „transport_spool_type“ = „file“) und ein Planer-Task oder Cronjob den Befehl „mailer:spool:send“ ausführt; ohne diese Einstellung oder ohne fremde Nutzer mit Schreibzugriff auf diesen Ordner ist das Risiko gering."
                 }
             }
         },
@@ -2492,12 +2393,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "Passwords that the system creates are more predictable than they should be. Someone who can guess such a password may gain access to the account it belongs to.",
-                    "urgency": "Schedule this in your normal update cycle; it only matters if the site relies on passwords generated by TYPO3 itself."
+                    "plainImpact": "Passwords created by the built-in password generator always start with the same three characters, so they are easier to guess than they look. An attacker trying many passwords in a row can find one faster.",
+                    "urgency": "Schedule this with your next regular update if the site uses passwords created by the generator, and replace those passwords afterwards; passwords people chose themselves are not affected by this flaw."
                 },
                 "de": {
-                    "plainImpact": "Vom System erzeugte Passwörter sind nicht zufällig genug und lassen sich dadurch leichter erraten. Ein Angreifer könnte ein solches Passwort schneller herausfinden und sich damit Zugang verschaffen.",
-                    "urgency": "Bald einplanen, wenn die Anwendung sich auf automatisch erzeugte Passwörter verlässt; werden Passwörter anders vergeben, ist die Gefahr geringer."
+                    "plainImpact": "Passwörter, die TYPO3 selbst erzeugt, beginnen immer mit denselben drei vorhersehbaren Zeichen. Dadurch sind sie leichter zu erraten, und ein Angreifer kommt durch massenhaftes Ausprobieren schneller ans Ziel.",
+                    "urgency": "Beim nächsten regulären Update einplanen, vor allem wenn auf der Seite Passwörter über die eingebaute Passwortfunktion von TYPO3 erzeugt werden; solche bereits erzeugten Passwörter sollten danach neu vergeben werden."
                 }
             }
         },
@@ -2529,12 +2430,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "An attacker can craft a link that looks like it points to your site but sends the visitor onward to a different site of the attacker's choosing. This can be used to trick people into landing on a malicious page while thinking they stayed on your site.",
-                    "urgency": "Schedule this in a normal update cycle; the risk depends on links that carry a redirect target, so it mainly matters for phishing-style tricks against your users."
+                    "plainImpact": "A check that is supposed to allow only links within your own site can be tricked, so a link that looks like it points to your site actually sends visitors to an outside site chosen by the attacker. This can be used to lure users to fake pages that try to steal their login details.",
+                    "urgency": "Schedule this in your next regular update; it matters most if your site or its extensions rely on the core's check for links within your own site before sending visitors to a link."
                 },
                 "de": {
-                    "plainImpact": "Ein Angreifer kann einen Link erstellen, der scheinbar zu Ihrer Website führt, den Besucher aber unbemerkt auf eine fremde Seite weiterleitet. Das lässt sich für Täuschungen nutzen, etwa um Nutzer auf gefälschte Seiten zu lenken.",
-                    "urgency": "Bei Gelegenheit einplanen; die Weiterleitung setzt voraus, dass ein Nutzer auf einen präparierten Link klickt."
+                    "plainImpact": "Eine Prüfung im Kern, die nur Adressen der eigenen Website durchlassen soll, lässt auch fremde Adressen durch. Wer einen präparierten Link verschickt, kann Besucher so von Ihrer Website auf eine fremde Seite weiterleiten, etwa auf eine gefälschte Anmeldeseite, um Zugangsdaten abzugreifen.",
+                    "urgency": "Planen Sie das Update zeitnah ein, wenn Ihre Website oder eigene Erweiterungen sich auf diese Prüfung verlassen, um nur Weiterleitungen auf die eigene Website zu erlauben."
                 }
             }
         },
@@ -2556,12 +2457,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "Some of the low-level maintenance commands do not check whether the person running them is allowed to. A user with limited rights could run actions that should be reserved for administrators.",
-                    "urgency": "Schedule this soon, especially on sites where several people have backend access with different permission levels."
+                    "plainImpact": "A backend administrator who is not a system maintainer can schedule the configuration:read, configuration:set and configuration:show commands and use them to change any system setting. That way they can make themselves system maintainer or take the site offline.",
+                    "urgency": "Schedule this soon if the site has administrator accounts that are not system maintainers or that you do not fully trust; it requires an administrator-level backend account to exploit."
                 },
                 "de": {
-                    "plainImpact": "Bestimmte Wartungsbefehle prüfen nicht richtig, ob der Nutzer dazu berechtigt ist. Dadurch kann jemand ohne die nötigen Rechte diese Befehle ausführen und so auf Funktionen zugreifen, die eigentlich nur Berechtigten offenstehen.",
-                    "urgency": "Zeitnah einplanen, da die Einstufung hoch ist; betroffen sind vor allem Installationen, bei denen diese Wartungsbefehle erreichbar sind."
+                    "plainImpact": "Ein Backend-Administrator ohne Systemverwalter-Rechte kann über geplante Aufgaben Befehle starten, mit denen er beliebige Systemeinstellungen lesen und ändern kann. So kann er sich selbst Systemverwalter-Rechte geben oder die Website lahmlegen.",
+                    "urgency": "Bald einplanen, wenn es Backend-Administratoren gibt, die keine Systemverwalter sind; ohne solche Konten ist das Risiko gering."
                 }
             }
         },
@@ -2588,12 +2489,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "Someone can send repeated requests to the part of TYPO3 that displays images, forcing the server to do heavy work each time. Enough of these requests can slow the site down or make it stop responding for real visitors.",
-                    "urgency": "Schedule this in your normal update cycle; it matters most for public sites that show images through this feature and are exposed to unwanted traffic."
+                    "plainImpact": "Someone can call the image preview address of the site with changing values in one unprotected setting and make the server create any number of new thumbnail images. This uses up server resources such as disk space and processing time.",
+                    "urgency": "Schedule this in your next regular update; it affects any site running an affected version, because the image preview address is part of the core and can be called from outside."
                 },
                 "de": {
-                    "plainImpact": "Ein Angreifer kann über den Bildanzeige-Teil so viele Anfragen auslösen, dass der Server stark ausgelastet wird. Das kann die Seite verlangsamen oder zeitweise unerreichbar machen.",
-                    "urgency": "Bald einplanen, wenn die Seite Bilder über diesen Teil ausliefert und öffentlich erreichbar ist."
+                    "plainImpact": "Jemand kann über die Bildanzeige-Adresse (tx_cms_showpic) mit einem frei gewählten Wert für den Parameter „frame“ den Server dazu bringen, beliebig viele Vorschaubilder zu erzeugen. Das belastet den Server und füllt den Speicherplatz.",
+                    "urgency": "Bei der nächsten regulären Wartung einplanen; dringender, wenn die Bildanzeige über diese Adresse öffentlich erreichbar ist und der Server wenig Rechenleistung oder Speicherplatz hat."
                 }
             }
         },
@@ -2620,12 +2521,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "An attacker can trick a logged-in administrator into carrying out actions in the backend user module without meaning to, just by getting them to open a prepared link or page. This could lead to unwanted changes to user accounts made under the administrator's identity.",
-                    "urgency": "Plan this update in a normal maintenance window; it only matters if administrators manage users through the backend and can be lured to an outside page while logged in."
+                    "plainImpact": "If a logged-in backend user opens a prepared link, an attacker can make the Backend User Module act in that user's name without them noticing. This can start password resets for other backend users or log those users out.",
+                    "urgency": "Plan this for the next regular update. Act sooner if editors could be lured into clicking links, for example in emails, or if the site has \"security.backend.enforceReferrer\" turned off and \"BE/cookieSameSite\" set to \"lax\" or \"none\", because then simply visiting a manipulated website is also enough."
                 },
                 "de": {
-                    "plainImpact": "Ein Angreifer kann einen angemeldeten Administrator dazu bringen, ohne dessen Wissen Aktionen im Modul zur Verwaltung von Backend-Benutzern auszuführen. So können etwa Benutzerkonten verändert werden, wenn der Administrator auf eine vom Angreifer vorbereitete Seite oder einen Link klickt.",
-                    "urgency": "In nächster Zeit einplanen, besonders wenn mehrere Personen mit Backend-Zugang das Benutzerverwaltungsmodul nutzen."
+                    "plainImpact": "Wenn ein angemeldeter Backend-Benutzer auf einen präparierten Link klickt, kann ein Angreifer in seinem Namen im Modul „Backend-Benutzer“ das Zurücksetzen von Passwörtern anderer Backend-Benutzer auslösen oder deren Sitzungen beenden. Das Modul nimmt solche Änderungen auch über einen einfachen Link-Aufruf an.",
+                    "urgency": "Zeitnah einplanen, besonders wenn Redakteure Links aus E-Mails öffnen; über fremde Webseiten ist ein Angriff nur möglich, wenn die Einstellung „security.backend.enforceReferrer“ ausgeschaltet ist und „BE/cookieSameSite“ auf „lax“ oder „none“ steht."
                 }
             }
         },
@@ -2657,12 +2558,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "A logged-in backend user could reach media files or actions in the Media module that they should not have access to. This lets them view or work with files beyond their assigned permissions.",
-                    "urgency": "Schedule this soon if you have backend users with limited rights who could misuse the extra access; it matters wherever the Media module is used."
+                    "plainImpact": "A backend user who is allowed to download files can use the Media module to download files from anywhere under the web server's main folder, not just from the storages they were given. This can expose sensitive files such as log files.",
+                    "urgency": "Schedule this soon if backend users who are not fully trusted have file download permissions; if only trusted administrators can download files, the exposure is limited."
                 },
                 "de": {
-                    "plainImpact": "Ein angemeldeter Nutzer kann im Medienbereich auf Dateien oder Ordner zugreifen, für die ihm eigentlich die Rechte fehlen. So können Inhalte eingesehen oder verändert werden, die für ihn nicht vorgesehen sind.",
-                    "urgency": "Bald einplanen, wenn im Backend mehrere Nutzer mit unterschiedlichen Rechten arbeiten; bei nur wenigen voll berechtigten Redakteuren ist das Risiko geringer."
+                    "plainImpact": "Backend-Benutzer, die Dateien herunterladen dürfen, können über das Medien-Modul auch Dateien laden, die direkt im Hauptverzeichnis des Webservers liegen und gar nicht für sie freigegeben sind. Dazu können vertrauliche Dateien wie Protokolldateien gehören.",
+                    "urgency": "Bald einplanen, wenn Backend-Benutzer mit Download-Recht arbeiten, denen nicht voll vertraut wird; ohne solche Benutzer ist das Risiko gering."
                 }
             }
         },
@@ -2689,12 +2590,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "A logged-in backend user could make changes to data they are not supposed to be allowed to touch. This lets them edit or affect records beyond their assigned permissions.",
-                    "urgency": "Schedule this in your normal update cycle; it only matters if you have backend users whose access is meant to be limited."
+                    "plainImpact": "A backend user can move records from a page to another page even though they are not allowed to edit the page the records come from. This lets them change where content appears on pages they should not be able to change.",
+                    "urgency": "Plan this for the next regular update; it only matters if the site has backend users whose edit rights are limited to certain pages."
                 },
                 "de": {
-                    "plainImpact": "Ein angemeldeter Nutzer kann Aktionen ausführen oder Daten ändern, die eigentlich nur mit höheren Rechten erlaubt sein sollten. So lassen sich Inhalte verändern, für die die Berechtigung fehlt.",
-                    "urgency": "In nächster Zeit einplanen; betrifft vor allem Installationen mit mehreren Redakteuren oder abgestuften Rechten."
+                    "plainImpact": "Ein Backend-Benutzer kann Datensätze von einer Seite auf eine andere Seite verschieben, obwohl er auf der Ausgangsseite keine Bearbeitungsrechte hat. So können Inhalte von Seiten verschwinden, für die er eigentlich nicht zuständig ist.",
+                    "urgency": "Beim nächsten regulären Update einplanen; früher handeln, wenn viele Backend-Benutzer mit eingeschränkten Seitenrechten arbeiten, denn nur angemeldete Backend-Benutzer können das ausnutzen."
                 }
             }
         },
@@ -2716,12 +2617,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "The install tool can reveal some internal details about the system that would normally stay hidden. This is limited to information being shown, not changes to the site or access to accounts.",
-                    "urgency": "Low priority; only relevant if the install tool is reachable, so include it in your next routine update."
+                    "plainImpact": "The login screen of the standalone install tool shows the full server folder path where the site keeps its temporary data. Anyone who can open that screen can read where the site's files are stored on the server.",
+                    "urgency": "Low priority: this only affects Composer-based installations where the install tool login screen can be reached, so include it in your next regular update."
                 },
                 "de": {
-                    "plainImpact": "Über das Installationswerkzeug können bestimmte interne Informationen sichtbar werden, die eigentlich nicht nach außen gelangen sollten. Es geht um Einblick in Details, nicht um Zugriff auf Konten oder das Verändern von Inhalten.",
-                    "urgency": "Nur bei nächster Gelegenheit einplanen; betrifft vor allem Installationen, bei denen das Installationswerkzeug erreichbar ist."
+                    "plainImpact": "Die Anmeldeseite des eigenständigen Install-Tools zeigt jedem Besucher den vollständigen Pfad des Ordners für Zwischendaten auf dem Server an (zum Beispiel /var/www/html/var/transient/). Damit erfährt ein Außenstehender, wie die Ordner auf dem Server aufgebaut sind.",
+                    "urgency": "Betrifft nur Installationen, die mit Composer eingerichtet wurden, und kann beim nächsten regulären Update mit erledigt werden; klassische Installationen ohne Composer sind nicht betroffen."
                 }
             }
         },
@@ -2746,16 +2647,7 @@
                     "fixedInElts": false
                 }
             },
-            "explanation": {
-                "en": {
-                    "plainImpact": "An attacker can trick a logged-in backend user into triggering actions in the log module without meaning to, by getting them to open a prepared link or page. This is limited to what the log module itself can do.",
-                    "urgency": "Schedule this in a normal update cycle; it only matters for sites with backend users who use the log module."
-                },
-                "de": {
-                    "plainImpact": "Ein Angreifer kann einen angemeldeten Redakteur oder Administrator dazu bringen, ohne dessen Wissen eine Aktion im Log-Modul auszulösen. Dazu muss das Opfer eine vom Angreifer vorbereitete Seite öffnen, während es angemeldet ist.",
-                    "urgency": "Betrifft nur Installationen, die das Log-Modul im Backend nutzen; bei mittlerer Einstufung im Rahmen der normalen Wartung einplanen."
-                }
-            }
+            "explanation": null
         },
         {
             "id": "PKSA-y4y2-63tg-bjxn",
@@ -2773,16 +2665,7 @@
                     "fixedInElts": false
                 }
             },
-            "explanation": {
-                "en": {
-                    "plainImpact": "When something goes wrong, the error handling can reveal internal details about the system that are not meant to be shown. This gives an attacker background information about how the site is set up, but no direct control.",
-                    "urgency": "Low priority; schedule with your normal update cycle, and it only matters for sites running the affected install tool component."
-                },
-                "de": {
-                    "plainImpact": "Bei einem Fehler oder in Protokolldateien können interne Angaben auftauchen, die eigentlich nicht sichtbar sein sollten. Das betrifft nur kleinere Informationen, keine Kontoübernahme oder Datendiebstahl.",
-                    "urgency": "Kann bei Gelegenheit mit dem nächsten geplanten Update erledigt werden, da die Auswirkungen gering sind."
-                }
-            }
+            "explanation": null
         },
         {
             "id": "PKSA-zz7z-6zsy-d2hc",
@@ -2807,12 +2690,12 @@
             },
             "explanation": {
                 "en": {
-                    "plainImpact": "Someone with access to file handling could reach files outside the folders they are supposed to stay in. This can expose or affect files that were meant to be off limits.",
-                    "urgency": "Schedule this in a normal update cycle; it mainly matters for sites where users can upload or manage files."
+                    "plainImpact": "A backend user with administrator rights can set up a file storage that reads and writes folders outside the project's own directory on the server. The system setting meant to stop this was ignored by the file handling.",
+                    "urgency": "Plan this for a regular update cycle; it only matters if administrator accounts could be misused or are held by people who should not reach files outside the project."
                 },
                 "de": {
-                    "plainImpact": "Ein Angreifer kann über die Dateiverwaltung auf Dateien außerhalb des vorgesehenen Ordners zugreifen. Dadurch lassen sich Dateien lesen oder erreichen, die eigentlich nicht zugänglich sein sollten.",
-                    "urgency": "In absehbarer Zeit einplanen, vor allem wenn Nutzer oder Redakteure mit Dateien und Dateispeichern arbeiten können."
+                    "plainImpact": "Ein Backend-Benutzer mit Administratorrechten kann einen Dateispeicher so einrichten, dass er auf Ordner außerhalb des Projektverzeichnisses auf dem Server zugreift. Die Systemeinstellung, die solche Zugriffe auf bestimmte Pfade begrenzen soll, wird dabei nicht beachtet.",
+                    "urgency": "Mit dem nächsten regulären Update einplanen; dringender nur, wenn Administratorkonten nicht vollständig vertrauenswürdig sind oder die Einstellung zur Begrenzung der Pfade bewusst zur Absicherung genutzt wird."
                 }
             }
         },
@@ -2842,16 +2725,7 @@
                     "fixedInElts": false
                 }
             },
-            "explanation": {
-                "en": {
-                    "plainImpact": "The tool that is supposed to clean up HTML content can be tricked, so harmful code slips through and runs in the browser of someone who views the page. This could let an attacker act in the context of a logged-in user who opens the affected content.",
-                    "urgency": "Schedule this update in your normal cycle; it matters wherever this content-cleaning tool is relied on to filter user- or editor-supplied HTML."
-                },
-                "de": {
-                    "plainImpact": "Die Schutzfunktion, die schädlichen Code aus Inhalten entfernen soll, lässt sich unter Umständen umgehen. Dadurch kann eingeschleuster Code im Browser von Besuchern ausgeführt werden.",
-                    "urgency": "Zeitnah einplanen, vor allem wenn Inhalte von weniger vertrauenswürdigen Nutzern eingegeben werden und auf die genannte Schutzkomponente vertraut wird."
-                }
-            }
+            "explanation": null
         }
     ]
 }
