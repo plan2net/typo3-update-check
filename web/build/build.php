@@ -61,14 +61,24 @@ if ($apiKey !== '') {
         }
         $langs = [];
         foreach ($wantLangs as $lang) {
-            $candidate = $explainer->explain($advisory, $description, $lang);
-            if ($candidate !== null && $judge->approve($advisory, $description, $lang, $candidate)) {
-                $langs[$lang] = $candidate;
+            $rejection = null;
+            for ($attempt = 1; $attempt <= 2 && !isset($langs[$lang]); ++$attempt) {
+                $candidate = $explainer->explain($advisory, $description, $lang, $rejection);
+                if ($candidate === null) {
+                    continue;
+                }
+                $rejection = $judge->rejection($advisory, $description, $lang, $candidate);
+                if ($rejection === null) {
+                    $langs[$lang] = $candidate;
+                }
+            }
+            // A partial entry would count as done forever; skip the rest and retry next run.
+            if (!isset($langs[$lang])) {
+                return null;
             }
         }
-        // Require ALL languages — never cache a partial (e.g. EN-only) entry as "complete",
-        // or the missing language would be treated as done forever. Retry next run instead.
-        return count($langs) === count($wantLangs) ? $langs : null;
+
+        return $langs;
     };
 }
 

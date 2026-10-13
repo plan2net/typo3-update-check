@@ -56,9 +56,9 @@ final class ExplanationJudge
      * @param array<string,mixed> $advisory
      * @param 'en'|'de' $lang
      * @param array{plainImpact:string,urgency:string} $candidate
-     * @return bool true = safe to publish. False (and not published) on rejection OR any API failure.
+     * @return string|null null = approved, '' = API failure
      */
-    public function approve(array $advisory, string $description, string $lang, array $candidate): bool
+    public function rejection(array $advisory, string $description, string $lang, array $candidate): ?string
     {
         $prompt = sprintf(
             "Advisory: %s\nSeverity: %s\nPackage: %s\nAffected versions: %s\n" .
@@ -97,23 +97,26 @@ final class ExplanationJudge
                 ],
             );
             if ($message->stopReason !== 'end_turn') {
-                return false;
+                return '';
             }
             foreach ($message->content as $block) {
                 if ($block->type === 'text') {
                     $data = json_decode($block->text, true);
                     if (is_array($data) && isset($data['ok'])) {
-                        if ($data['ok'] !== true) {
-                            fwrite(STDERR, "judge rejected ({$lang}): " . (string) ($data['reason'] ?? '') . "\n");
+                        if ($data['ok'] === true) {
+                            return null;
                         }
-                        return $data['ok'] === true;
+                        $reason = (string) ($data['reason'] ?? '');
+                        fwrite(STDERR, "judge rejected ({$lang}): {$reason}\n");
+
+                        return $reason;
                     }
                 }
             }
         } catch (\Throwable) {
-            return false; // can't verify -> don't publish (conservative)
+            return ''; // can't verify -> don't publish (conservative)
         }
 
-        return false;
+        return '';
     }
 }

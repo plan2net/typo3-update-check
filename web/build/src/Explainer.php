@@ -28,6 +28,9 @@ final class Explainer
           (CVE, CVSS, XSS, CSRF, SSRF, RCE) and no terms of art ("deserialization",
           "authentication bypass", "sanitisation"). The German must be plain German, not
           English security jargon left untranslated.
+        - Never copy code identifiers, setting or variable names, HTML element names, or server
+          terms (e.g. getIndpEnv, SCRIPT_NAME, CGI/FPM, "tags") from the description. Say what
+          they do in everyday words instead.
         - Your reader is a professional deciding whether to schedule this update, not a worried
           site owner. State the facts. No analogies, no reassurance, no filler, no padding.
         - Keep the described consequences proportionate to the severity: a low-severity issue
@@ -35,9 +38,9 @@ final class Explainer
           account takeover.
         - Do not state version numbers or upgrade steps; the tool shows those separately.
 
-        Return exactly two fields:
-        - plainImpact: 1–2 sentences on what an attacker could achieve.
-        - urgency: 1 sentence on how soon to act and what that depends on, using the
+        Return exactly two fields, each AT MOST two short sentences — never three:
+        - plainImpact: what an attacker could achieve.
+        - urgency: how soon to act and what that depends on, using the
           preconditions the description names (e.g. "only matters if a form stores uploads in
           a custom folder").
 
@@ -46,6 +49,8 @@ final class Explainer
           who opens the page. That is enough to take over the session of a logged-in editor."
         - urgency: "Schedule this soon if the site uses forms; without them the exposure is limited."
         TXT;
+
+    private const ABBREVIATIONS = ['z. B.', 'z.B.', 'd. h.', 'd.h.', 'bzw.', 'usw.', 'e.g.', 'i.e.', 'etc.'];
 
     private const JARGON = ['cve-', 'cvss', 'xss', 'csrf', 'ssrf', 'sql injection', ' rce', 'deserial', 'sanitis', 'sanitiz', 'authentication bypass'];
 
@@ -63,7 +68,7 @@ final class Explainer
      * @param 'en'|'de' $lang
      * @return array{plainImpact:string,urgency:string}|null null on any failure (fail-soft)
      */
-    public function explain(array $advisory, string $description, string $lang): ?array
+    public function explain(array $advisory, string $description, string $lang, ?string $rejection = null): ?array
     {
         $prompt = sprintf(
             "Advisory: %s\nSeverity: %s\nAffected package: %s\nAffected versions: %s\nReference: %s\n\n" .
@@ -76,6 +81,9 @@ final class Explainer
             $description,
             self::LANGUAGE[$lang] ?? 'English',
         );
+        if ($rejection !== null && $rejection !== '') {
+            $prompt .= "\n\nA reviewer rejected your previous attempt: {$rejection}\nFix that.";
+        }
 
         try {
             $message = $this->client->messages->create(
@@ -126,7 +134,7 @@ final class Explainer
      *
      * @return array{plainImpact:string,urgency:string}|null
      */
-    private static function validated(string $plainImpact, string $urgency): ?array
+    public static function validated(string $plainImpact, string $urgency): ?array
     {
         $plainImpact = trim($plainImpact);
         $urgency = trim($urgency);
@@ -134,6 +142,10 @@ final class Explainer
             return null;
         }
         if (mb_strlen($urgency) < 8 || mb_strlen($urgency) > 400) {
+            return null;
+        }
+        // The judge would reject it anyway.
+        if (self::sentenceCount($plainImpact) > 2 || self::sentenceCount($urgency) > 2) {
             return null;
         }
 
@@ -148,5 +160,12 @@ final class Explainer
         }
 
         return ['plainImpact' => $plainImpact, 'urgency' => $urgency];
+    }
+
+    private static function sentenceCount(string $text): int
+    {
+        $text = str_ireplace(self::ABBREVIATIONS, '', $text);
+
+        return preg_match_all('/[.!?](?=\s|$)/u', $text);
     }
 }
