@@ -419,6 +419,20 @@
             }
         }
     },
+    "PKSA-fykt-pmbg-txnv|optional|typo3/cms-form": {
+        "contentHash": "fd434e43ed215706d4ab79075fa642eb201e1d5b1fa8dc26b2fec0b7533fada9",
+        "promptVersion": 3,
+        "langs": {
+            "en": {
+                "plainImpact": "A setting in the form part of TYPO3 is not safe by default. This could let someone misuse a form in a way the site owner did not intend, for example reaching data or actions that were meant to stay closed off.",
+                "urgency": "Plan this update in your normal cycle; it only matters if the site uses the form framework."
+            },
+            "de": {
+                "plainImpact": "Eine falsche Grundeinstellung im Bereich der Formulare kann dazu führen, dass das Formular-Werkzeug nicht so sicher arbeitet wie vorgesehen. Dadurch könnte ein Angreifer eine vorhandene Schwachstelle leichter ausnutzen.",
+                "urgency": "Zeitnah einplanen, wenn die Seite das Formular-Werkzeug verwendet; ohne Formulare besteht keine Gefahr."
+            }
+        }
+    },
     "PKSA-ghx2-mc2z-fx6x|core|typo3/cms-core": {
         "contentHash": "8cf4a2601691d17f8c9328ad7529324a1bad0349a82d325c80e39364cbd61bad",
         "promptVersion": 3,

@@ -1,5 +1,5 @@
 {
-    "generatedAt": "2026-10-09T12:38:59+00:00",
+    "generatedAt": "2026-10-13T09:36:10+00:00",
     "majors": {
         "12": {
             "maintainedUntil": "2026-04-30T00:00:00+02:00",
@@ -638,9 +638,15 @@
         "14": {
             "maintainedUntil": "2029-06-30T00:00:00+02:00",
             "eltsUntil": "2032-06-30T00:00:00+02:00",
-            "latestFree": "14.3.8",
-            "latestElts": "14.3.8",
+            "latestFree": "14.3.9",
+            "latestElts": "14.3.9",
             "releases": [
+                {
+                    "version": "14.3.9",
+                    "date": "2026-10-13T09:22:58+02:00",
+                    "type": "security",
+                    "elts": false
+                },
                 {
                     "version": "14.3.8",
                     "date": "2026-10-09T09:18:05+02:00",
@@ -1687,6 +1693,33 @@
                 "de": {
                     "plainImpact": "Unter bestimmten Umständen kann ein Angreifer den geheimen Schlüssel der Installation auslesen. Mit diesem Schlüssel lassen sich Schutzmechanismen umgehen, die auf ihm aufbauen.",
                     "urgency": "Bald einplanen, da der Schlüssel eine zentrale Rolle in der Sicherheit der Installation spielt."
+                }
+            }
+        },
+        {
+            "id": "PKSA-fykt-pmbg-txnv",
+            "cve": "CVE-2026-109162",
+            "package": "typo3/cms-form",
+            "optional": true,
+            "severity": "medium",
+            "title": "TYPO3-CORE-SA-2026-024: Security Misconfiguration in Form Framework",
+            "affectedVersions": ">=14.0.0,<14.3.9",
+            "link": "https://news.typo3.com/security/advisory/typo3-core-sa-2026-024",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": "14.3.9",
+                    "fixedInElts": false
+                }
+            },
+            "explanation": {
+                "en": {
+                    "plainImpact": "A setting in the form part of TYPO3 is not safe by default. This could let someone misuse a form in a way the site owner did not intend, for example reaching data or actions that were meant to stay closed off.",
+                    "urgency": "Plan this update in your normal cycle; it only matters if the site uses the form framework."
+                },
+                "de": {
+                    "plainImpact": "Eine falsche Grundeinstellung im Bereich der Formulare kann dazu führen, dass das Formular-Werkzeug nicht so sicher arbeitet wie vorgesehen. Dadurch könnte ein Angreifer eine vorhandene Schwachstelle leichter ausnutzen.",
+                    "urgency": "Zeitnah einplanen, wenn die Seite das Formular-Werkzeug verwendet; ohne Formulare besteht keine Gefahr."
                 }
             }
         },
