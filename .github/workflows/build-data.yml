@@ -55,6 +55,7 @@ jobs:
         working-directory: web/build
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GITHUB_TOKEN: ${{ github.token }} # GitHub advisory API, for the explainer's source text
 
       - name: Validate generated data contract
         run: php validate.php

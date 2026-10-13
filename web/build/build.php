@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Typo3UpdateCheckWeb\Build\Advisories;
+use Typo3UpdateCheckWeb\Build\AdvisoryDescription;
 use Typo3UpdateCheckWeb\Build\AffectedResolver;
 use Typo3UpdateCheckWeb\Build\DataFile;
 use Typo3UpdateCheckWeb\Build\ExplanationCache;
@@ -45,11 +46,23 @@ $explain = static fn (array $advisory): ?array => null;
 if ($apiKey !== '') {
     $explainer = Explainer::fromEnv();
     $judge = ExplanationJudge::fromEnv();
-    $explain = static function (array $advisory) use ($explainer, $judge, $wantLangs): ?array {
+    $githubToken = (string) getenv('GITHUB_TOKEN');
+    $descriptions = new AdvisoryDescription(static fn (string $url): ?string => $http->getText(
+        $url,
+        $githubToken !== '' && str_starts_with($url, 'https://api.github.com/') ? ['Authorization: Bearer ' . $githubToken] : [],
+    ));
+    $explain = static function (array $advisory) use ($explainer, $judge, $descriptions, $wantLangs): ?array {
+        // Explaining from the title alone means guessing; retry next run instead.
+        $description = $descriptions->for($advisory);
+        if ($description === null) {
+            fwrite(STDERR, "no description for {$advisory['id']} ({$advisory['link']}); not explained\n");
+
+            return null;
+        }
         $langs = [];
         foreach ($wantLangs as $lang) {
-            $candidate = $explainer->explain($advisory, $lang);
-            if ($candidate !== null && $judge->approve($advisory, $lang, $candidate)) {
+            $candidate = $explainer->explain($advisory, $description, $lang);
+            if ($candidate !== null && $judge->approve($advisory, $description, $lang, $candidate)) {
                 $langs[$lang] = $candidate;
             }
         }

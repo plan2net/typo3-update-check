@@ -9,19 +9,19 @@ use Anthropic\Client;
 final class Explainer
 {
     /** Bump when the writer SYSTEM prompt OR the judge criteria change — regenerates every explanation (§5). */
-    public const PROMPT_VERSION = 3;
+    public const PROMPT_VERSION = 4;
 
-    private const MODEL = 'claude-opus-4-8';
+    private const MODEL = 'claude-opus-5-5';
     private const SYSTEM = <<<TXT
         You explain ONE TYPO3 security advisory to the TYPO3 developers and project managers who
-        decide whether to schedule an update. You are given only the advisory's title, severity,
-        affected package, and version range.
+        decide whether to schedule an update. You are given the advisory's title, severity,
+        affected package, version range, and the official problem description.
 
         Rules:
-        - Ground everything in the given advisory ONLY. Do not invent or guess the attack,
-          the affected feature, or the consequences beyond what the title and category say.
-          If a detail isn't given, don't claim it — stay general ("a security weakness")
-          rather than inventing specifics.
+        - Ground everything in the official problem description. Say what it says actually
+          happens, and under which conditions (e.g. "only forms with a custom upload folder").
+          Do not invent or guess the attack, the affected feature, or consequences the
+          description does not support. The title alone is too vague to explain from.
         - Use SIMPLE, everyday words in BOTH languages. Short sentences. Say what actually
           happens instead of naming the vulnerability class: "someone can put code into a page
           that then runs for every visitor", not "stored cross-site scripting". No acronyms
@@ -37,8 +37,9 @@ final class Explainer
 
         Return exactly two fields:
         - plainImpact: 1–2 sentences on what an attacker could achieve.
-        - urgency: 1 sentence on how soon to act and what that depends on (e.g. "only matters
-          if the site uses the form framework").
+        - urgency: 1 sentence on how soon to act and what that depends on, using the
+          preconditions the description names (e.g. "only matters if a form stores uploads in
+          a custom folder").
 
         Example — advisory "Cross-Site Scripting in the Form Framework", severity high:
         - plainImpact: "Someone can slip code into a form that then runs in the browser of anyone
@@ -62,22 +63,24 @@ final class Explainer
      * @param 'en'|'de' $lang
      * @return array{plainImpact:string,urgency:string}|null null on any failure (fail-soft)
      */
-    public function explain(array $advisory, string $lang): ?array
+    public function explain(array $advisory, string $description, string $lang): ?array
     {
         $prompt = sprintf(
-            "Advisory: %s\nSeverity: %s\nAffected package: %s\nAffected versions: %s\nReference: %s\n\nWrite both fields in %s.",
+            "Advisory: %s\nSeverity: %s\nAffected package: %s\nAffected versions: %s\nReference: %s\n\n" .
+            "Official problem description:\n%s\n\nWrite both fields in %s.",
             (string) ($advisory['title'] ?? ''),
             (string) ($advisory['severity'] ?? ''),
             (string) ($advisory['package'] ?? ''),
             (string) ($advisory['affectedVersions'] ?? ''),
             (string) ($advisory['link'] ?? ''),
+            $description,
             self::LANGUAGE[$lang] ?? 'English',
         );
 
         try {
             $message = $this->client->messages->create(
                 model: self::MODEL,
-                maxTokens: 512,
+                maxTokens: 4096, // thinking is always on and counts against this
                 system: [['type' => 'text', 'text' => self::SYSTEM]],
                 messages: [['role' => 'user', 'content' => $prompt]],
                 outputConfig: [
