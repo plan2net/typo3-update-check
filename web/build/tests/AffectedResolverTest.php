@@ -51,6 +51,22 @@ final class AffectedResolverTest extends TestCase
     }
 
     #[Test]
+    public function aPredicateDecidesWhichReleasesAreAffected(): void
+    {
+        $bundledVersions = ['12.4.10' => '6.4.1', '12.4.45' => '6.4.1', '12.4.46' => '6.4.9', '12.4.47' => '6.4.9'];
+
+        $r = (new AffectedResolver())->resolveBy(
+            static fn (string $release): bool => $bundledVersions[$release] === '6.4.1',
+            $this->releases12,
+            'symfony/yaml CVE-1',
+        );
+
+        $this->assertSame('12.4.10', $r['from']);
+        $this->assertSame('12.4.46', $r['fixedIn']);
+        $this->assertTrue($r['fixedInElts']);
+    }
+
+    #[Test]
     public function malformedConstraintIsSkipped(): void
     {
         // Mirror the plugin: a constraint Composer can't parse is skipped, not fatal.

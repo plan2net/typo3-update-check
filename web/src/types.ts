@@ -17,6 +17,7 @@ export interface AffectedEntry {
   from: string;             // first affected real release in this major
   fixedIn: string | null;   // first patched real release, or null if no fix yet
   fixedInElts: boolean;     // whether that fix is an ELTS-only release
+  enforcedIn?: string | null; // bundled only: first release whose core requirements rule out every affected library version
 }
 
 export type Lang = 'en' | 'de';
@@ -45,6 +46,7 @@ export interface Typo3Data {
   checkedAt?: string;         // when the pipeline last verified the data (stamped into the deployed copy every run)
   majors: Record<string, MajorInfo>; // keyed by integer major, e.g. "12"
   advisories: AdvisoryInfo[];
+  bundled?: AdvisoryInfo[];   // third-party libraries a classic install bundles; `affected` keyed by TYPO3 release
 }
 
 export type SupportPhase = 'active' | 'elts-only' | 'eol' | 'unknown';
@@ -66,6 +68,7 @@ export interface AffectingAdvisory {
   fixVersion: string | null; // null = no released fix in this line yet
   fixIsFree: boolean;
   optional: boolean; // mirrors advisory.optional, for convenient grouping
+  composerGuaranteed?: boolean; // bundled only: the recommended release makes Composer install the fixed library
 }
 
 export interface Verdict {
@@ -75,5 +78,6 @@ export interface Verdict {
   headline: string;
   detail: string;
   affecting: AffectingAdvisory[]; // both core and optional; group on `optional` in the UI
-  concerns: string[];             // secondary plain-language notes the headline doesn't cover
+  bundled: AffectingAdvisory[];   // classic installs only; never drives the tier
+  concerns: string[];            // secondary plain-language notes the headline doesn't cover
 }

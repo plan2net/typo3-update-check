@@ -65,18 +65,8 @@ foreach (($data['majors'] ?? []) as $mk => $major) {
     }
 }
 
-$seenKeys = [];
-$coreCount = 0;
-foreach (($data['advisories'] ?? []) as $i => $a) {
-    $p = "advisory[{$i}]";
-    if (!is_array($a)) { $fail("{$p} not an object"); continue; }
+$checkRecord = static function (array $a, string $p) use ($fail, $str, $strOrNull): void {
     if (!$str($a['id'] ?? null)) $fail("{$p}.id");
-    // Must stay unique per published record or one advisory's explanation would overwrite
-    // another's in the cache — enforced with the REAL cache key so the two can't drift.
-    $key = ExplanationCache::cacheKey($a);
-    if (isset($seenKeys[$key])) $fail("{$p} duplicate id/optional/package key '{$key}'");
-    $seenKeys[$key] = true;
-    if (($a['optional'] ?? null) === false) $coreCount++;
     if (!$strOrNull($a['cve'] ?? null)) $fail("{$p}.cve");
     if (!$str($a['package'] ?? null)) $fail("{$p}.package");
     if (!is_bool($a['optional'] ?? null)) $fail("{$p}.optional");
@@ -92,6 +82,7 @@ foreach (($data['advisories'] ?? []) as $i => $a) {
             if (!is_array($e) || !$str($e['from'] ?? null)) $fail("{$p}.affected.{$mk}.from");
             if (!array_key_exists('fixedIn', (array) $e) || !$strOrNull($e['fixedIn'] ?? null)) $fail("{$p}.affected.{$mk}.fixedIn");
             if (!is_bool($e['fixedInElts'] ?? null)) $fail("{$p}.affected.{$mk}.fixedInElts");
+            if (array_key_exists('enforcedIn', (array) $e) && !$strOrNull($e['enforcedIn'])) $fail("{$p}.affected.{$mk}.enforcedIn");
         }
     }
 
@@ -107,6 +98,27 @@ foreach (($data['advisories'] ?? []) as $i => $a) {
             }
         }
     }
+};
+
+$seenKeys = [];
+$coreCount = 0;
+foreach (($data['advisories'] ?? []) as $i => $a) {
+    $p = "advisory[{$i}]";
+    if (!is_array($a)) { $fail("{$p} not an object"); continue; }
+    $checkRecord($a, $p);
+    // Must stay unique per published record or one advisory's explanation would overwrite
+    // another's in the cache — enforced with the REAL cache key so the two can't drift.
+    $key = ExplanationCache::cacheKey($a);
+    if (isset($seenKeys[$key])) $fail("{$p} duplicate id/optional/package key '{$key}'");
+    $seenKeys[$key] = true;
+    if (($a['optional'] ?? null) === false) $coreCount++;
+}
+
+if (array_key_exists('bundled', $data) && !is_array($data['bundled'])) $fail('bundled');
+foreach ((is_array($data['bundled'] ?? null) ? $data['bundled'] : []) as $i => $a) {
+    $p = "bundled[{$i}]";
+    if (!is_array($a)) { $fail("{$p} not an object"); continue; }
+    $checkRecord($a, $p);
 }
 
 // A healthy dataset always has core (non-optional) advisories; their absence means partial/broken

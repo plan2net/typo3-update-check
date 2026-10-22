@@ -306,3 +306,96 @@ describe('computeVerdict — data freshness (fail closed on a stalled pipeline)'
     expect(v.concerns).toHaveLength(0);
   });
 });
+
+describe('computeVerdict — libraries shipped with TYPO3', () => {
+  const bundledAdvisory = {
+    id: 'PKSA-EL', cve: 'CVE-2026-109449', package: 'symfony/expression-language', optional: false, severity: 'medium',
+    title: 'Unbounded nesting', affectedVersions: '>=7.4.0,<7.4.21', link: '#',
+    affected: { '13': { from: '13.4.30', fixedIn: '13.4.31', fixedInElts: false } },
+    explanation: null,
+  };
+  const withBundled: Typo3Data = {
+    generatedAt: NOW.toISOString(),
+    majors: {
+      '12': {
+        maintainedUntil: '2026-04-30T00:00:00+02:00',
+        eltsUntil: '2030-04-30T00:00:00+02:00',
+        latestFree: '12.4.45',
+        latestElts: '12.4.46',
+        releases: [
+          { version: '12.4.45', date: null, type: 'regular', elts: false },
+          { version: '12.4.46', date: null, type: 'security', elts: true },
+        ],
+      },
+      '13': {
+        maintainedUntil: '2027-12-31T00:00:00+01:00',
+        eltsUntil: '2030-12-31T00:00:00+01:00',
+        latestFree: '13.4.31',
+        latestElts: '13.4.31',
+        releases: [
+          { version: '13.4.30', date: null, type: 'regular', elts: false },
+          { version: '13.4.31', date: null, type: 'regular', elts: false },
+        ],
+      },
+    },
+    advisories: [],
+    bundled: [
+      bundledAdvisory,
+      { ...bundledAdvisory, id: 'PKSA-YAML', affected: { '12': { from: '12.4.45', fixedIn: null, fixedInElts: false } } },
+    ],
+  };
+
+  const bundledConcern = (v: { concerns: string[] }): string | undefined =>
+    v.concerns.find((c) => /librar/i.test(c));
+  const enforced: Typo3Data = {
+    ...withBundled,
+    bundled: [{ ...bundledAdvisory, affected: { '13': { ...bundledAdvisory.affected['13'], enforcedIn: '13.4.31' } } }],
+  };
+
+  it('lists bundled-library advisories separately without raising the tier', () => {
+    const v = computeVerdict('13.4.30', false, withBundled, NOW);
+    expect(v.tier).toBe('behind-maintenance');
+    expect(v.affecting).toHaveLength(0);
+    expect(v.bundled.map((a) => a.advisory.id)).toEqual(['PKSA-EL']);
+    expect(bundledConcern(v)).toContain('symfony/expression-language');
+  });
+
+  it('tells everyone the update fixes it when TYPO3 forces the fixed library', () => {
+    const v = computeVerdict('13.4.30', false, enforced, NOW);
+    expect(v.bundled[0]?.composerGuaranteed).toBe(true);
+    expect(bundledConcern(v)).toMatch(/updating to TYPO3 13\.4\.31 fixes it/i);
+    expect(bundledConcern(v)).not.toMatch(/composer/i);
+  });
+
+  it('asks Composer users to update the library too when TYPO3 does not force it', () => {
+    const v = computeVerdict('13.4.30', false, withBundled, NOW);
+    expect(v.bundled[0]?.composerGuaranteed).toBe(false);
+    expect(bundledConcern(v)).toMatch(/updating to TYPO3 13\.4\.31 fixes it/i);
+    expect(bundledConcern(v)).toMatch(/composer update/);
+  });
+
+  it('does not call the site secure when the newer release fixes shipped libraries', () => {
+    const v = computeVerdict('13.4.30', false, withBundled, NOW);
+    expect(v.headline).not.toMatch(/secure/i);
+    expect(v.headline).toMatch(/librar/i);
+    expect(v.detail).toContain('13.4.31');
+  });
+
+  it('reports nothing bundled once the release ships the patched library', () => {
+    const v = computeVerdict('13.4.31', false, withBundled, NOW);
+    expect(v.bundled).toHaveLength(0);
+    expect(bundledConcern(v)).toBeUndefined();
+  });
+
+  it('says when no free release bundles a fix yet', () => {
+    const v = computeVerdict('12.4.45', false, withBundled, NOW);
+    expect(v.bundled.map((a) => a.advisory.id)).toEqual(['PKSA-YAML']);
+    expect(bundledConcern(v)).toMatch(/no free TYPO3 update fixes it yet/i);
+    expect(bundledConcern(v)).toMatch(/composer audit/);
+  });
+
+  it('makes no bundled claim for an ELTS release, whose bundled libraries are not public', () => {
+    const v = computeVerdict('12.4.46', true, withBundled, NOW);
+    expect(v.bundled).toHaveLength(0);
+  });
+});

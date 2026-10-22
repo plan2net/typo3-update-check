@@ -48,15 +48,17 @@ function safeUrl(url: string): string {
   return /^https?:\/\//i.test(url) ? url : '#';
 }
 
-function advisoryItem(a: AffectingAdvisory, lang: Lang, m: Strings, hidden: boolean): string {
+function advisoryItem(a: AffectingAdvisory, lang: Lang, m: Strings, hidden: boolean, bundled: boolean): string {
   const exp = a.advisory.explanation?.[lang];
   const sev = escapeHtml(a.advisory.severity);
   const { advisoryId, title } = splitAdvisoryTitle(a.advisory.title);
   const impact = exp ? escapeHtml(exp.plainImpact) : '';
   const urgency = exp ? escapeHtml(exp.urgency) : '';
-  const caveat = a.optional
-    ? `<p class="caveat">${escapeHtml(m.ui.onlyIfUses)} ${escapeHtml(a.advisory.package)}</p>`
-    : '';
+  const caveat = bundled
+    ? `<p class="caveat">${escapeHtml(m.bundledCaveat(a.advisory.package, a.fixVersion, a.composerGuaranteed ?? false))}</p>`
+    : a.optional
+      ? `<p class="caveat">${escapeHtml(m.ui.onlyIfUses)} ${escapeHtml(a.advisory.package)}</p>`
+      : '';
   // External link: accessible name conveys purpose + "opens in a new tab" (§11a).
   const cveLabel = a.advisory.cve ?? a.advisory.id;
   const linkName = `${m.ui.officialAdvisory} (${cveLabel}), ${m.ui.opensNewTab}`;
@@ -217,7 +219,7 @@ function group(items: AffectingAdvisory[], cls: string, heading: string, lang: L
         <h3>${escapeHtml(heading)}</h3>
         <span class="severity-summary">${items.length} · ${escapeHtml(summary)}</span>
       </div>
-      <ul class="advisories">${items.map((a, i) => advisoryItem(a, lang, m, collapsed && i >= VISIBLE_WHEN_COLLAPSED)).join('')}</ul>
+      <ul class="advisories">${items.map((a, i) => advisoryItem(a, lang, m, collapsed && i >= VISIBLE_WHEN_COLLAPSED, cls === 'bundled')).join('')}</ul>
       ${showAll}
     </section>`;
 }
@@ -234,6 +236,7 @@ function renderVerdict(v: Verdict, version: string, data: Typo3Data, lang: Lang,
       ${major ? lifecycle(major, majorKey(version), version, m, now) : ''}
       ${group(core, 'affects', m.ui.affects, lang, m)}
       ${group(optional, 'may-apply', m.ui.mayApply, lang, m)}
+      ${group(v.bundled, 'bundled', m.ui.bundledHeading, lang, m)}
       ${devHint(m)}
     </div>`;
 }
@@ -257,6 +260,7 @@ function renderFor(raw: string, hasElts: boolean, data: Typo3Data, lang: Lang): 
       headline: t.headline,
       detail: t.detail,
       affecting: [],
+      bundled: [],
       concerns,
     };
     return `<div class="verdict" data-tier="unknown-version">${answerBand(verdict, m, '')}</div>`;
@@ -309,12 +313,14 @@ function releaseOptions(data: Typo3Data, mk: string, lang: Lang): string {
   const m = strings(lang);
   const major = data.majors[mk];
   if (!major) return '';
+  const thirdPartyFixes = new Set((data.bundled ?? []).map((a) => a.affected[mk]?.fixedIn));
   return [...major.releases]
     .sort((a, b) => compareVersions(b.version, a.version))
     .map((r) => {
       const tags: string[] = [];
       if (r.version === major.latestFree) tags.push(m.ui.tagLatest);
       if (r.type === 'security') tags.push(m.ui.tagSecurity);
+      if (thirdPartyFixes.has(r.version)) tags.push(m.ui.tagThirdParty);
       if (r.elts) tags.push(m.ui.tagElts);
       const label = tags.length ? `${r.version} — ${tags.join(' · ')}` : r.version;
       return `<option value="${escapeHtml(r.version)}">${escapeHtml(label)}</option>`;

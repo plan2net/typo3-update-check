@@ -1,4 +1,4 @@
-import type { Typo3Data, Verdict, Tier, AffectingAdvisory, SupportPhase, Lang } from './types';
+import type { Typo3Data, Verdict, Tier, AdvisoryInfo, AffectingAdvisory, SupportPhase, Lang } from './types';
 import { parseVersion, compareVersions } from './version';
 import { severityRank, topSeverity } from './format';
 import { strings } from './i18n';
@@ -21,6 +21,24 @@ export function staleCheckedAt(data: Typo3Data, now: Date): string | null {
   return stale ? data.checkedAt : null;
 }
 
+// Most severe first, so readers see the shape of the risk; stable sort keeps id order within a severity.
+function affectingAdvisories(advisories: AdvisoryInfo[], mk: string, version: string): AffectingAdvisory[] {
+  const affecting: AffectingAdvisory[] = [];
+  for (const a of advisories) {
+    const e = a.affected[mk];
+    if (!e) continue;
+    if (compareVersions(version, e.from) < 0) continue;            // below the affected range
+    if (e.fixedIn && compareVersions(version, e.fixedIn) >= 0) continue; // already patched
+    affecting.push({
+      advisory: a,
+      fixVersion: e.fixedIn,
+      fixIsFree: e.fixedIn ? !e.fixedInElts : false,
+      optional: a.optional,
+    });
+  }
+  return affecting.sort((a, b) => severityRank(a.advisory.severity) - severityRank(b.advisory.severity));
+}
+
 export function computeVerdict(
   version: string,
   hasElts: boolean,
@@ -31,7 +49,7 @@ export function computeVerdict(
   const m = strings(lang);
   const base = (tier: Tier, t: { headline: string; detail: string }): Verdict => ({
     tier, supportPhase: 'unknown', recommendedVersion: null,
-    headline: t.headline, detail: t.detail, affecting: [], concerns: [],
+    headline: t.headline, detail: t.detail, affecting: [], bundled: [], concerns: [],
   });
 
   const staleSince = staleCheckedAt(data, now);
@@ -73,21 +91,13 @@ export function computeVerdict(
   const target = hasElts ? major.latestElts : major.latestFree;
   const horizonMs = hasElts ? eltsMs : maintainedMs;
 
-  const affecting: AffectingAdvisory[] = [];
-  for (const a of data.advisories) {
-    const e = a.affected[mk];
-    if (!e) continue;
-    if (compareVersions(canonical, e.from) < 0) continue;            // below the affected range
-    if (e.fixedIn && compareVersions(canonical, e.fixedIn) >= 0) continue; // already patched
-    affecting.push({
-      advisory: a,
-      fixVersion: e.fixedIn,
-      fixIsFree: e.fixedIn ? !e.fixedInElts : false,
-      optional: a.optional,
-    });
-  }
-  // Most severe first, so readers see the shape of the risk; stable sort keeps id order within a severity.
-  affecting.sort((a, b) => severityRank(a.advisory.severity) - severityRank(b.advisory.severity));
+  const affecting = affectingAdvisories(data.advisories, mk, canonical);
+  // ELTS lock files are not public, so make no bundled claim for an ELTS release.
+  const onElts = major.releases.some((r) => r.version === canonical && r.elts);
+  const bundled = (onElts ? [] : affectingAdvisories(data.bundled ?? [], mk, canonical)).map((x) => {
+    const enforcedIn = x.advisory.affected[mk]?.enforcedIn;
+    return { ...x, composerGuaranteed: typeof enforcedIn === 'string' && compareVersions(target, enforcedIn) >= 0 };
+  });
 
   // Only core (always-present) advisories drive the headline + count. Optional ones are
   // surfaced separately so the tool can't over-alarm about extensions that may not be installed.
@@ -130,7 +140,8 @@ export function computeVerdict(
   } else if (compareVersions(canonical, target) < 0) {
     tier = 'behind-maintenance';
     recommendedVersion = target;
-    text = m.behind(canonical, target);
+    const targetFixesLibraries = bundled.some((x) => x.fixVersion !== null && compareVersions(target, x.fixVersion) >= 0);
+    text = targetFixesLibraries ? m.behindLibraryFixes(canonical, target) : m.behind(canonical, target);
   } else {
     tier = 'all-good';
     text = m.allGood(eltsApplies && !hasElts);
@@ -141,6 +152,16 @@ export function computeVerdict(
   if (optional.length > 0 && tier !== 'review-optional') {
     const pkgs = [...new Set(optional.map((x) => x.advisory.package))].slice(0, 3);
     concerns.push(m.concernOptional(optional.length, pkgs));
+  }
+  if (bundled.length > 0) {
+    const fixedByTarget = bundled.filter((x) => x.fixVersion !== null && compareVersions(target, x.fixVersion) >= 0);
+    concerns.push(m.concernBundled({
+      count: bundled.length,
+      packages: [...new Set(bundled.map((x) => x.advisory.package))],
+      target,
+      fixed: fixedByTarget.length,
+      composerUpdateNeeded: fixedByTarget.some((x) => !x.composerGuaranteed),
+    }));
   }
   if (tier === 'critical-missing-fix' && coreUnfixed.length > 0) {
     concerns.push(m.concernSeparateUnfixed());
@@ -168,6 +189,7 @@ export function computeVerdict(
       // lists under "can't confirm"; the UI renders `affecting` unconditionally.
       concerns.length = 0;
       affecting.length = 0;
+      bundled.length = 0;
     } else {
       // Critical tier stands, but a stale dataset's "latest" may itself be obsolete — drop the
       // structured recommendation and flag the staleness up front.
@@ -181,5 +203,5 @@ export function computeVerdict(
     }
   }
 
-  return { tier, supportPhase, recommendedVersion, headline: text.headline, detail: text.detail, affecting, concerns };
+  return { tier, supportPhase, recommendedVersion, headline: text.headline, detail: text.detail, affecting, bundled, concerns };
 }

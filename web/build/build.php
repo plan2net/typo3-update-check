@@ -5,6 +5,9 @@ declare(strict_types=1);
 use Typo3UpdateCheckWeb\Build\Advisories;
 use Typo3UpdateCheckWeb\Build\AdvisoryDescription;
 use Typo3UpdateCheckWeb\Build\AffectedResolver;
+use Typo3UpdateCheckWeb\Build\BundledAdvisories;
+use Typo3UpdateCheckWeb\Build\BundledPackages;
+use Typo3UpdateCheckWeb\Build\CoreConstraints;
 use Typo3UpdateCheckWeb\Build\DataFile;
 use Typo3UpdateCheckWeb\Build\ExplanationCache;
 use Typo3UpdateCheckWeb\Build\ExplanationJudge;
@@ -28,6 +31,9 @@ $explanations = is_file($cachePath)
 $http = new Http();
 $majors = (new Typo3Releases($http))->build();
 $advisories = (new Advisories($http, new AffectedResolver()))->build($majors);
+$bundledPackages = (new BundledPackages($http->getText(...), __DIR__ . '/bundled-packages.json'))->forReleases($majors);
+$coreConstraints = (new CoreConstraints($http->getText(...)))->forPackages(Advisories::ALWAYS_PRESENT);
+$bundled = (new BundledAdvisories($http, new AffectedResolver()))->build($majors, $bundledPackages, $coreConstraints);
 
 // Packagist serves a just-published advisory unrated; read the rating off TYPO3's own bulletin
 // instead of showing "not rated". Before the overrides, so a curated severity still wins.
@@ -98,14 +104,15 @@ unset($advisory);
 // Deterministic ordering so the committed files change only on real data changes.
 ksort($majors);
 usort($advisories, static fn (array $a, array $b): int => strcmp((string) $a['id'], (string) $b['id']));
+usort($bundled, static fn (array $a, array $b): int => strcmp((string) $a['id'], (string) $b['id']));
 ksort($explanations);
 
 // Only rewrite typo3.json (with a fresh timestamp) when the meaningful body changed — a new
 // generatedAt every run would otherwise produce an empty daily commit.
-$body = ['majors' => $majors, 'advisories' => $advisories];
+$body = ['majors' => $majors, 'advisories' => $advisories, 'bundled' => $bundled];
 $existing = is_file($typoPath) ? json_decode((string) file_get_contents($typoPath), true) : null;
 $existingBody = is_array($existing)
-    ? ['majors' => $existing['majors'] ?? null, 'advisories' => $existing['advisories'] ?? null]
+    ? ['majors' => $existing['majors'] ?? null, 'advisories' => $existing['advisories'] ?? null, 'bundled' => $existing['bundled'] ?? null]
     : null;
 $changed = $body != $existingBody; // loose: ignore key order, compare values
 if ($changed) {
@@ -114,6 +121,6 @@ if ($changed) {
 DataFile::write($cachePath, $explanations);
 
 fwrite(STDOUT, sprintf(
-    "Wrote %d majors, %d advisories (%d newly explained); data %s.\n",
-    count($majors), count($advisories), $merged['newlyExplained'], $changed ? 'changed' : 'unchanged',
+    "Wrote %d majors, %d advisories (%d newly explained), %d bundled-library advisories; data %s.\n",
+    count($majors), count($advisories), $merged['newlyExplained'], count($bundled), $changed ? 'changed' : 'unchanged',
 ));

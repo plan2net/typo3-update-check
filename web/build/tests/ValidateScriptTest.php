@@ -46,6 +46,43 @@ final class ValidateScriptTest extends TestCase
         $this->assertStringContainsString('checkedAt', $output);
     }
 
+    #[Test]
+    public function acceptsBundledLibraryAdvisories(): void
+    {
+        $dataset = $this->validDataset();
+        $dataset['bundled'] = [['package' => 'symfony/yaml', 'optional' => false] + $dataset['advisories'][0]];
+
+        [$exitCode] = $this->runValidate($dataset);
+
+        $this->assertSame(0, $exitCode);
+    }
+
+    #[Test]
+    public function rejectsABundledLibraryAdvisoryWithoutAnAffectedRange(): void
+    {
+        $dataset = $this->validDataset();
+        $dataset['bundled'] = [['package' => 'symfony/yaml', 'affected' => []] + $dataset['advisories'][0]];
+
+        [$exitCode, $output] = $this->runValidate($dataset);
+
+        $this->assertSame(1, $exitCode);
+        $this->assertStringContainsString('bundled[0].affected', $output);
+    }
+
+    #[Test]
+    public function rejectsAMalformedEnforcedIn(): void
+    {
+        $dataset = $this->validDataset();
+        $bundled = ['package' => 'symfony/yaml'] + $dataset['advisories'][0];
+        $bundled['affected']['13']['enforcedIn'] = 37;
+        $dataset['bundled'] = [$bundled];
+
+        [$exitCode, $output] = $this->runValidate($dataset);
+
+        $this->assertSame(1, $exitCode);
+        $this->assertStringContainsString('bundled[0].affected.13.enforcedIn', $output);
+    }
+
     /**
      * @param array<string,mixed> $dataset
      * @return array{0:int,1:string}

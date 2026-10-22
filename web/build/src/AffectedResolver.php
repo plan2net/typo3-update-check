@@ -25,20 +25,32 @@ final class AffectedResolver
      */
     public function resolve(string $affectedVersions, array $releasesAsc): ?array
     {
+        try {
+            return $this->resolveBy(
+                static fn (string $version): bool => Semver::satisfies($version, $affectedVersions),
+                $releasesAsc,
+                $affectedVersions,
+            );
+        } catch (\UnexpectedValueException) {
+            return null; // malformed constraint: skip, do not abort the build (mirrors PackagistAdvisoryProvider)
+        }
+    }
+
+    /**
+     * @param \Closure(string):bool $isAffected receives a release version
+     * @param list<array{version:string,elts:bool}> $releasesAsc releases of one major (any order)
+     * @param string $label names the advisory in data-quality warnings
+     * @return array{from:string,fixedIn:string|null,fixedInElts:bool}|null
+     */
+    public function resolveBy(\Closure $isAffected, array $releasesAsc, string $label): ?array
+    {
         usort(
             $releasesAsc,
             static fn (array $a, array $b): int => Comparator::lessThan($a['version'], $b['version']) ? -1
                 : (Comparator::greaterThan($a['version'], $b['version']) ? 1 : 0),
         );
 
-        try {
-            $matched = array_map(
-                static fn (array $r): bool => Semver::satisfies($r['version'], $affectedVersions),
-                $releasesAsc,
-            );
-        } catch (\UnexpectedValueException) {
-            return null; // malformed constraint: skip, do not abort the build (mirrors PackagistAdvisoryProvider)
-        }
+        $matched = array_map(static fn (array $r): bool => $isAffected($r['version']), $releasesAsc);
 
         /** @var list<int> $indices */
         $indices = array_keys(array_filter($matched, static fn (bool $m): bool => $m));
@@ -56,7 +68,7 @@ final class AffectedResolver
             $warn = $this->warningSink ?? static function (string $warning): void {
                 fwrite(STDERR, $warning);
             };
-            $warn("warning: non-contiguous affected range, treating the span conservatively as affected: {$affectedVersions}\n");
+            $warn("warning: non-contiguous affected range, treating the span conservatively as affected: {$label}\n");
         }
 
         $fix = $releasesAsc[$max + 1] ?? null; // first release after the LAST affected one

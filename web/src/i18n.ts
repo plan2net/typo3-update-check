@@ -16,10 +16,12 @@ export interface UiLabels {
   yourVersion: string;
   tagLatest: string;
   tagSecurity: string;
+  tagThirdParty: string;
   tagElts: string;
   eltsShort: string;
   affects: string;
   mayApply: string;
+  bundledHeading: string;
   openAdvisories: string;
   today: string;
   zoneFree: string;
@@ -51,6 +53,14 @@ export interface TimelineAltInfo {
   ageMonths: number;
 }
 
+export interface BundledInfo {
+  count: number;
+  packages: string[];
+  target: string;
+  fixed: number;                 // fixed by updating to target
+  composerUpdateNeeded: boolean; // some of those fixes are not forced on Composer installs by target
+}
+
 export interface Strings {
   tierLabel: Record<Tier, string>;
   missingFix(version: string, target: string, count: number, severity: string | null, hasElts: boolean): TierText;
@@ -61,11 +71,14 @@ export interface Strings {
   soon(major: string, endsIso: string, hasElts: boolean): TierText;
   reviewOptional(count: number): TierText;
   behind(version: string, target: string): TierText;
+  behindLibraryFixes(version: string, target: string): TierText;
   allGood(free: boolean): TierText;
   stale(updatedIso: string): TierText;
   unknownVersion(): TierText;
   unknownMajor(major: string, maintainedIso: string, eltsIso: string): TierText;
   concernOptional(count: number, packages: string[]): string;
+  concernBundled(info: BundledInfo): string;
+  bundledCaveat(packageName: string, fixVersion: string | null, composerGuaranteed: boolean): string;
   concernSeparateUnfixed(): string;
   concernStale(updatedIso: string): string;
   concernMaybeNewer(updatedIso: string): string;
@@ -137,6 +150,10 @@ const EN: Strings = {
     headline: 'Secure, but a newer release is available.',
     detail: `Updating ${version} → ${target} is low-risk and recommended.`,
   }),
+  behindLibraryFixes: (version, target) => ({
+    headline: 'A newer release fixes security issues in shipped libraries.',
+    detail: `TYPO3 itself has no known issue here. Updating ${version} → ${target} is low-risk and recommended.`,
+  }),
   allGood: (free) => ({
     headline: 'Up to date.',
     detail: `This is the latest ${free ? 'free ' : ''}release of a supported version. Nothing to do right now.`,
@@ -157,6 +174,24 @@ const EN: Strings = {
   }),
   concernOptional: (count, packages) =>
     `${count} ${plural(count, 'advisory', 'advisories')} may also apply depending on installed extensions (${packages.join(', ')}).`,
+  concernBundled: ({ count, packages, target, fixed, composerUpdateNeeded }) => {
+    const unfixed = count - fixed;
+    return `${count} known security ${plural(count, 'issue', 'issues')} in ${plural(packages.length, 'a library', 'libraries')} ` +
+      `shipped with this TYPO3 version (${packages.slice(0, 3).join(', ')}). ` +
+      (unfixed === 0
+        ? `Updating to TYPO3 ${target} fixes ${plural(count, 'it', 'them')}.`
+        : fixed > 0
+          ? `Updating to TYPO3 ${target} fixes ${fixed}; ${unfixed} ${plural(unfixed, 'has', 'have')} no fix in a free TYPO3 release yet.`
+          : `No free TYPO3 update fixes ${plural(count, 'it', 'them')} yet.`) +
+      (fixed > 0 && composerUpdateNeeded ? ' With Composer, also run composer update so the libraries are updated too.' : '') +
+      (unfixed > 0 ? ' With Composer, composer audit shows whether you can install a fixed library version yourself.' : '');
+  },
+  bundledCaveat: (packageName, fixVersion, composerGuaranteed) =>
+    `Library ${packageName}. ` +
+    (fixVersion
+      ? `Fixed in TYPO3 ${fixVersion}.${composerGuaranteed ? '' : ' With Composer, also run composer update.'}`
+      : 'No free TYPO3 release fixes it yet. With Composer, composer audit shows whether a fixed version can be installed.') +
+    " We don't check whether TYPO3 actually uses the affected code.",
   concernSeparateUnfixed: () => "A separate known issue has no released fix yet, so updating won't resolve it.",
   concernStale: (updatedIso) =>
     `Based on security data from ${fmtDate(updatedIso, 'en')}, which may be out of date. Confirm the current release before updating.`,
@@ -202,10 +237,12 @@ const EN: Strings = {
     yourVersion: 'Installed version',
     tagLatest: 'latest free release',
     tagSecurity: 'security release',
+    tagThirdParty: '3rd-party security fixes',
     tagElts: 'ELTS',
     eltsShort: 'We have ELTS',
     affects: 'Affects your site',
     mayApply: 'Only if you use these extensions',
+    bundledHeading: 'Libraries shipped with TYPO3',
     openAdvisories: 'Open advisories',
     today: 'Today',
     zoneFree: 'Free security updates',
@@ -280,6 +317,10 @@ const DE: Strings = {
     headline: 'Sicher, aber ein neueres Release ist verfügbar.',
     detail: `Das Update ${version} → ${target} ist risikoarm und empfohlen.`,
   }),
+  behindLibraryFixes: (version, target) => ({
+    headline: 'Ein neueres Release behebt Sicherheitslücken in mitgelieferten Bibliotheken.',
+    detail: `TYPO3 selbst hat hier keine bekannte Lücke. Das Update ${version} → ${target} ist risikoarm und empfohlen.`,
+  }),
   allGood: (free) => ({
     headline: 'Auf dem neuesten Stand.',
     detail: `Das ist das aktuellste ${free ? 'kostenlose ' : ''}Release einer unterstützten Version. Derzeit ist nichts zu tun.`,
@@ -300,6 +341,24 @@ const DE: Strings = {
   }),
   concernOptional: (count, packages) =>
     `${count} ${plural(count, 'Meldung kann', 'Meldungen können')} außerdem zutreffen, je nachdem, welche Erweiterungen installiert sind (${packages.join(', ')}).`,
+  concernBundled: ({ count, packages, target, fixed, composerUpdateNeeded }) => {
+    const unfixed = count - fixed;
+    return `${count} bekannte ${plural(count, 'Sicherheitslücke', 'Sicherheitslücken')} in ` +
+      `${plural(packages.length, 'einer mitgelieferten Bibliothek', 'mitgelieferten Bibliotheken')} (${packages.slice(0, 3).join(', ')}). ` +
+      (unfixed === 0
+        ? `Das Update auf TYPO3 ${target} behebt das.`
+        : fixed > 0
+          ? `Das Update auf TYPO3 ${target} behebt ${fixed}; ${unfixed} ${plural(unfixed, 'ist', 'sind')} noch in keinem kostenlosen TYPO3-Release behoben.`
+          : 'Noch kein kostenloses TYPO3-Update behebt das.') +
+      (fixed > 0 && composerUpdateNeeded ? ' Bei Composer zusätzlich composer update ausführen, damit auch die Bibliotheken aktualisiert werden.' : '') +
+      (unfixed > 0 ? ' Bei Composer zeigt composer audit, ob Sie selbst eine behobene Version installieren können.' : '');
+  },
+  bundledCaveat: (packageName, fixVersion, composerGuaranteed) =>
+    `Bibliothek ${packageName}. ` +
+    (fixVersion
+      ? `Behoben in TYPO3 ${fixVersion}.${composerGuaranteed ? '' : ' Bei Composer zusätzlich composer update ausführen.'}`
+      : 'Noch in keinem kostenlosen TYPO3-Release behoben. Bei Composer zeigt composer audit, ob eine behobene Version installierbar ist.') +
+    ' Ob TYPO3 den betroffenen Code tatsächlich nutzt, prüfen wir nicht.',
   concernSeparateUnfixed: () => 'Ein weiteres bekanntes Problem hat noch keinen Fix, das Update behebt es also nicht.',
   concernStale: (updatedIso) =>
     `Basiert auf Sicherheitsdaten vom ${fmtDate(updatedIso, 'de')} und ist möglicherweise nicht mehr aktuell. Prüfen Sie vor dem Update das aktuelle Release.`,
@@ -347,10 +406,12 @@ const DE: Strings = {
     yourVersion: 'Installierte Version',
     tagLatest: 'neuestes kostenloses Release',
     tagSecurity: 'Sicherheitsrelease',
+    tagThirdParty: 'Sicherheitsfixes in Drittanbieter-Bibliotheken',
     tagElts: 'ELTS',
     eltsShort: 'Wir haben ELTS',
     affects: 'Betrifft Ihre Website',
     mayApply: 'Nur bei diesen Erweiterungen',
+    bundledHeading: 'Mit TYPO3 ausgelieferte Bibliotheken',
     openAdvisories: 'Offene Meldungen',
     today: 'Heute',
     zoneFree: 'Kostenlose Sicherheitsupdates',

@@ -82,10 +82,10 @@ jobs:
 
       - name: Commit refreshed data (persists the explanation cache) — only after validate + build pass
         run: |
-          if [ -n "$(git status --porcelain web/public/data)" ]; then
+          if [ -n "$(git status --porcelain web/public/data web/build/bundled-packages.json)" ]; then
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
-            git add web/public/data
+            git add web/public/data web/build/bundled-packages.json
             git commit -m "chore(data): refresh TYPO3 release/advisory data"
             git pull --rebase # a human push during the run must not fail the deploy
             git push

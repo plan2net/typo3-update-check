@@ -15,7 +15,7 @@ final class Advisories
      * Packages present in every TYPO3 install. Advisories filed under these are "core"
      * (counted in the headline); anything else is "optional" — may apply only if installed (§7).
      */
-    private const ALWAYS_PRESENT = [
+    public const ALWAYS_PRESENT = [
         'typo3/cms',
         'typo3/cms-core',
         'typo3/cms-backend',
@@ -206,7 +206,7 @@ final class Advisories
         return array_values(array_diff_key($advisories, $drop));
     }
 
-    private function higherSeverity(string $a, string $b): string
+    public static function higherSeverity(string $a, string $b): string
     {
         $ra = array_search($a, self::SEVERITY_RANK, true);
         $rb = array_search($b, self::SEVERITY_RANK, true);
