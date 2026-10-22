@@ -153,6 +153,9 @@ export function computeVerdict(
     const pkgs = [...new Set(optional.map((x) => x.advisory.package))].slice(0, 3);
     concerns.push(m.concernOptional(optional.length, pkgs));
   }
+  if (onElts) {
+    concerns.push(m.concernEltsLibrariesUnknown());
+  }
   if (bundled.length > 0) {
     const fixedByTarget = bundled.filter((x) => x.fixVersion !== null && compareVersions(target, x.fixVersion) >= 0);
     concerns.push(m.concernBundled({

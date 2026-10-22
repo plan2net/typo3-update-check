@@ -78,6 +78,7 @@ export interface Strings {
   unknownMajor(major: string, maintainedIso: string, eltsIso: string): TierText;
   concernOptional(count: number, packages: string[]): string;
   concernBundled(info: BundledInfo): string;
+  concernEltsLibrariesUnknown(): string;
   bundledCaveat(packageName: string, fixVersion: string | null, composerGuaranteed: boolean): string;
   concernSeparateUnfixed(): string;
   concernStale(updatedIso: string): string;
@@ -186,6 +187,8 @@ const EN: Strings = {
       (fixed > 0 && composerUpdateNeeded ? ' With Composer, also run composer update so the libraries are updated too.' : '') +
       (unfixed > 0 ? ' With Composer, composer audit shows whether you can install a fixed library version yourself.' : '');
   },
+  concernEltsLibrariesUnknown: () =>
+    "The libraries shipped with ELTS releases are not public, so we can't check them. With Composer, composer audit shows your actual state.",
   bundledCaveat: (packageName, fixVersion, composerGuaranteed) =>
     `Library ${packageName}. ` +
     (fixVersion
@@ -353,6 +356,8 @@ const DE: Strings = {
       (fixed > 0 && composerUpdateNeeded ? ' Bei Composer zusätzlich composer update ausführen, damit auch die Bibliotheken aktualisiert werden.' : '') +
       (unfixed > 0 ? ' Bei Composer zeigt composer audit, ob Sie selbst eine behobene Version installieren können.' : '');
   },
+  concernEltsLibrariesUnknown: () =>
+    'Die mit ELTS-Releases ausgelieferten Bibliotheken sind nicht öffentlich einsehbar, daher können wir sie nicht prüfen. Bei Composer zeigt composer audit den tatsächlichen Stand.',
   bundledCaveat: (packageName, fixVersion, composerGuaranteed) =>
     `Bibliothek ${packageName}. ` +
     (fixVersion

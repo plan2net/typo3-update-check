@@ -397,5 +397,11 @@ describe('computeVerdict — libraries shipped with TYPO3', () => {
   it('makes no bundled claim for an ELTS release, whose bundled libraries are not public', () => {
     const v = computeVerdict('12.4.46', true, withBundled, NOW);
     expect(v.bundled).toHaveLength(0);
+    expect(v.concerns.some((c) => /ELTS/.test(c) && /composer audit/.test(c))).toBe(true);
+  });
+
+  it('adds no ELTS library note for a free release', () => {
+    const v = computeVerdict('13.4.31', false, withBundled, NOW);
+    expect(v.concerns.some((c) => /composer audit/.test(c))).toBe(false);
   });
 });
