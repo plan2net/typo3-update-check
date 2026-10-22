@@ -1,12 +1,18 @@
 {
-    "generatedAt": "2026-10-13T12:02:43+00:00",
+    "generatedAt": "2026-10-22T09:30:40+00:00",
     "majors": {
         "12": {
             "maintainedUntil": "2026-04-30T00:00:00+02:00",
             "eltsUntil": "2030-04-30T00:00:00+02:00",
             "latestFree": "12.4.45",
-            "latestElts": "12.4.50",
+            "latestElts": "12.4.51",
             "releases": [
+                {
+                    "version": "12.4.51",
+                    "date": "2026-10-22T08:39:41+02:00",
+                    "type": "regular",
+                    "elts": true
+                },
                 {
                     "version": "12.4.50",
                     "date": "2026-10-09T11:14:30+02:00",
@@ -360,9 +366,15 @@
         "13": {
             "maintainedUntil": "2027-12-31T00:00:00+01:00",
             "eltsUntil": "2030-12-31T00:00:00+01:00",
-            "latestFree": "13.4.36",
-            "latestElts": "13.4.36",
+            "latestFree": "13.4.37",
+            "latestElts": "13.4.37",
             "releases": [
+                {
+                    "version": "13.4.37",
+                    "date": "2026-10-22T09:06:28+02:00",
+                    "type": "regular",
+                    "elts": false
+                },
                 {
                     "version": "13.4.36",
                     "date": "2026-10-09T09:27:31+02:00",
@@ -638,9 +650,15 @@
         "14": {
             "maintainedUntil": "2029-06-30T00:00:00+02:00",
             "eltsUntil": "2032-06-30T00:00:00+02:00",
-            "latestFree": "14.3.9",
-            "latestElts": "14.3.9",
+            "latestFree": "14.3.10",
+            "latestElts": "14.3.10",
             "releases": [
+                {
+                    "version": "14.3.10",
+                    "date": "2026-10-22T09:04:45+02:00",
+                    "type": "regular",
+                    "elts": false
+                },
                 {
                     "version": "14.3.9",
                     "date": "2026-10-13T09:22:58+02:00",
