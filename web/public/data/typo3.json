@@ -1,5 +1,5 @@
 {
-    "generatedAt": "2026-10-22T09:30:40+00:00",
+    "generatedAt": "2026-10-22T14:49:06+00:00",
     "majors": {
         "12": {
             "maintainedUntil": "2026-04-30T00:00:00+02:00",
@@ -2870,6 +2870,1076 @@
                     "urgency": "Zeitnah einplanen, da eine der beiden Lücken ohne besondere Einstellung ausgenutzt werden kann. Die zweite betrifft nur Seiten, auf denen der Filter so eingestellt ist, dass er bestimmte Rohtext-Inhalte unverändert durchlässt."
                 }
             }
+        }
+    ],
+    "bundled": [
+        {
+            "id": "PKSA-28rh-rzzn-djk4",
+            "cve": "CVE-2026-45068",
+            "package": "symfony/mailer",
+            "optional": false,
+            "severity": "medium",
+            "title": "CVE-2026-45068: Argument Injection in SendmailTransport via Dash-Prefixed Recipient Address",
+            "affectedVersions": ">=2.0.0,<3.0.0|>=3.0.0,<4.0.0|>=4.0.0,<5.0.0|>=5.0.0,<5.1.0|>=5.1.0,<5.2.0|>=5.2.0,<5.3.0|>=5.3.0,<5.4.0|>=5.4.0,<5.4.52|>=6.0.0,<6.1.0|>=6.1.0,<6.2.0|>=6.2.0,<6.3.0|>=6.3.0,<6.4.0|>=6.4.0,<6.4.40|>=7.0.0,<7.1.0|>=7.1.0,<7.2.0|>=7.2.0,<7.3.0|>=7.3.0,<7.4.0|>=7.4.0,<7.4.12|>=8.0.0,<8.0.12",
+            "link": "https://symfony.com/cve-2026-45068",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": "14.3.2",
+                    "fixedInElts": false,
+                    "enforcedIn": "14.3.2"
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": "13.4.30",
+                    "fixedInElts": false,
+                    "enforcedIn": "13.4.30"
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
+            "id": "PKSA-2n2k-66v2-bwg3",
+            "cve": "CVE-2026-45067",
+            "package": "symfony/mime",
+            "optional": false,
+            "severity": "high",
+            "title": "CVE-2026-45067: Email Header / SMTP Command Injection via CRLF in Symfony\\Component\\Mime\\Address",
+            "affectedVersions": ">=2.0.0,<3.0.0|>=3.0.0,<4.0.0|>=4.0.0,<5.0.0|>=5.0.0,<5.1.0|>=5.1.0,<5.2.0|>=5.2.0,<5.3.0|>=5.3.0,<5.4.0|>=5.4.0,<5.4.52|>=6.0.0,<6.1.0|>=6.1.0,<6.2.0|>=6.2.0,<6.3.0|>=6.3.0,<6.4.0|>=6.4.0,<6.4.40|>=7.0.0,<7.1.0|>=7.1.0,<7.2.0|>=7.2.0,<7.3.0|>=7.3.0,<7.4.0|>=7.4.0,<7.4.12|>=8.0.0,<8.0.12",
+            "link": "https://symfony.com/cve-2026-45067",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": "14.3.2",
+                    "fixedInElts": false,
+                    "enforcedIn": "14.3.2"
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": "13.4.30",
+                    "fixedInElts": false,
+                    "enforcedIn": "13.4.30"
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
+            "id": "PKSA-365x-2zjk-pt47",
+            "cve": "CVE-2025-64500",
+            "package": "symfony/http-foundation",
+            "optional": false,
+            "severity": "high",
+            "title": "CVE-2025-64500: Incorrect parsing of PATH_INFO can lead to limited authorization bypass",
+            "affectedVersions": ">=2.0.0,<3.0.0|>=3.0.0,<4.0.0|>=4.0.0,<5.0.0|>=5.0.0,<5.1.0|>=5.1.0,<5.2.0|>=5.2.0,<5.3.0|>=5.3.0,<5.4.0|>=5.4.0,<5.4.50|>=6.0.0,<6.1.0|>=6.1.0,<6.2.0|>=6.2.0,<6.3.0|>=6.3.0,<6.4.0|>=6.4.0,<6.4.29|>=7.0.0,<7.1.0|>=7.1.0,<7.2.0|>=7.2.0,<7.3.0|>=7.3.0,<7.3.7",
+            "link": "https://symfony.com/blog/cve-2025-64500-incorrect-parsing-of-path-info-can-lead-to-limited-authorization-bypass",
+            "affected": {
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": "13.4.21",
+                    "fixedInElts": false,
+                    "enforcedIn": "13.4.31"
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": "12.4.40",
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
+            "id": "PKSA-4g5g-4rkv-myqs",
+            "cve": "CVE-2025-55166",
+            "package": "enshrined/svg-sanitize",
+            "optional": false,
+            "severity": "medium",
+            "title": "svg-sanitizer Bypasses Attribute Sanitization",
+            "affectedVersions": "<0.22.0",
+            "link": "https://github.com/advisories/GHSA-22wq-q86m-83fh",
+            "affected": {
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": "13.4.17",
+                    "fixedInElts": false,
+                    "enforcedIn": "13.4.17"
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": "12.4.36",
+                    "fixedInElts": false,
+                    "enforcedIn": "12.4.36"
+                }
+            },
+            "explanation": null
+        },
+        {
+            "id": "PKSA-6j95-1jtb-x6wc",
+            "cve": "CVE-2026-107381",
+            "package": "enshrined/svg-sanitize",
+            "optional": false,
+            "severity": "medium",
+            "title": "svg-sanitizer: Mixed-case xlink:HrEf skips the `<use>` nesting-DoS check in Resolver::processReferences",
+            "affectedVersions": "<=0.22.0",
+            "link": "https://github.com/advisories/GHSA-m9xh-6747-9r6f",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": "14.3.8",
+                    "fixedInElts": false,
+                    "enforcedIn": "14.3.8"
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": "13.4.36",
+                    "fixedInElts": false,
+                    "enforcedIn": "13.4.36"
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
+            "id": "PKSA-7qs6-zvnz-h66r",
+            "cve": "CVE-2026-55766",
+            "package": "guzzlehttp/psr7",
+            "optional": false,
+            "severity": "medium",
+            "title": "CRLF injection in HTTP start-line serialization",
+            "affectedVersions": "<2.12.1",
+            "link": "https://github.com/guzzle/psr7/security/advisories/GHSA-vm85-hxw5-5432",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": "14.3.5",
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": "13.4.33",
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
+            "id": "PKSA-8j6w-3kr7-s9xk",
+            "cve": "CVE-2026-107380",
+            "package": "enshrined/svg-sanitize",
+            "optional": false,
+            "severity": "medium",
+            "title": "enshrined/svg-sanitize: Stored XSS via DTD Entity / HTML5 Named Character Reference Collision",
+            "affectedVersions": "<=0.22.0",
+            "link": "https://github.com/advisories/GHSA-9rjx-3jch-6vjf",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": "14.3.8",
+                    "fixedInElts": false,
+                    "enforcedIn": "14.3.8"
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": "13.4.36",
+                    "fixedInElts": false,
+                    "enforcedIn": "13.4.36"
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
+            "id": "PKSA-93qv-9n9h-6k6p",
+            "cve": "CVE-2026-55767",
+            "package": "guzzlehttp/guzzle",
+            "optional": false,
+            "severity": "medium",
+            "title": "Dot-only cookie domains match all hosts",
+            "affectedVersions": "<7.12.1",
+            "link": "https://github.com/guzzle/guzzle/security/advisories/GHSA-cwxw-98qj-8qjx",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": "14.3.5",
+                    "fixedInElts": false,
+                    "enforcedIn": "14.3.5"
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": "13.4.33",
+                    "fixedInElts": false,
+                    "enforcedIn": "13.4.33"
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
+            "id": "PKSA-b14r-zh1d-vdrc",
+            "cve": "CVE-2026-45133",
+            "package": "symfony/yaml",
+            "optional": false,
+            "severity": "low",
+            "title": "CVE-2026-45133: YAML Parser Stack Exhaustion via Unbounded Recursion in Nested Blocks, Sequences, and Mappings",
+            "affectedVersions": ">=2.0.0,<3.0.0|>=3.0.0,<4.0.0|>=4.0.0,<5.0.0|>=5.0.0,<5.1.0|>=5.1.0,<5.2.0|>=5.2.0,<5.3.0|>=5.3.0,<5.4.0|>=5.4.0,<5.4.52|>=6.0.0,<6.1.0|>=6.1.0,<6.2.0|>=6.2.0,<6.3.0|>=6.3.0,<6.4.0|>=6.4.0,<6.4.40|>=7.0.0,<7.1.0|>=7.1.0,<7.2.0|>=7.2.0,<7.3.0|>=7.3.0,<7.4.0|>=7.4.0,<7.4.12|>=8.0.0,<8.0.12",
+            "link": "https://symfony.com/cve-2026-45133",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": "14.3.2",
+                    "fixedInElts": false,
+                    "enforcedIn": "14.3.2"
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": "13.4.30",
+                    "fixedInElts": false,
+                    "enforcedIn": "13.4.30"
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
+            "id": "PKSA-b35n-565h-rs4q",
+            "cve": "CVE-2024-50345",
+            "package": "symfony/http-foundation",
+            "optional": false,
+            "severity": "low",
+            "title": "CVE-2024-50345: Open redirect via browser-sanitized URLs",
+            "affectedVersions": ">=2.0.0,<3.0.0|>=3.0.0,<4.0.0|>=4.0.0,<5.0.0|>=5.0.0,<5.1.0|>=5.1.0,<5.2.0|>=5.2.0,<5.3.0|>=5.3.0,<5.4.0|>=5.4.0,<5.4.46|>=6.0.0,<6.1.0|>=6.1.0,<6.2.0|>=6.2.0,<6.3.0|>=6.3.0,<6.4.0|>=6.4.0,<6.4.14|>=7.0.0,<7.1.0|>=7.1.0,<7.1.7",
+            "link": "https://symfony.com/cve-2024-50345",
+            "affected": {
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": "13.4.1",
+                    "fixedInElts": false,
+                    "enforcedIn": "13.4.10"
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": "12.4.23",
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
+            "id": "PKSA-bbs6-q5q9-f3t4",
+            "cve": "CVE-2026-67353",
+            "package": "guzzlehttp/guzzle",
+            "optional": false,
+            "severity": "medium",
+            "title": "Guzzle: Unbounded response cookies risk denial of service",
+            "affectedVersions": "<7.15.1",
+            "link": "https://github.com/advisories/GHSA-f283-ghqc-fg79",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": "14.3.6",
+                    "fixedInElts": false,
+                    "enforcedIn": "14.3.6"
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": "13.4.34",
+                    "fixedInElts": false,
+                    "enforcedIn": "13.4.34"
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
+            "id": "PKSA-bcdd-5xc7-gwfb",
+            "cve": "CVE-2026-59883",
+            "package": "guzzlehttp/guzzle",
+            "optional": false,
+            "severity": "medium",
+            "title": "Guzzle: Cookie Disclosure and Injection via IP-Address Domains",
+            "affectedVersions": "<7.12.3",
+            "link": "https://github.com/advisories/GHSA-g446-98w2-8p5w",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": "14.3.5",
+                    "fixedInElts": false,
+                    "enforcedIn": "14.3.6"
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": "13.4.33",
+                    "fixedInElts": false,
+                    "enforcedIn": "13.4.34"
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
+            "id": "PKSA-bf7t-jnpz-492k",
+            "cve": "CVE-2026-48784",
+            "package": "symfony/routing",
+            "optional": false,
+            "severity": "medium",
+            "title": "CVE-2026-48784: UrlGenerator Dot-Segment Encoding Skips Every Other Chained `../` or `./` → Generated URL Collapses Off-Route Under RFC 3986 Normalization",
+            "affectedVersions": ">=2.0.0,<3.0.0|>=3.0.0,<4.0.0|>=4.0.0,<5.0.0|>=5.0.0,<5.1.0|>=5.1.0,<5.2.0|>=5.2.0,<5.3.0|>=5.3.0,<5.4.0|>=5.4.0,<5.4.53|>=6.0.0,<6.1.0|>=6.1.0,<6.2.0|>=6.2.0,<6.3.0|>=6.3.0,<6.4.0|>=6.4.0,<6.4.41|>=7.0.0,<7.1.0|>=7.1.0,<7.2.0|>=7.2.0,<7.3.0|>=7.3.0,<7.4.0|>=7.4.0,<7.4.13|>=8.0.0,<8.0.13",
+            "link": "https://symfony.com/cve-2026-48784",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": "14.3.3",
+                    "fixedInElts": false,
+                    "enforcedIn": "14.3.3"
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": "13.4.31",
+                    "fixedInElts": false,
+                    "enforcedIn": "13.4.31"
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
+            "id": "PKSA-cbx2-m9db-bmzd",
+            "cve": "CVE-2026-107379",
+            "package": "enshrined/svg-sanitize",
+            "optional": false,
+            "severity": "medium",
+            "title": "enshrined/svg-sanitize: Denial of Service via DTD Attribute Declaration Crash",
+            "affectedVersions": "<=0.22.0",
+            "link": "https://github.com/advisories/GHSA-v383-3rw5-q8rf",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": "14.3.8",
+                    "fixedInElts": false,
+                    "enforcedIn": "14.3.8"
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": "13.4.36",
+                    "fixedInElts": false,
+                    "enforcedIn": "13.4.36"
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
+            "id": "PKSA-cnw1-2ytm-cgr8",
+            "cve": "CVE-2026-69245",
+            "package": "guzzlehttp/guzzle",
+            "optional": false,
+            "severity": "medium",
+            "title": "Guzzle: Noncanonical cookie domain keeps subdomain scope",
+            "affectedVersions": ">=8.0.0,<8.0.1|<7.15.2",
+            "link": "https://github.com/advisories/GHSA-f7vp-7xgx-4w4r",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": "14.3.6",
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": "13.4.34",
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
+            "id": "PKSA-ft77-7h5f-p3r6",
+            "cve": "CVE-2026-45305",
+            "package": "symfony/yaml",
+            "optional": false,
+            "severity": "low",
+            "title": "CVE-2026-45305: YAML Parser ReDoS via Catastrophic Backtracking in Parser::cleanup() Regex",
+            "affectedVersions": ">=2.0.0,<3.0.0|>=3.0.0,<4.0.0|>=4.0.0,<5.0.0|>=5.0.0,<5.1.0|>=5.1.0,<5.2.0|>=5.2.0,<5.3.0|>=5.3.0,<5.4.0|>=5.4.0,<5.4.52|>=6.0.0,<6.1.0|>=6.1.0,<6.2.0|>=6.2.0,<6.3.0|>=6.3.0,<6.4.0|>=6.4.0,<6.4.40|>=7.0.0,<7.1.0|>=7.1.0,<7.2.0|>=7.2.0,<7.3.0|>=7.3.0,<7.4.0|>=7.4.0,<7.4.12|>=8.0.0,<8.0.12",
+            "link": "https://symfony.com/cve-2026-45305",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": "14.3.2",
+                    "fixedInElts": false,
+                    "enforcedIn": "14.3.2"
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": "13.4.30",
+                    "fixedInElts": false,
+                    "enforcedIn": "13.4.30"
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
+            "id": "PKSA-fy2t-3c5f-827y",
+            "cve": "CVE-2026-67354",
+            "package": "guzzlehttp/guzzle",
+            "optional": false,
+            "severity": "medium",
+            "title": "Guzzle: URI fragments disclosed in redirect Referer headers",
+            "affectedVersions": "<7.15.1",
+            "link": "https://github.com/advisories/GHSA-h95v-h523-3mw8",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": "14.3.6",
+                    "fixedInElts": false,
+                    "enforcedIn": "14.3.6"
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": "13.4.34",
+                    "fixedInElts": false,
+                    "enforcedIn": "13.4.34"
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
+            "id": "PKSA-gcrk-3vtt-1r14",
+            "cve": "CVE-2026-69246",
+            "package": "guzzlehttp/guzzle",
+            "optional": false,
+            "severity": "high",
+            "title": "Guzzle: Noncanonical host can bypass host-based checks",
+            "affectedVersions": ">=8.0.0,<8.0.1|<7.15.2",
+            "link": "https://github.com/advisories/GHSA-v5mv-p594-2x33",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": "14.3.6",
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": "13.4.34",
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
+            "id": "PKSA-gm5x-j3mz-71n9",
+            "cve": "CVE-2026-49214",
+            "package": "guzzlehttp/psr7",
+            "optional": false,
+            "severity": "medium",
+            "title": "CRLF injection via URI host component",
+            "affectedVersions": "<2.10.2",
+            "link": "https://github.com/guzzle/psr7/security/advisories/GHSA-hq7v-mx3g-29hw",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": "14.3.5",
+                    "fixedInElts": false,
+                    "enforcedIn": "14.3.5"
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": "13.4.33",
+                    "fixedInElts": false,
+                    "enforcedIn": "13.4.33"
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
+            "id": "PKSA-hn62-zkx4-1y5q",
+            "cve": "CVE-2023-29197",
+            "package": "guzzlehttp/psr7",
+            "optional": false,
+            "severity": "medium",
+            "title": "Improper header validation",
+            "affectedVersions": ">=2,<2.4.5|<1.9.1",
+            "link": "https://github.com/guzzle/psr7/security/advisories/GHSA-wxmh-65f7-jcvw",
+            "affected": {
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": "12.4.0",
+                    "fixedInElts": false,
+                    "enforcedIn": "12.4.0"
+                }
+            },
+            "explanation": null
+        },
+        {
+            "id": "PKSA-jj5t-2zs1-dcfm",
+            "cve": "CVE-2026-48998",
+            "package": "guzzlehttp/psr7",
+            "optional": false,
+            "severity": "medium",
+            "title": "Host confusion via authority reinterpretation",
+            "affectedVersions": "<2.10.2",
+            "link": "https://github.com/guzzle/psr7/security/advisories/GHSA-34xg-wgjx-8xph",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": "14.3.5",
+                    "fixedInElts": false,
+                    "enforcedIn": "14.3.5"
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": "13.4.33",
+                    "fixedInElts": false,
+                    "enforcedIn": "13.4.33"
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
+            "id": "PKSA-k22t-f949-t9g6",
+            "cve": "CVE-2026-55568",
+            "package": "guzzlehttp/guzzle",
+            "optional": false,
+            "severity": "medium",
+            "title": "Silent HTTPS proxy downgrade to cleartext",
+            "affectedVersions": "<7.12.1",
+            "link": "https://github.com/guzzle/guzzle/security/advisories/GHSA-wpwq-4j6v-78m3",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": "14.3.5",
+                    "fixedInElts": false,
+                    "enforcedIn": "14.3.5"
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": "13.4.33",
+                    "fixedInElts": false,
+                    "enforcedIn": "13.4.33"
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
+            "id": "PKSA-pwsk-hy21-4gby",
+            "cve": "CVE-2026-67339",
+            "package": "guzzlehttp/guzzle",
+            "optional": false,
+            "severity": "medium",
+            "title": "Guzzle: Proxy-Authorization headers can be sent to origin servers",
+            "affectedVersions": "<7.14.2",
+            "link": "https://github.com/advisories/GHSA-94pj-82f3-465w",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": "14.3.6",
+                    "fixedInElts": false,
+                    "enforcedIn": "14.3.6"
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": "13.4.34",
+                    "fixedInElts": false,
+                    "enforcedIn": "13.4.34"
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
+            "id": "PKSA-qxvb-2bpp-dnk6",
+            "cve": "CVE-2026-67355",
+            "package": "guzzlehttp/guzzle",
+            "optional": false,
+            "severity": "medium",
+            "title": "Guzzle: Host-only cookie scope is not preserved",
+            "affectedVersions": "<7.15.1",
+            "link": "https://github.com/advisories/GHSA-wm3w-8rrp-j577",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": "14.3.6",
+                    "fixedInElts": false,
+                    "enforcedIn": "14.3.6"
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": "13.4.34",
+                    "fixedInElts": false,
+                    "enforcedIn": "13.4.34"
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
+            "id": "PKSA-rkkf-636k-qjb3",
+            "cve": "CVE-2026-24739",
+            "package": "symfony/process",
+            "optional": false,
+            "severity": "medium",
+            "title": "Symfony's incorrect argument escaping under MSYS2/Git Bash can lead to destructive file operations on Windows",
+            "affectedVersions": ">=8.0,<8.0.5|>=7.4,<7.4.5|>=7.3,<7.3.11|>=6.4,<6.4.33|<5.4.51",
+            "link": "https://github.com/advisories/GHSA-r39x-jcww-82v6",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": "14.1.1",
+                    "fixedInElts": false,
+                    "enforcedIn": "14.3.0"
+                },
+                "13": {
+                    "from": "13.4.20",
+                    "fixedIn": "13.4.25",
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
+            "id": "PKSA-v5yj-8nmz-sk2q",
+            "cve": "CVE-2026-45304",
+            "package": "symfony/yaml",
+            "optional": false,
+            "severity": "low",
+            "title": "CVE-2026-45304: YAML Parser Exponential Memory Allocation via Recursive Collection-Alias Expansion (\"Billion Laughs\")",
+            "affectedVersions": ">=2.0.0,<3.0.0|>=3.0.0,<4.0.0|>=4.0.0,<5.0.0|>=5.0.0,<5.1.0|>=5.1.0,<5.2.0|>=5.2.0,<5.3.0|>=5.3.0,<5.4.0|>=5.4.0,<5.4.52|>=6.0.0,<6.1.0|>=6.1.0,<6.2.0|>=6.2.0,<6.3.0|>=6.3.0,<6.4.0|>=6.4.0,<6.4.40|>=7.0.0,<7.1.0|>=7.1.0,<7.2.0|>=7.2.0,<7.3.0|>=7.3.0,<7.4.0|>=7.4.0,<7.4.12|>=8.0.0,<8.0.12",
+            "link": "https://symfony.com/cve-2026-45304",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": "14.3.2",
+                    "fixedInElts": false,
+                    "enforcedIn": "14.3.2"
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": "13.4.30",
+                    "fixedInElts": false,
+                    "enforcedIn": "13.4.30"
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
+            "id": "PKSA-vq1j-sc3k-jzzk",
+            "cve": "CVE-2026-109449",
+            "package": "symfony/expression-language",
+            "optional": false,
+            "severity": "unknown",
+            "title": "CVE-2026-109449: Unbounded Nesting in the Expression Parser Lets Untrusted Expressions Crash the Process",
+            "affectedVersions": ">=2.4.0,<3.0.0|>=3.0.0,<4.0.0|>=4.0.0,<5.0.0|>=5.0.0,<5.1.0|>=5.1.0,<5.2.0|>=5.2.0,<5.3.0|>=5.3.0,<5.4.0|>=5.4.0,<5.4.54|>=6.0.0,<6.1.0|>=6.1.0,<6.2.0|>=6.2.0,<6.3.0|>=6.3.0,<6.4.0|>=6.4.0,<6.4.48|>=7.0.0,<7.1.0|>=7.1.0,<7.2.0|>=7.2.0,<7.3.0|>=7.3.0,<7.4.0|>=7.4.0,<7.4.21|>=8.0.0,<8.1.0|>=8.1.0,<8.1.9",
+            "link": "https://symfony.com/cve-2026-109449",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": "14.3.10",
+                    "fixedInElts": false,
+                    "enforcedIn": "14.3.10"
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": "13.4.37",
+                    "fixedInElts": false,
+                    "enforcedIn": "13.4.37"
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
+            "id": "PKSA-vznr-tgp9-fd7d",
+            "cve": "CVE-2026-59882",
+            "package": "guzzlehttp/psr7",
+            "optional": false,
+            "severity": "medium",
+            "title": "guzzlehttp/psr7: Host Confusion via Weak URI Host Validation",
+            "affectedVersions": "<2.12.3",
+            "link": "https://github.com/advisories/GHSA-c2w2-prh8-qm98",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": "14.3.5",
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": "13.4.33",
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
+            "id": "PKSA-wtxr-p26d-nn42",
+            "cve": "CVE-2026-45070",
+            "package": "symfony/mime",
+            "optional": false,
+            "severity": "medium",
+            "title": "CVE-2026-45070: Email Header Injection via Non-Token Characters in Mime Parameter Names",
+            "affectedVersions": ">=2.0.0,<3.0.0|>=3.0.0,<4.0.0|>=4.0.0,<5.0.0|>=5.0.0,<5.1.0|>=5.1.0,<5.2.0|>=5.2.0,<5.3.0|>=5.3.0,<5.4.0|>=5.4.0,<5.4.52|>=6.0.0,<6.1.0|>=6.1.0,<6.2.0|>=6.2.0,<6.3.0|>=6.3.0,<6.4.0|>=6.4.0,<6.4.40|>=7.0.0,<7.1.0|>=7.1.0,<7.2.0|>=7.2.0,<7.3.0|>=7.3.0,<7.4.0|>=7.4.0,<7.4.12|>=8.0.0,<8.0.12",
+            "link": "https://symfony.com/cve-2026-45070",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": "14.3.2",
+                    "fixedInElts": false,
+                    "enforcedIn": "14.3.2"
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": "13.4.30",
+                    "fixedInElts": false,
+                    "enforcedIn": "13.4.30"
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
+            "id": "PKSA-wws7-mr54-jsny",
+            "cve": "CVE-2024-51736",
+            "package": "symfony/process",
+            "optional": false,
+            "severity": "high",
+            "title": "CVE-2024-51736: Command execution hijack on Windows with Process class",
+            "affectedVersions": ">=2.0.0,<3.0.0|>=3.0.0,<4.0.0|>=4.0.0,<5.0.0|>=5.0.0,<5.1.0|>=5.1.0,<5.2.0|>=5.2.0,<5.3.0|>=5.3.0,<5.4.0|>=5.4.0,<5.4.46|>=6.0.0,<6.1.0|>=6.1.0,<6.2.0|>=6.2.0,<6.3.0|>=6.3.0,<6.4.0|>=6.4.0,<6.4.14|>=7.0.0,<7.1.0|>=7.1.0,<7.1.7",
+            "link": "https://symfony.com/cve-2024-51736",
+            "affected": {
+                "13": {
+                    "from": "13.3.0",
+                    "fixedIn": "13.4.1",
+                    "fixedInElts": false,
+                    "enforcedIn": "13.4.10"
+                }
+            },
+            "explanation": null
+        },
+        {
+            "id": "PKSA-xmwy-rmx5-m7h4",
+            "cve": "CVE-2026-108082",
+            "package": "symfony/http-foundation",
+            "optional": false,
+            "severity": "unknown",
+            "title": "CVE-2026-108082: ReDoS in HeaderUtils::split() Reachable Through the Cache-Control Request Header",
+            "affectedVersions": ">=5.4.1,<5.4.54|>=6.0.1,<6.1.0|>=6.1.0,<6.2.0|>=6.2.0,<6.3.0|>=6.3.0,<6.4.0|>=6.4.0,<6.4.46|>=7.0.0,<7.1.0|>=7.1.0,<7.2.0|>=7.2.0,<7.3.0|>=7.3.0,<7.4.0|>=7.4.0,<7.4.19|>=8.0.0,<8.1.0|>=8.1.0,<8.1.7",
+            "link": "https://symfony.com/cve-2026-108082",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": "14.3.8",
+                    "fixedInElts": false,
+                    "enforcedIn": "14.3.10"
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": "13.4.36",
+                    "fixedInElts": false,
+                    "enforcedIn": "13.4.37"
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
+            "id": "PKSA-xz3r-9gp4-4m1z",
+            "cve": "CVE-2026-109413",
+            "package": "symfony/yaml",
+            "optional": false,
+            "severity": "unknown",
+            "title": "CVE-2026-109413: Unbounded Recursion in the YAML Inline Lexer Lets a Single Document Crash the Process",
+            "affectedVersions": ">=2.0.0,<3.0.0|>=3.0.0,<4.0.0|>=4.0.0,<5.0.0|>=5.0.0,<5.1.0|>=5.1.0,<5.2.0|>=5.2.0,<5.3.0|>=5.3.0,<5.4.0|>=5.4.0,<5.4.54|>=6.0.0,<6.1.0|>=6.1.0,<6.2.0|>=6.2.0,<6.3.0|>=6.3.0,<6.4.0|>=6.4.0,<6.4.45|>=7.0.0,<7.1.0|>=7.1.0,<7.2.0|>=7.2.0,<7.3.0|>=7.3.0,<7.4.0|>=7.4.0,<7.4.18|>=8.0.0,<8.1.0|>=8.1.0,<8.1.6",
+            "link": "https://symfony.com/cve-2026-109413",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": "14.3.8",
+                    "fixedInElts": false,
+                    "enforcedIn": "14.3.10"
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": "13.4.36",
+                    "fixedInElts": false,
+                    "enforcedIn": "13.4.37"
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
+            "id": "PKSA-y2cr-5h3j-g3ys",
+            "cve": "CVE-2025-45769",
+            "package": "firebase/php-jwt",
+            "optional": false,
+            "severity": "low",
+            "title": "php-jwt contains weak encryption",
+            "affectedVersions": "<7.0.0",
+            "link": "https://github.com/advisories/GHSA-2x45-7fc3-mxwq",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": "14.1.1",
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": "13.4.26",
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": "12.4.43",
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
+            "id": "PKSA-y6py-qpv1-h52p",
+            "cve": "CVE-2026-48736",
+            "package": "symfony/http-foundation",
+            "optional": false,
+            "severity": "medium",
+            "title": "CVE-2026-48736: IpUtils::PRIVATE_SUBNETS Omits IPv6 Transition Forms (6to4, NAT64, Teredo, IPv4-compatible): SSRF Bypass in NoPrivateNetworkHttpClient",
+            "affectedVersions": ">=6.4.0,<6.4.41|>=7.0.0,<7.1.0|>=7.1.0,<7.2.0|>=7.2.0,<7.3.0|>=7.3.0,<7.4.0|>=7.4.0,<7.4.13|>=8.0.0,<8.0.13",
+            "link": "https://symfony.com/cve-2026-48736",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": "14.3.3",
+                    "fixedInElts": false,
+                    "enforcedIn": "14.3.3"
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": "13.4.31",
+                    "fixedInElts": false,
+                    "enforcedIn": "13.4.31"
+                },
+                "12": {
+                    "from": "12.4.9",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
+            "id": "PKSA-yc7t-91v9-99xs",
+            "cve": "CVE-2026-45065",
+            "package": "symfony/routing",
+            "optional": false,
+            "severity": "medium",
+            "title": "CVE-2026-45065: UrlGenerator Route-Requirement Bypass via Unanchored Regex Alternation → Off-Site //host URL Injection",
+            "affectedVersions": ">=2.0.0,<3.0.0|>=3.0.0,<4.0.0|>=4.0.0,<5.0.0|>=5.0.0,<5.1.0|>=5.1.0,<5.2.0|>=5.2.0,<5.3.0|>=5.3.0,<5.4.0|>=5.4.0,<5.4.52|>=6.0.0,<6.1.0|>=6.1.0,<6.2.0|>=6.2.0,<6.3.0|>=6.3.0,<6.4.0|>=6.4.0,<6.4.40|>=7.0.0,<7.1.0|>=7.1.0,<7.2.0|>=7.2.0,<7.3.0|>=7.3.0,<7.4.0|>=7.4.0,<7.4.12|>=8.0.0,<8.0.12",
+            "link": "https://symfony.com/cve-2026-45065",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": "14.3.2",
+                    "fixedInElts": false,
+                    "enforcedIn": "14.3.2"
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": "13.4.30",
+                    "fixedInElts": false,
+                    "enforcedIn": "13.4.30"
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
+            "id": "PKSA-z7t6-zt6p-wtng",
+            "cve": "CVE-2026-45073",
+            "package": "symfony/cache",
+            "optional": false,
+            "severity": "medium",
+            "title": "CVE-2026-45073: SQL Injection in PdoAdapter::doClear() via Unsanitized $prefix",
+            "affectedVersions": ">=2.0.0,<3.0.0|>=3.0.0,<4.0.0|>=4.0.0,<5.0.0|>=5.0.0,<5.1.0|>=5.1.0,<5.2.0|>=5.2.0,<5.3.0|>=5.3.0,<5.4.0|>=5.4.0,<5.4.52|>=6.0.0,<6.1.0|>=6.1.0,<6.2.0|>=6.2.0,<6.3.0|>=6.3.0,<6.4.0|>=6.4.0,<6.4.40|>=7.0.0,<7.1.0|>=7.1.0,<7.2.0|>=7.2.0,<7.3.0|>=7.3.0,<7.4.0|>=7.4.0,<7.4.12|>=8.0.0,<8.0.12",
+            "link": "https://symfony.com/cve-2026-45073",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": "14.3.2",
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": "13.4.30",
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
         }
     ]
 }
