@@ -1,5 +1,5 @@
 {
-    "generatedAt": "2026-10-28T19:19:27+00:00",
+    "generatedAt": "2026-11-04T20:19:17+00:00",
     "majors": {
         "12": {
             "maintainedUntil": "2026-04-30T00:00:00+02:00",
@@ -2874,6 +2874,37 @@
     ],
     "bundled": [
         {
+            "id": "PKSA-24ph-xkrh-y79j",
+            "cve": "CVE-2026-118514",
+            "package": "symfony/http-foundation",
+            "optional": false,
+            "severity": "unknown",
+            "title": "CVE-2026-118514: HEAD Requests Bypass the methods Option of security.access_control Rules and Firewalls: Incomplete Fix for CVE-2026-45075",
+            "affectedVersions": ">=2.0.0,<3.0.0|>=3.0.0,<4.0.0|>=4.0.0,<5.0.0|>=5.0.0,<5.1.0|>=5.1.0,<5.2.0|>=5.2.0,<5.3.0|>=5.3.0,<5.4.0|>=5.4.0,<5.4.56|>=6.0.0,<6.1.0|>=6.1.0,<6.2.0|>=6.2.0,<6.3.0|>=6.3.0,<6.4.0|>=6.4.0,<6.4.50|>=7.0.0,<7.1.0|>=7.1.0,<7.2.0|>=7.2.0,<7.3.0|>=7.3.0,<7.4.0|>=7.4.0,<7.4.23|>=8.0.0,<8.1.0|>=8.1.0,<8.1.11",
+            "link": "https://symfony.com/cve-2026-118514",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
             "id": "PKSA-28rh-rzzn-djk4",
             "cve": "CVE-2026-45068",
             "package": "symfony/mailer",
@@ -2981,6 +3012,25 @@
                     "fixedIn": "12.4.36",
                     "fixedInElts": false,
                     "enforcedIn": "12.4.36"
+                }
+            },
+            "explanation": null
+        },
+        {
+            "id": "PKSA-68kf-8d6f-hdsy",
+            "cve": null,
+            "package": "symfony/validator",
+            "optional": false,
+            "severity": "unknown",
+            "title": "Ip Constraint public/private Modes Accept IPv4-Mapped and IPv4-Compatible IPv6 Addresses: SSRF Filter Bypass",
+            "affectedVersions": ">=2.0.0,<3.0.0|>=3.0.0,<4.0.0|>=4.0.0,<5.0.0|>=5.0.0,<5.1.0|>=5.1.0,<5.2.0|>=5.2.0,<5.3.0|>=5.3.0,<5.4.0|>=5.4.0,<5.4.56|>=6.0.0,<6.1.0|>=6.1.0,<6.2.0|>=6.2.0,<6.3.0|>=6.3.0,<6.4.0|>=6.4.0,<6.4.50|>=7.0.0,<7.1.0|>=7.1.0,<7.2.0|>=7.2.0,<7.3.0|>=7.3.0,<7.4.0|>=7.4.0,<7.4.23|>=8.0.0,<8.1.0|>=8.1.0,<8.1.11",
+            "link": "https://github.com/symfony/symfony/security/advisories/GHSA-4qpf-57w4-m3wc",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
                 }
             },
             "explanation": null
@@ -3110,6 +3160,37 @@
             "explanation": null
         },
         {
+            "id": "PKSA-9myg-zzdn-22rg",
+            "cve": null,
+            "package": "symfony/config",
+            "optional": false,
+            "severity": "unknown",
+            "title": "XXE (Local File Read) in Config XmlUtils::parse() via validateOnParse = true",
+            "affectedVersions": ">=2.0.0,<3.0.0|>=3.0.0,<4.0.0|>=4.0.0,<5.0.0|>=5.0.0,<5.1.0|>=5.1.0,<5.2.0|>=5.2.0,<5.3.0|>=5.3.0,<5.4.0|>=5.4.0,<5.4.56|>=6.0.0,<6.1.0|>=6.1.0,<6.2.0|>=6.2.0,<6.3.0|>=6.3.0,<6.4.0|>=6.4.0,<6.4.50|>=7.0.0,<7.1.0|>=7.1.0,<7.2.0|>=7.2.0,<7.3.0|>=7.3.0,<7.4.0|>=7.4.0,<7.4.23|>=8.0.0,<8.1.0|>=8.1.0,<8.1.11",
+            "link": "https://github.com/symfony/symfony/security/advisories/GHSA-5jff-8h8q-r5qx",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
             "id": "PKSA-b14r-zh1d-vdrc",
             "cve": "CVE-2026-45133",
             "package": "symfony/yaml",
@@ -3130,6 +3211,37 @@
                     "fixedIn": "13.4.30",
                     "fixedInElts": false,
                     "enforcedIn": "13.4.30"
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
+            "id": "PKSA-b2gg-vk1g-6d5q",
+            "cve": null,
+            "package": "symfony/http-foundation",
+            "optional": false,
+            "severity": "unknown",
+            "title": "Generated URLs Can Point to a Host Chosen by the Client",
+            "affectedVersions": ">=2.0.0,<2.1.0|>=2.1.0,<2.2.0|>=2.2.0,<2.3.0|>=2.3.0,<2.4.0|>=2.4.0,<2.5.0|>=2.5.0,<2.6.0|>=2.6.0,<2.7.0|>=2.7.0,<2.8.0|>=2.8.0,<3.0.0|>=3.0.0,<3.1.0|>=3.1.0,<3.2.0|>=3.2.0,<3.3.0|>=3.3.0,<3.4.0|>=3.4.0,<4.0.0|>=4.0.0,<4.1.0|>=4.1.0,<4.2.0|>=4.2.0,<4.3.0|>=4.3.0,<4.4.0|>=4.4.0,<5.0.0|>=5.0.0,<5.1.0|>=5.1.0,<5.2.0|>=5.2.0,<5.3.0|>=5.3.0,<5.4.0|>=5.4.0,<5.4.56|>=6.0.0,<6.1.0|>=6.1.0,<6.2.0|>=6.2.0,<6.3.0|>=6.3.0,<6.4.0|>=6.4.0,<6.4.50|>=7.0.0,<7.1.0|>=7.1.0,<7.2.0|>=7.2.0,<7.3.0|>=7.3.0,<7.4.0|>=7.4.0,<7.4.23|>=8.0.0,<8.1.0|>=8.1.0,<8.1.11",
+            "link": "https://github.com/symfony/symfony/security/advisories/GHSA-5mx8-mwrp-5693",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
                 },
                 "12": {
                     "from": "12.0.0",
@@ -3383,6 +3495,37 @@
             "explanation": null
         },
         {
+            "id": "PKSA-g499-cm4q-v35y",
+            "cve": null,
+            "package": "symfony/filesystem",
+            "optional": false,
+            "severity": "unknown",
+            "title": "Filesystem Path Treats Any Prefix Before \"://\" as a Root, Letting Paths Escape Their Base Directory",
+            "affectedVersions": ">=5.4.0,<5.4.56|>=6.0.0,<6.1.0|>=6.1.0,<6.2.0|>=6.2.0,<6.3.0|>=6.3.0,<6.4.0|>=6.4.0,<6.4.50|>=7.0.0,<7.1.0|>=7.1.0,<7.2.0|>=7.2.0,<7.3.0|>=7.3.0,<7.4.0|>=7.4.0,<7.4.23|>=8.0.0,<8.1.0|>=8.1.0,<8.1.11",
+            "link": "https://github.com/symfony/symfony/security/advisories/GHSA-6prc-h956-hxjq",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
             "id": "PKSA-gcrk-3vtt-1r14",
             "cve": "CVE-2026-69246",
             "package": "guzzlehttp/guzzle",
@@ -3518,6 +3661,93 @@
                 },
                 "12": {
                     "from": "12.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
+            "id": "PKSA-nktx-f1n1-b4yd",
+            "cve": null,
+            "package": "symfony/yaml",
+            "optional": false,
+            "severity": "unknown",
+            "title": "Exponential and Quadratic Parse Times in the YAML Parser Let a Single Document Hold a Process",
+            "affectedVersions": ">=2.0.0,<3.0.0|>=3.0.0,<4.0.0|>=4.0.0,<5.0.0|>=5.0.0,<5.1.0|>=5.1.0,<5.2.0|>=5.2.0,<5.3.0|>=5.3.0,<5.4.0|>=5.4.0,<5.4.56|>=6.0.0,<6.1.0|>=6.1.0,<6.2.0|>=6.2.0,<6.3.0|>=6.3.0,<6.4.0|>=6.4.0,<6.4.50|>=7.0.0,<7.1.0|>=7.1.0,<7.2.0|>=7.2.0,<7.3.0|>=7.3.0,<7.4.0|>=7.4.0,<7.4.23|>=8.0.0,<8.1.0|>=8.1.0,<8.1.11",
+            "link": "https://github.com/symfony/symfony/security/advisories/GHSA-hwfg-qwvh-2wfx",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
+            "id": "PKSA-nxjs-s6hn-vb6m",
+            "cve": null,
+            "package": "symfony/http-foundation",
+            "optional": false,
+            "severity": "unknown",
+            "title": "The \"private_ranges\" Trusted Proxies Shortcut Trusts Clients Presenting an IPv4-Mapped, 6to4, Teredo or NAT64 Address as Reverse Proxies",
+            "affectedVersions": ">=7.2.0,<7.3.0|>=7.3.0,<7.4.0|>=7.4.0,<7.4.23|>=8.0.0,<8.1.0|>=8.1.0,<8.1.11",
+            "link": "https://github.com/symfony/symfony/security/advisories/GHSA-xg2q-4rrq-657q",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                },
+                "13": {
+                    "from": "13.4.10",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
+            "id": "PKSA-pr6q-2w5s-kzzf",
+            "cve": null,
+            "package": "symfony/http-foundation",
+            "optional": false,
+            "severity": "unknown",
+            "title": "Path Rules Enforced in Front of PHP Can Be Bypassed by Appending the Path to the Script Name",
+            "affectedVersions": ">=5.4.50,<5.4.56|>=6.4.29,<6.4.50|>=7.3.7,<7.4.0|>=7.4.0,<7.4.23|>=8.0.0,<8.1.0|>=8.1.0,<8.1.11",
+            "link": "https://github.com/symfony/symfony/security/advisories/GHSA-3h27-hjv7-fqjx",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                },
+                "13": {
+                    "from": "13.4.21",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                },
+                "12": {
+                    "from": "12.4.40",
                     "fixedIn": null,
                     "fixedInElts": false,
                     "enforcedIn": null
@@ -3872,6 +4102,37 @@
                 },
                 "12": {
                     "from": "12.4.9",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
+            "id": "PKSA-y8c5-1b7f-r1gj",
+            "cve": "CVE-2026-118516",
+            "package": "symfony/routing",
+            "optional": false,
+            "severity": "unknown",
+            "title": "CVE-2026-118516: Host Placeholders Can Match the Start of the Path in Compiled URL Matchers, Bypassing Path-Based Access Control",
+            "affectedVersions": ">=4.1.0,<4.2.0|>=4.2.0,<4.3.0|>=4.3.0,<4.4.0|>=4.4.0,<5.0.0|>=5.0.0,<5.1.0|>=5.1.0,<5.2.0|>=5.2.0,<5.3.0|>=5.3.0,<5.4.0|>=5.4.0,<5.4.56|>=6.0.0,<6.1.0|>=6.1.0,<6.2.0|>=6.2.0,<6.3.0|>=6.3.0,<6.4.0|>=6.4.0,<6.4.50|>=7.0.0,<7.1.0|>=7.1.0,<7.2.0|>=7.2.0,<7.3.0|>=7.3.0,<7.4.0|>=7.4.0,<7.4.23|>=8.0.0,<8.1.0|>=8.1.0,<8.1.11",
+            "link": "https://symfony.com/cve-2026-118516",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                },
+                "12": {
+                    "from": "12.0.0",
                     "fixedIn": null,
                     "fixedInElts": false,
                     "enforcedIn": null
