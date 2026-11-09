@@ -1,5 +1,5 @@
 {
-    "generatedAt": "2026-11-04T20:19:17+00:00",
+    "generatedAt": "2026-11-09T18:21:41+00:00",
     "majors": {
         "12": {
             "maintainedUntil": "2026-04-30T00:00:00+02:00",
@@ -3018,7 +3018,7 @@
         },
         {
             "id": "PKSA-68kf-8d6f-hdsy",
-            "cve": null,
+            "cve": "CVE-2026-123125",
             "package": "symfony/validator",
             "optional": false,
             "severity": "unknown",
@@ -3161,7 +3161,7 @@
         },
         {
             "id": "PKSA-9myg-zzdn-22rg",
-            "cve": null,
+            "cve": "CVE-2026-123824",
             "package": "symfony/config",
             "optional": false,
             "severity": "unknown",
@@ -3670,7 +3670,7 @@
         },
         {
             "id": "PKSA-nktx-f1n1-b4yd",
-            "cve": null,
+            "cve": "CVE-2026-123792",
             "package": "symfony/yaml",
             "optional": false,
             "severity": "unknown",
