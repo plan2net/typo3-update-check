@@ -1,5 +1,5 @@
 {
-    "generatedAt": "2026-11-09T18:21:41+00:00",
+    "generatedAt": "2026-11-10T11:19:24+00:00",
     "majors": {
         "12": {
             "maintainedUntil": "2026-04-30T00:00:00+02:00",
@@ -650,9 +650,15 @@
         "14": {
             "maintainedUntil": "2029-06-30T00:00:00+02:00",
             "eltsUntil": "2032-06-30T00:00:00+02:00",
-            "latestFree": "14.3.10",
-            "latestElts": "14.3.10",
+            "latestFree": "14.3.11",
+            "latestElts": "14.3.11",
             "releases": [
+                {
+                    "version": "14.3.11",
+                    "date": "2026-11-10T11:03:56+01:00",
+                    "type": "regular",
+                    "elts": false
+                },
                 {
                     "version": "14.3.10",
                     "date": "2026-10-22T09:04:45+02:00",
@@ -2885,9 +2891,9 @@
             "affected": {
                 "14": {
                     "from": "14.0.0",
-                    "fixedIn": null,
+                    "fixedIn": "14.3.11",
                     "fixedInElts": false,
-                    "enforcedIn": null
+                    "enforcedIn": "14.3.11"
                 },
                 "13": {
                     "from": "13.0.0",
@@ -3028,9 +3034,9 @@
             "affected": {
                 "14": {
                     "from": "14.0.0",
-                    "fixedIn": null,
+                    "fixedIn": "14.3.11",
                     "fixedInElts": false,
-                    "enforcedIn": null
+                    "enforcedIn": "14.3.11"
                 }
             },
             "explanation": null
@@ -3080,7 +3086,7 @@
                     "from": "14.0.0",
                     "fixedIn": "14.3.5",
                     "fixedInElts": false,
-                    "enforcedIn": null
+                    "enforcedIn": "14.3.11"
                 },
                 "13": {
                     "from": "13.0.0",
@@ -3171,9 +3177,9 @@
             "affected": {
                 "14": {
                     "from": "14.0.0",
-                    "fixedIn": null,
+                    "fixedIn": "14.3.11",
                     "fixedInElts": false,
-                    "enforcedIn": null
+                    "enforcedIn": "14.3.11"
                 },
                 "13": {
                     "from": "13.0.0",
@@ -3233,9 +3239,9 @@
             "affected": {
                 "14": {
                     "from": "14.0.0",
-                    "fixedIn": null,
+                    "fixedIn": "14.3.11",
                     "fixedInElts": false,
-                    "enforcedIn": null
+                    "enforcedIn": "14.3.11"
                 },
                 "13": {
                     "from": "13.0.0",
@@ -3415,7 +3421,7 @@
                     "from": "14.0.0",
                     "fixedIn": "14.3.6",
                     "fixedInElts": false,
-                    "enforcedIn": null
+                    "enforcedIn": "14.3.11"
                 },
                 "13": {
                     "from": "13.0.0",
@@ -3506,9 +3512,9 @@
             "affected": {
                 "14": {
                     "from": "14.0.0",
-                    "fixedIn": null,
+                    "fixedIn": "14.3.11",
                     "fixedInElts": false,
-                    "enforcedIn": null
+                    "enforcedIn": "14.3.11"
                 },
                 "13": {
                     "from": "13.0.0",
@@ -3539,7 +3545,7 @@
                     "from": "14.0.0",
                     "fixedIn": "14.3.6",
                     "fixedInElts": false,
-                    "enforcedIn": null
+                    "enforcedIn": "14.3.11"
                 },
                 "13": {
                     "from": "13.0.0",
@@ -3680,9 +3686,9 @@
             "affected": {
                 "14": {
                     "from": "14.0.0",
-                    "fixedIn": null,
+                    "fixedIn": "14.3.11",
                     "fixedInElts": false,
-                    "enforcedIn": null
+                    "enforcedIn": "14.3.11"
                 },
                 "13": {
                     "from": "13.0.0",
@@ -3711,9 +3717,9 @@
             "affected": {
                 "14": {
                     "from": "14.0.0",
-                    "fixedIn": null,
+                    "fixedIn": "14.3.11",
                     "fixedInElts": false,
-                    "enforcedIn": null
+                    "enforcedIn": "14.3.11"
                 },
                 "13": {
                     "from": "13.4.10",
@@ -3736,9 +3742,9 @@
             "affected": {
                 "14": {
                     "from": "14.0.0",
-                    "fixedIn": null,
+                    "fixedIn": "14.3.11",
                     "fixedInElts": false,
-                    "enforcedIn": null
+                    "enforcedIn": "14.3.11"
                 },
                 "13": {
                     "from": "13.4.21",
@@ -3918,7 +3924,7 @@
                     "from": "14.0.0",
                     "fixedIn": "14.3.5",
                     "fixedInElts": false,
-                    "enforcedIn": null
+                    "enforcedIn": "14.3.11"
                 },
                 "13": {
                     "from": "13.0.0",
@@ -3947,9 +3953,9 @@
             "affected": {
                 "14": {
                     "from": "14.0.0",
-                    "fixedIn": null,
+                    "fixedIn": "14.3.11",
                     "fixedInElts": false,
-                    "enforcedIn": null
+                    "enforcedIn": "14.3.11"
                 },
                 "13": {
                     "from": "13.0.0",
@@ -4121,9 +4127,9 @@
             "affected": {
                 "14": {
                     "from": "14.0.0",
-                    "fixedIn": null,
+                    "fixedIn": "14.3.11",
                     "fixedInElts": false,
-                    "enforcedIn": null
+                    "enforcedIn": "14.3.11"
                 },
                 "13": {
                     "from": "13.0.0",
