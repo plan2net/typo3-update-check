@@ -1,5 +1,5 @@
 {
-    "generatedAt": "2026-11-10T11:19:24+00:00",
+    "generatedAt": "2026-11-10T12:24:04+00:00",
     "majors": {
         "12": {
             "maintainedUntil": "2026-04-30T00:00:00+02:00",
@@ -366,9 +366,15 @@
         "13": {
             "maintainedUntil": "2027-12-31T00:00:00+01:00",
             "eltsUntil": "2030-12-31T00:00:00+01:00",
-            "latestFree": "13.4.37",
-            "latestElts": "13.4.37",
+            "latestFree": "13.4.39",
+            "latestElts": "13.4.39",
             "releases": [
+                {
+                    "version": "13.4.39",
+                    "date": "2026-11-10T11:35:54+01:00",
+                    "type": "regular",
+                    "elts": false
+                },
                 {
                     "version": "13.4.37",
                     "date": "2026-10-22T09:06:28+02:00",
@@ -2897,9 +2903,9 @@
                 },
                 "13": {
                     "from": "13.0.0",
-                    "fixedIn": null,
+                    "fixedIn": "13.4.39",
                     "fixedInElts": false,
-                    "enforcedIn": null
+                    "enforcedIn": "13.4.39"
                 },
                 "12": {
                     "from": "12.0.0",
@@ -3092,7 +3098,7 @@
                     "from": "13.0.0",
                     "fixedIn": "13.4.33",
                     "fixedInElts": false,
-                    "enforcedIn": null
+                    "enforcedIn": "13.4.39"
                 },
                 "12": {
                     "from": "12.0.0",
@@ -3183,9 +3189,9 @@
                 },
                 "13": {
                     "from": "13.0.0",
-                    "fixedIn": null,
+                    "fixedIn": "13.4.39",
                     "fixedInElts": false,
-                    "enforcedIn": null
+                    "enforcedIn": "13.4.39"
                 },
                 "12": {
                     "from": "12.0.0",
@@ -3245,9 +3251,9 @@
                 },
                 "13": {
                     "from": "13.0.0",
-                    "fixedIn": null,
+                    "fixedIn": "13.4.39",
                     "fixedInElts": false,
-                    "enforcedIn": null
+                    "enforcedIn": "13.4.39"
                 },
                 "12": {
                     "from": "12.0.0",
@@ -3427,7 +3433,7 @@
                     "from": "13.0.0",
                     "fixedIn": "13.4.34",
                     "fixedInElts": false,
-                    "enforcedIn": null
+                    "enforcedIn": "13.4.39"
                 },
                 "12": {
                     "from": "12.0.0",
@@ -3518,9 +3524,9 @@
                 },
                 "13": {
                     "from": "13.0.0",
-                    "fixedIn": null,
+                    "fixedIn": "13.4.39",
                     "fixedInElts": false,
-                    "enforcedIn": null
+                    "enforcedIn": "13.4.39"
                 },
                 "12": {
                     "from": "12.0.0",
@@ -3551,7 +3557,7 @@
                     "from": "13.0.0",
                     "fixedIn": "13.4.34",
                     "fixedInElts": false,
-                    "enforcedIn": null
+                    "enforcedIn": "13.4.39"
                 },
                 "12": {
                     "from": "12.0.0",
@@ -3692,9 +3698,9 @@
                 },
                 "13": {
                     "from": "13.0.0",
-                    "fixedIn": null,
+                    "fixedIn": "13.4.39",
                     "fixedInElts": false,
-                    "enforcedIn": null
+                    "enforcedIn": "13.4.39"
                 },
                 "12": {
                     "from": "12.0.0",
@@ -3723,9 +3729,9 @@
                 },
                 "13": {
                     "from": "13.4.10",
-                    "fixedIn": null,
+                    "fixedIn": "13.4.39",
                     "fixedInElts": false,
-                    "enforcedIn": null
+                    "enforcedIn": "13.4.39"
                 }
             },
             "explanation": null
@@ -3748,9 +3754,9 @@
                 },
                 "13": {
                     "from": "13.4.21",
-                    "fixedIn": null,
+                    "fixedIn": "13.4.39",
                     "fixedInElts": false,
-                    "enforcedIn": null
+                    "enforcedIn": "13.4.39"
                 },
                 "12": {
                     "from": "12.4.40",
@@ -3930,7 +3936,7 @@
                     "from": "13.0.0",
                     "fixedIn": "13.4.33",
                     "fixedInElts": false,
-                    "enforcedIn": null
+                    "enforcedIn": "13.4.39"
                 },
                 "12": {
                     "from": "12.0.0",
@@ -3959,9 +3965,9 @@
                 },
                 "13": {
                     "from": "13.0.0",
-                    "fixedIn": null,
+                    "fixedIn": "13.4.39",
                     "fixedInElts": false,
-                    "enforcedIn": null
+                    "enforcedIn": "13.4.39"
                 },
                 "12": {
                     "from": "12.0.0",
@@ -4133,9 +4139,9 @@
                 },
                 "13": {
                     "from": "13.0.0",
-                    "fixedIn": null,
+                    "fixedIn": "13.4.39",
                     "fixedInElts": false,
-                    "enforcedIn": null
+                    "enforcedIn": "13.4.39"
                 },
                 "12": {
                     "from": "12.0.0",
