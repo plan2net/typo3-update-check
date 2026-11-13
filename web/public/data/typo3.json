@@ -1,5 +1,5 @@
 {
-    "generatedAt": "2026-11-10T12:24:04+00:00",
+    "generatedAt": "2026-11-13T19:19:22+00:00",
     "majors": {
         "12": {
             "maintainedUntil": "2026-04-30T00:00:00+02:00",
@@ -3713,7 +3713,7 @@
         },
         {
             "id": "PKSA-nxjs-s6hn-vb6m",
-            "cve": null,
+            "cve": "CVE-2026-121619",
             "package": "symfony/http-foundation",
             "optional": false,
             "severity": "unknown",
