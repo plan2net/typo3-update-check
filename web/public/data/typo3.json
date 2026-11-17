@@ -1,5 +1,5 @@
 {
-    "generatedAt": "2026-11-13T19:19:22+00:00",
+    "generatedAt": "2026-11-17T11:19:24+00:00",
     "majors": {
         "12": {
             "maintainedUntil": "2026-04-30T00:00:00+02:00",
@@ -366,9 +366,15 @@
         "13": {
             "maintainedUntil": "2027-12-31T00:00:00+01:00",
             "eltsUntil": "2030-12-31T00:00:00+01:00",
-            "latestFree": "13.4.39",
-            "latestElts": "13.4.39",
+            "latestFree": "13.4.40",
+            "latestElts": "13.4.40",
             "releases": [
+                {
+                    "version": "13.4.40",
+                    "date": "2026-11-17T10:47:48+01:00",
+                    "type": "security",
+                    "elts": false
+                },
                 {
                     "version": "13.4.39",
                     "date": "2026-11-10T11:35:54+01:00",
@@ -656,9 +662,15 @@
         "14": {
             "maintainedUntil": "2029-06-30T00:00:00+02:00",
             "eltsUntil": "2032-06-30T00:00:00+02:00",
-            "latestFree": "14.3.11",
-            "latestElts": "14.3.11",
+            "latestFree": "14.3.12",
+            "latestElts": "14.3.12",
             "releases": [
+                {
+                    "version": "14.3.12",
+                    "date": "2026-11-17T10:55:22+01:00",
+                    "type": "security",
+                    "elts": false
+                },
                 {
                     "version": "14.3.11",
                     "date": "2026-11-10T11:03:56+01:00",
