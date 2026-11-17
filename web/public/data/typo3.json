@@ -1,12 +1,18 @@
 {
-    "generatedAt": "2026-11-17T11:19:24+00:00",
+    "generatedAt": "2026-11-17T12:28:17+00:00",
     "majors": {
         "12": {
             "maintainedUntil": "2026-04-30T00:00:00+02:00",
             "eltsUntil": "2030-04-30T00:00:00+02:00",
             "latestFree": "12.4.45",
-            "latestElts": "12.4.51",
+            "latestElts": "12.4.52",
             "releases": [
+                {
+                    "version": "12.4.52",
+                    "date": "2026-11-17T11:01:25+01:00",
+                    "type": "security",
+                    "elts": true
+                },
                 {
                     "version": "12.4.51",
                     "date": "2026-10-22T08:39:41+02:00",
@@ -1109,6 +1115,43 @@
             }
         },
         {
+            "id": "PKSA-4m1f-m6bx-wtv1",
+            "cve": "CVE-2026-125161",
+            "package": "typo3/cms-core",
+            "optional": false,
+            "severity": "medium",
+            "title": "TYPO3-CORE-SA-2026-030: Open Redirection in URL Sanitization",
+            "affectedVersions": ">=14.0.0,<14.3.12|>=13.0.0,<13.4.40|>=12.0.0,<12.4.52|>=11.0.0,<11.5.57|>=10.0.0,<10.4.63",
+            "link": "https://news.typo3.com/security/advisory/typo3-core-sa-2026-030",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": "14.3.12",
+                    "fixedInElts": false
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": "13.4.40",
+                    "fixedInElts": false
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": "12.4.52",
+                    "fixedInElts": true
+                }
+            },
+            "explanation": {
+                "en": {
+                    "plainImpact": "Someone can craft a link that looks like it stays on your TYPO3 site but sends the visitor to an outside website, for example a fake login page. In the core this works through backend redirects, so the victim must be logged in to the backend.",
+                    "urgency": "Schedule this in your next regular update, sooner if many editors could be targeted with fake links. Custom extensions that use the core's link check for their own redirects are also affected."
+                },
+                "de": {
+                    "plainImpact": "Jemand kann einen Link bauen, der wie ein Link auf die eigene Website aussieht, Nutzer aber auf eine fremde Seite weiterleitet. Das lässt sich nutzen, um dort zum Beispiel Zugangsdaten abzufragen.",
+                    "urgency": "Im Rahmen der nächsten regulären Wartung einplanen; im Kern betrifft es nur Weiterleitungen im Backend, und das Opfer muss dort angemeldet sein. Eigene Erweiterungen, die die Prüffunktion von TYPO3 für eigene Weiterleitungen nutzen, sind ebenfalls betroffen."
+                }
+            }
+        },
+        {
             "id": "PKSA-4w8t-ddwx-n1z6",
             "cve": "CVE-2024-47780",
             "package": "typo3/cms-backend",
@@ -1174,6 +1217,43 @@
                 "de": {
                     "plainImpact": "Ein angemeldeter Backend-Benutzer kann beim Anlegen eines neuen Datensatzes Werte in Felder schreiben, die für ihn eigentlich gesperrt sind. Das betrifft nur Tabellen, in denen er ohnehin schon einige Felder bearbeiten darf.",
                     "urgency": "Zeitnah einplanen, wenn es Backend-Benutzer mit eingeschränkten Feldrechten gibt, denen nicht voll vertraut wird; arbeiten nur Administratoren oder voll berechtigte Redakteure im Backend, ist die Gefahr gering."
+                }
+            }
+        },
+        {
+            "id": "PKSA-5h54-h95w-n92h",
+            "cve": "CVE-2026-119623",
+            "package": "typo3/cms-install",
+            "optional": false,
+            "severity": "critical",
+            "title": "TYPO3-CORE-SA-2026-027: Missing Authentication in Installer",
+            "affectedVersions": ">=14.0.0,<14.3.12|>=13.0.0,<13.4.40|>=12.0.0,<12.4.52|>=11.0.0,<11.5.57|>=10.0.0,<10.4.63",
+            "link": "https://news.typo3.com/security/advisory/typo3-core-sa-2026-027",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": "14.3.12",
+                    "fixedInElts": false
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": "13.4.40",
+                    "fixedInElts": false
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": "12.4.52",
+                    "fixedInElts": true
+                }
+            },
+            "explanation": {
+                "en": {
+                    "plainImpact": "If someone manages to put a specially named file into the site's main folders, the setup wizard reopens without asking for a login. They can then point the site to another database and create a new administrator account, which gives full control over the server.",
+                    "urgency": "Update immediately, especially if backend users with limited rights exist or files can otherwise end up in the site's main folders. Leftover or restored setup marker files from earlier installations are enough to open the wizard."
+                },
+                "de": {
+                    "plainImpact": "Wer eine bestimmte Datei im öffentlichen Webordner oder im Projektordner ablegen kann, öffnet den Einrichtungsassistenten ohne Anmeldung erneut. Darüber lassen sich die Datenbankverbindung ändern und neue Administratorkonten anlegen, also die volle Kontrolle über den Server übernehmen.",
+                    "urgency": "Sofort einplanen, besonders wenn Redakteure mit wenigen Rechten im Backend arbeiten, denn schon sie können so eine Datei anlegen. Auch übrig gebliebene oder aus einer Sicherung wiederhergestellte Markierungsdateien reichen dafür aus."
                 }
             }
         },
@@ -1402,6 +1482,43 @@
             }
         },
         {
+            "id": "PKSA-7z6t-ctq9-9wk4",
+            "cve": "CVE-2026-125164",
+            "package": "typo3/cms-core",
+            "optional": false,
+            "severity": "medium",
+            "title": "TYPO3-CORE-SA-2026-033: Information Disclosure in File Dump Controller",
+            "affectedVersions": ">=14.0.0,<14.3.12|>=13.0.0,<13.4.40|>=12.0.0,<12.4.52|>=11.0.0,<11.5.57|>=10.0.0,<10.4.63",
+            "link": "https://news.typo3.com/security/advisory/typo3-core-sa-2026-033",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": "14.3.12",
+                    "fixedInElts": false
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": "13.4.40",
+                    "fixedInElts": false
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": "12.4.52",
+                    "fixedInElts": true
+                }
+            },
+            "explanation": {
+                "en": {
+                    "plainImpact": "A visitor without a login can reuse a valid download link meant for one file to fetch a different file that shares the same internal number. This can expose files from storage areas that are not meant to be public.",
+                    "urgency": "Schedule this soon if the site hands out protected download links or keeps files in non-public storage. Sites that use neither are less exposed."
+                },
+                "de": {
+                    "plainImpact": "Ein gültiger Download-Link für eine Datei lässt sich so umbauen, dass er eine andere Datei mit derselben Nummer ausliefert. Dadurch können Besucher ohne Anmeldung Dateien herunterladen, für die nie ein Link freigegeben wurde, zum Beispiel aus nicht öffentlichen Speicherorten.",
+                    "urgency": "Zeitnah einplanen, wenn die Seite geschützte Dateien über solche Download-Links ausliefert. Ohne nicht öffentliche Dateien ist das Risiko gering."
+                }
+            }
+        },
+        {
             "id": "PKSA-836z-82j1-zt6j",
             "cve": "CVE-2022-23499",
             "package": "typo3/cms",
@@ -1616,6 +1733,43 @@
             }
         },
         {
+            "id": "PKSA-bs5s-5x8g-skvh",
+            "cve": "CVE-2026-125159",
+            "package": "typo3/cms-core",
+            "optional": false,
+            "severity": "high",
+            "title": "TYPO3-CORE-SA-2026-028: Information Disclosure in Image Processing",
+            "affectedVersions": ">=14.0.0,<14.3.12|>=13.0.0,<13.4.40|>=12.0.0,<12.4.52|>=11.0.0,<11.5.57|>=10.0.0,<10.4.63",
+            "link": "https://news.typo3.com/security/advisory/typo3-core-sa-2026-028",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": "14.3.12",
+                    "fixedInElts": false
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": "13.4.40",
+                    "fixedInElts": false
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": "12.4.52",
+                    "fixedInElts": true
+                }
+            },
+            "explanation": {
+                "en": {
+                    "plainImpact": "Someone can upload a disguised file that makes TYPO3's image processing copy any file the web server can read, such as configuration files with passwords, into a publicly visible image. Through an open upload form this works without logging in.",
+                    "urgency": "Act quickly if the site lets people upload files without checking the file type, such as public upload forms that do not limit allowed file types. It also requires ImageMagick for image processing with its default settings still allowing this kind of vector drawing file."
+                },
+                "de": {
+                    "plainImpact": "Jemand kann eine präparierte Datei als Bild hochladen, die beim Verkleinern oder Umrechnen Dateien vom Server in das fertige Bild schreibt. So lassen sich über ein öffentlich abrufbares Bild zum Beispiel Konfigurationsdateien mit Zugangsdaten auslesen.",
+                    "urgency": "Bald einplanen, wenn Dateien ohne Prüfung des Dateityps hochgeladen werden können, etwa über ein öffentliches Formular mit Datei- oder Bild-Upload ohne festgelegte erlaubte Dateitypen. Zusätzlich muss ImageMagick die Bilder verarbeiten und in seiner Grundeinstellung das betroffene Vektorgrafik-Format erlauben."
+                }
+            }
+        },
+        {
             "id": "PKSA-bzt2-2962-49bj",
             "cve": "CVE-2026-47349",
             "package": "typo3/cms-core",
@@ -1653,6 +1807,43 @@
             }
         },
         {
+            "id": "PKSA-c8kp-f3wr-5vmd",
+            "cve": "CVE-2026-119621",
+            "package": "typo3/cms-impexp",
+            "optional": true,
+            "severity": "high",
+            "title": "TYPO3-CORE-SA-2026-025: Path Traversal in Import/Export Module",
+            "affectedVersions": ">=14.0.0,<14.3.12|>=13.0.0,<13.4.40|>=12.0.0,<12.4.52|>=11.0.0,<11.5.57|>=10.0.0,<10.4.63",
+            "link": "https://news.typo3.com/security/advisory/typo3-core-sa-2026-025",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": "14.3.12",
+                    "fixedInElts": false
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": "13.4.40",
+                    "fixedInElts": false
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": "12.4.52",
+                    "fixedInElts": true
+                }
+            },
+            "explanation": {
+                "en": {
+                    "plainImpact": "A specially prepared import file can write files with any content to any folder the web server can write to, including a program file in the public website folder. That lets the attacker run their own code on the server.",
+                    "urgency": "Schedule this soon, because the result is full control of the server. It only matters for administrators, or for other editors who have been explicitly allowed to import, so the risk is lower if you trust all such accounts."
+                },
+                "de": {
+                    "plainImpact": "Mit einer präparierten Importdatei kann ein Backend-Benutzer im Import/Export-Modul beliebige Dateien an jeden Ort schreiben, auf den der Webserver schreiben darf. Legt er dort eine Programmdatei im öffentlichen Webverzeichnis ab, kann er eigenen Code auf dem Server ausführen.",
+                    "urgency": "Bald einplanen, denn ein Angriff setzt ein Administrator-Konto im Backend voraus oder einen normalen Backend-Benutzer, dem das Importieren ausdrücklich erlaubt wurde. Besonders dringend ist es, wenn Nicht-Administratoren importieren dürfen oder viele Personen Administratorrechte haben."
+                }
+            }
+        },
+        {
             "id": "PKSA-ccxj-fgkz-pynv",
             "cve": "CVE-2022-23503",
             "package": "typo3/cms-core",
@@ -1676,6 +1867,43 @@
                 "de": {
                     "plainImpact": "Ein Backend-Benutzer mit Zugriff auf das Formular-Modul kann über den Formular-Editor eigene Befehle einschleusen, die der Server dann als PHP-Code ausführt. Damit kann er auf dem Server beliebigen Code laufen lassen.",
                     "urgency": "Bald einplanen, wenn Backend-Benutzer das Formular-Modul nutzen dürfen und für einzelne Formulare eigene TypoScript-Anweisungen (formDefinitionOverrides) existieren; fehlt eines davon, lässt sich die Lücke nicht ausnutzen."
+                }
+            }
+        },
+        {
+            "id": "PKSA-cq99-bswg-h27z",
+            "cve": "CVE-2026-119622",
+            "package": "typo3/cms-backend",
+            "optional": false,
+            "severity": "high",
+            "title": "TYPO3-CORE-SA-2026-026: Missing Authorization in Online Media Handling",
+            "affectedVersions": ">=14.0.0,<14.3.12|>=13.0.0,<13.4.40|>=12.0.0,<12.4.52|>=11.0.0,<11.5.57|>=10.0.0,<10.4.63",
+            "link": "https://news.typo3.com/security/advisory/typo3-core-sa-2026-026",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": "14.3.12",
+                    "fixedInElts": false
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": "13.4.40",
+                    "fixedInElts": false
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": "12.4.52",
+                    "fixedInElts": true
+                }
+            },
+            "explanation": {
+                "en": {
+                    "plainImpact": "Any logged-in backend user, even one with no file access at all, can create video link files with a partly chosen name in the public main folder of the website. Combined with a second, related flaw, this can switch the installer back on and be used to create a new administrator account, which gives full control over the server.",
+                    "urgency": "Update soon on any site where people other than fully trusted administrators can log into the backend. The risk is highest when the related second flaw is also unpatched."
+                },
+                "de": {
+                    "plainImpact": "Jeder angemeldete Redakteur, auch ohne Dateirechte oder Modulzugriff, kann beim Hinzufügen von Online-Videos Dateien mit teilweise frei wählbarem Namen direkt im öffentlichen Hauptordner der Website anlegen. Zusammen mit einer zweiten Lücke lässt sich so das Installationsprogramm wieder einschalten, ein neues Administratorkonto anlegen und am Ende beliebiger Code auf dem Server ausführen.",
+                    "urgency": "Zeitnah einplanen, wenn es Backend-Zugänge für Personen gibt, denen nicht voll vertraut wird. Die Prüfung von Dateirechten greift hier nicht, eingeschränkte Benutzerrechte schützen also nicht."
                 }
             }
         },
@@ -1735,6 +1963,43 @@
                 "de": {
                     "plainImpact": "Im Install Tool wurde der geheime Schlüssel der Installation offen in den Bearbeitungsformularen angezeigt. Wer ihn kennt, kann selbst Prüfwerte erzeugen, mit denen TYPO3 sonst erkennt, ob Werte in einer Anfrage echt und unverändert sind.",
                     "urgency": "Mit dem nächsten regulären Update einplanen, denn ausnutzen kann das nur jemand mit einem Administrator-Konto, das zusätzlich die Rechte eines Systemverwalters hat."
+                }
+            }
+        },
+        {
+            "id": "PKSA-d6n7-kcg3-2nsp",
+            "cve": "CVE-2026-125162",
+            "package": "typo3/cms-frontend",
+            "optional": false,
+            "severity": "high",
+            "title": "TYPO3-CORE-SA-2026-031: Cache Flooding in Page Cache Handling",
+            "affectedVersions": ">=14.0.0,<14.3.12|>=13.0.0,<13.4.40|>=12.0.0,<12.4.52|>=11.0.0,<11.5.57|>=10.0.0,<10.4.63",
+            "link": "https://news.typo3.com/security/advisory/typo3-core-sa-2026-031",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": "14.3.12",
+                    "fixedInElts": false
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": "13.4.40",
+                    "fixedInElts": false
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": "12.4.52",
+                    "fixedInElts": true
+                }
+            },
+            "explanation": {
+                "en": {
+                    "plainImpact": "Anyone, without logging in, can add made-up values to any page address and force the site to build and store a new copy of the page each time. This can use up server power and fill the storage for saved pages until the site slows down or stops responding.",
+                    "urgency": "Schedule this soon if the site does not enforce the check on page address values; newer installations have it on by default, but sites upgraded from older setups often still have it off. If the check is already enforced, the site is not affected."
+                },
+                "de": {
+                    "plainImpact": "Jeder Besucher kann ohne Anmeldung durch einen veränderten Zusatz in der Adresse beliebig viele neue Zwischenspeicher-Einträge für Seiten anlegen und Seiten immer wieder neu erzeugen lassen. Das kann den Server stark auslasten und den Speicher für zwischengespeicherte Seiten volllaufen lassen.",
+                    "urgency": "Bald einplanen, wenn die Pflichtprüfung der Prüfsumme in Seitenadressen in der Konfiguration abgeschaltet ist, was bei von älteren Versionen aktualisierten Installationen oft der Fall ist. Ist diese Prüfung eingeschaltet, wie bei Neuinstallationen ab Version 12 üblich, ist die Seite nicht betroffen."
                 }
             }
         },
@@ -2278,6 +2543,43 @@
             }
         },
         {
+            "id": "PKSA-p95h-d713-w1tb",
+            "cve": "CVE-2026-125163",
+            "package": "typo3/cms-form",
+            "optional": true,
+            "severity": "medium",
+            "title": "TYPO3-CORE-SA-2026-032: Unrestricted File Upload in Form Framework",
+            "affectedVersions": ">=14.0.0,<14.3.12|>=13.0.0,<13.4.40|>=12.0.0,<12.4.52|>=11.0.0,<11.5.57|>=10.0.0,<10.4.63",
+            "link": "https://news.typo3.com/security/advisory/typo3-core-sa-2026-032",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": "14.3.12",
+                    "fixedInElts": false
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": "13.4.40",
+                    "fixedInElts": false
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": "12.4.52",
+                    "fixedInElts": true
+                }
+            },
+            "explanation": {
+                "en": {
+                    "plainImpact": "Anyone visiting the site can upload files such as web pages or images that contain code through a form whose upload field has no allowed file types set. If someone finds the address of such a file, the code can run in the browser of whoever opens it.",
+                    "urgency": "Plan this update soon if any form has an upload field with no allowed file types, for example a hand-written form or one where all types were unticked in the form editor. It matters most when uploads land in a public folder and the web server does not apply TYPO3's recommended browser security rules to that folder."
+                },
+                "de": {
+                    "plainImpact": "Über ein Upload-Feld in einem Formular ohne festgelegte erlaubte Dateiarten können Besucher ohne Anmeldung fast beliebige Dateien hochladen, etwa Webseiten- oder Grafikdateien mit eingebautem Code. Kennt jemand die Adresse einer solchen Datei, kann deren Code im Browser von Personen laufen, die sie aufrufen.",
+                    "urgency": "Betrifft nur Formulare mit Upload-Feldern, bei denen keine erlaubten Dateiarten eingestellt sind, und nur Server ohne die von TYPO3 empfohlenen Sicherheitsregeln für den Upload-Ordner. Diese Formulare prüfen und das Update zeitnah einplanen."
+                }
+            }
+        },
+        {
             "id": "PKSA-pg93-52nb-x8ym",
             "cve": "CVE-2026-47348",
             "package": "typo3/cms-core",
@@ -2581,6 +2883,33 @@
             }
         },
         {
+            "id": "PKSA-shs7-m1wr-5rm5",
+            "cve": "CVE-2026-125165",
+            "package": "typo3/cms-dashboard",
+            "optional": true,
+            "severity": "medium",
+            "title": "TYPO3-CORE-SA-2026-034: Server-Side Request Forgery in Dashboard RSS Widget",
+            "affectedVersions": ">=14.0.0,<14.3.12",
+            "link": "https://news.typo3.com/security/advisory/typo3-core-sa-2026-034",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": "14.3.12",
+                    "fixedInElts": false
+                }
+            },
+            "explanation": {
+                "en": {
+                    "plainImpact": "A backend user who can use the dashboard can enter any web address as the news feed source, and the server will fetch it. This lets them reach services inside your own network or the hosting provider's internal settings service, which are normally closed to the outside.",
+                    "urgency": "Schedule this soon if backend users you do not fully trust can access the dashboard, especially when the server runs in a cloud or next to internal services. If only trusted administrators have dashboard access, the risk is lower."
+                },
+                "de": {
+                    "plainImpact": "Ein Backend-Benutzer mit Zugriff auf das Dashboard kann im Nachrichten-Widget eine beliebige Adresse eintragen, die der Server dann selbst abruft. So kann er den Server Anfragen an interne Dienste im eigenen Netz oder an Cloud-Dienste mit Zugangsdaten schicken lassen, die von außen nicht erreichbar sind.",
+                    "urgency": "Zeitnah einplanen, wenn Backend-Benutzer das Dashboard nutzen dürfen und der Server in einem internen Netz oder in einer Cloud läuft. Ohne Dashboard-Zugriff für weniger vertrauenswürdige Benutzer ist das Risiko gering."
+                }
+            }
+        },
+        {
             "id": "PKSA-t4m5-b2kz-hh4n",
             "cve": "CVE-2026-85400",
             "package": "typo3/cms-lowlevel",
@@ -2796,6 +3125,43 @@
                 "de": {
                     "plainImpact": "Ein Angreifer kann einen angemeldeten Backend-Benutzer dazu bringen, unbemerkt Einträge im Protokoll-Modul zu löschen. Dafür reicht es, dass der Benutzer einen präparierten Link öffnet, etwa aus einer E-Mail.",
                     "urgency": "Mit dem nächsten regulären Update einplanen; ein Angriff setzt voraus, dass ein Redakteur im Backend angemeldet ist und auf einen solchen Link hereinfällt. Über manipulierte Webseiten klappt das nur, wenn die Herkunftsprüfung für Backend-Aufrufe abgeschaltet ist und die Cookie-Einstellung des Backends Aufrufe von fremden Seiten zulässt."
+                }
+            }
+        },
+        {
+            "id": "PKSA-xxfm-2xcw-zytr",
+            "cve": "CVE-2026-125160",
+            "package": "typo3/cms-form",
+            "optional": true,
+            "severity": "medium",
+            "title": "TYPO3-CORE-SA-2026-029: Information Disclosure in Form Framework",
+            "affectedVersions": ">=14.0.0,<14.3.12|>=13.0.0,<13.4.40|>=12.0.0,<12.4.52|>=11.0.0,<11.5.57|>=10.0.0,<10.4.63",
+            "link": "https://news.typo3.com/security/advisory/typo3-core-sa-2026-029",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": "14.3.12",
+                    "fixedInElts": false
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": "13.4.40",
+                    "fixedInElts": false
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": "12.4.52",
+                    "fixedInElts": true
+                }
+            },
+            "explanation": {
+                "en": {
+                    "plainImpact": "When saving an uploaded file fails, the form shows the visitor an error message that reveals the hidden folder where uploads are stored. An attacker can then find the public web address of their own uploaded file, and if the form accepts files a browser runs, such as web pages, that file can run code for anyone who opens it.",
+                    "urgency": "Act now on any site with upload fields in forms, because this is already being exploited. The risk is highest where forms accept web page files and the web server does not apply TYPO3's recommended browser safety rules to the upload folder."
+                },
+                "de": {
+                    "plainImpact": "Wenn das Speichern einer hochgeladenen Datei scheitert, zeigt das Formular dem Besucher den genauen Speicherort samt geheimem Ordnernamen an. Erlaubt das Formular Dateien, die der Browser ausführt (etwa HTML-Seiten), kann ein Angreifer so eigenen Code hochladen, der dann bei jedem läuft, der diese Datei öffnet.",
+                    "urgency": "Zeitnah einplanen, da die Lücke bereits aktiv ausgenutzt wird, wenn Formulare Datei- oder Bild-Uploads erlauben. Am größten ist das Risiko, wenn solche ausführbaren Dateitypen erlaubt sind und der Upload-Ordner nicht die von TYPO3 empfohlenen Sicherheitsregeln für Browser nutzt."
                 }
             }
         },
