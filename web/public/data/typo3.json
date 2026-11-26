@@ -1,5 +1,5 @@
 {
-    "generatedAt": "2026-11-24T11:19:50+00:00",
+    "generatedAt": "2026-11-26T07:22:01+00:00",
     "majors": {
         "12": {
             "maintainedUntil": "2026-04-30T00:00:00+02:00",
@@ -3357,6 +3357,37 @@
             "explanation": null
         },
         {
+            "id": "PKSA-2vy6-qchn-f13r",
+            "cve": "CVE-2026-133754",
+            "package": "symfony/routing",
+            "optional": false,
+            "severity": "unknown",
+            "title": "CVE-2026-133754: UrlGenerator Lets Host Placeholder Values Send Generated URLs to Another Host",
+            "affectedVersions": ">=2.0.0,<3.0.0|>=3.0.0,<4.0.0|>=4.0.0,<5.0.0|>=5.0.0,<5.1.0|>=5.1.0,<5.2.0|>=5.2.0,<5.3.0|>=5.3.0,<5.4.0|>=5.4.0,<5.4.57|>=6.0.0,<6.1.0|>=6.1.0,<6.2.0|>=6.2.0,<6.3.0|>=6.3.0,<6.4.0|>=6.4.0,<6.4.51|>=7.0.0,<7.1.0|>=7.1.0,<7.2.0|>=7.2.0,<7.3.0|>=7.3.0,<7.4.0|>=7.4.0,<7.4.24|>=8.0.0,<8.1.0|>=8.1.0,<8.1.12",
+            "link": "https://symfony.com/cve-2026-133754",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
             "id": "PKSA-365x-2zjk-pt47",
             "cve": "CVE-2025-64500",
             "package": "symfony/http-foundation",
@@ -3488,6 +3519,37 @@
             "explanation": null
         },
         {
+            "id": "PKSA-7b9s-mkdg-qfhs",
+            "cve": "CVE-2026-133748",
+            "package": "symfony/http-foundation",
+            "optional": false,
+            "severity": "unknown",
+            "title": "CVE-2026-133748: NoPrivateNetworkHttpClient With Custom Subnets Lets IPv4-Mapped Addresses Through",
+            "affectedVersions": ">=2.0.0,<3.0.0|>=3.0.0,<4.0.0|>=4.0.0,<5.0.0|>=5.0.0,<5.1.0|>=5.1.0,<5.2.0|>=5.2.0,<5.3.0|>=5.3.0,<5.4.0|>=5.4.0,<5.4.57|>=6.0.0,<6.1.0|>=6.1.0,<6.2.0|>=6.2.0,<6.3.0|>=6.3.0,<6.4.0|>=6.4.0,<6.4.50|>=7.0.0,<7.1.0|>=7.1.0,<7.2.0|>=7.2.0,<7.3.0|>=7.3.0,<7.4.0|>=7.4.0,<7.4.23|>=8.0.0,<8.1.0|>=8.1.0,<8.1.11",
+            "link": "https://symfony.com/cve-2026-133748",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": "14.3.11",
+                    "fixedInElts": false,
+                    "enforcedIn": "14.3.11"
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": "13.4.39",
+                    "fixedInElts": false,
+                    "enforcedIn": "13.4.39"
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
             "id": "PKSA-7qs6-zvnz-h66r",
             "cve": "CVE-2026-55766",
             "package": "guzzlehttp/psr7",
@@ -3604,6 +3666,56 @@
                 },
                 "12": {
                     "from": "12.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
+            "id": "PKSA-9r8k-3vgs-8f3v",
+            "cve": "CVE-2026-133755",
+            "package": "symfony/mailer",
+            "optional": false,
+            "severity": "unknown",
+            "title": "CVE-2026-133755: Mailer Trusts Replies That a Man in the Middle Injects Right After STARTTLS",
+            "affectedVersions": ">=7.3.0,<7.4.0|>=7.4.0,<7.4.24|>=8.0.0,<8.1.0|>=8.1.0,<8.1.12",
+            "link": "https://symfony.com/cve-2026-133755",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                },
+                "13": {
+                    "from": "13.4.20",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
+            "id": "PKSA-9t6c-d2hr-ss6w",
+            "cve": "CVE-2026-134791",
+            "package": "symfony/expression-language",
+            "optional": false,
+            "severity": "unknown",
+            "title": "CVE-2026-134791: Unclosed Comments Make the Lexer of ExpressionLanguage Quadratic, Letting Untrusted Expressions Hold a Process",
+            "affectedVersions": ">=7.2.0,<7.3.0|>=7.3.0,<7.4.0|>=7.4.0,<7.4.24|>=8.0.0,<8.1.0|>=8.1.0,<8.1.12",
+            "link": "https://symfony.com/cve-2026-134791",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                },
+                "13": {
+                    "from": "13.4.10",
                     "fixedIn": null,
                     "fixedInElts": false,
                     "enforcedIn": null
@@ -4115,6 +4227,37 @@
             "explanation": null
         },
         {
+            "id": "PKSA-pbtx-4qgh-mmkh",
+            "cve": "CVE-2026-133746",
+            "package": "symfony/routing",
+            "optional": false,
+            "severity": "unknown",
+            "title": "CVE-2026-133746: UrlGenerator Can Still Generate URLs to Another Host: Incomplete Fix for CVE-2026-45065",
+            "affectedVersions": ">=2.0.0,<3.0.0|>=3.0.0,<4.0.0|>=4.0.0,<5.0.0|>=5.0.0,<5.1.0|>=5.1.0,<5.2.0|>=5.2.0,<5.3.0|>=5.3.0,<5.4.0|>=5.4.0,<5.4.57|>=6.0.0,<6.1.0|>=6.1.0,<6.2.0|>=6.2.0,<6.3.0|>=6.3.0,<6.4.0|>=6.4.0,<6.4.51|>=7.0.0,<7.1.0|>=7.1.0,<7.2.0|>=7.2.0,<7.3.0|>=7.3.0,<7.4.0|>=7.4.0,<7.4.24|>=8.0.0,<8.1.0|>=8.1.0,<8.1.12",
+            "link": "https://symfony.com/cve-2026-133746",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                },
+                "13": {
+                    "from": "13.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                },
+                "12": {
+                    "from": "12.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
             "id": "PKSA-pwsk-hy21-4gby",
             "cve": "CVE-2026-67339",
             "package": "guzzlehttp/guzzle",
@@ -4287,6 +4430,31 @@
                 },
                 "12": {
                     "from": "12.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
+            "id": "PKSA-vqxj-j8fm-1q3k",
+            "cve": "CVE-2026-133751",
+            "package": "symfony/mailer",
+            "optional": false,
+            "severity": "unknown",
+            "title": "CVE-2026-133751: Mailer's require_tls Can Be Bypassed by a Man in the Middle",
+            "affectedVersions": ">=7.3.0,<7.4.0|>=7.4.0,<7.4.24|>=8.0.0,<8.1.0|>=8.1.0,<8.1.12",
+            "link": "https://symfony.com/cve-2026-133751",
+            "affected": {
+                "14": {
+                    "from": "14.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                },
+                "13": {
+                    "from": "13.4.20",
                     "fixedIn": null,
                     "fixedInElts": false,
                     "enforcedIn": null
@@ -4585,6 +4753,31 @@
                 },
                 "12": {
                     "from": "12.0.0",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                }
+            },
+            "explanation": null
+        },
+        {
+            "id": "PKSA-zt52-53gf-j6kr",
+            "cve": "CVE-2026-133760",
+            "package": "symfony/expression-language",
+            "optional": false,
+            "severity": "unknown",
+            "title": "CVE-2026-133760: Nested Short Ternaries Make the Nesting Check of the Expression Parser Exponential, Letting Untrusted Expressions Hang It",
+            "affectedVersions": ">=5.4.54,<5.4.57|>=6.4.48,<6.4.51|>=7.4.21,<7.4.24|>=8.1.9,<8.1.12",
+            "link": "https://symfony.com/cve-2026-133760",
+            "affected": {
+                "14": {
+                    "from": "14.3.10",
+                    "fixedIn": null,
+                    "fixedInElts": false,
+                    "enforcedIn": null
+                },
+                "13": {
+                    "from": "13.4.37",
                     "fixedIn": null,
                     "fixedInElts": false,
                     "enforcedIn": null
