@@ -140,16 +140,16 @@
         }
     },
     "PKSA-4m1f-m6bx-wtv1|core|typo3/cms-core": {
-        "contentHash": "52a4892666866e802dc9f70f4d20ade69f458916a6fe4a6a7b5f121dd3342a31",
+        "contentHash": "1fff3a20606e3bbeee5001dcc005a82353ee062b9083300b1e8b4a917e07b877",
         "promptVersion": 4,
         "langs": {
             "en": {
-                "plainImpact": "Someone can build a link to the site that looks like it stays on the site but actually sends the visitor on to an outside website. That can be used to lead users to fake login pages or other deceptive content.",
-                "urgency": "Plan this update soon, since it completes an earlier incomplete fix. In the core it only affects backend redirects for logged-in editors, but custom code that uses the same link check for its own redirects is also exposed."
+                "plainImpact": "Someone can craft a link to the site's backend that, after a logged-in backend user clicks it, sends that user on to an outside website of the attacker's choosing. That outside page can then pose as the site to trick the user into giving away passwords or other details.",
+                "urgency": "Schedule this in your next regular update, sooner if many people use the backend. In the core it only affects users logged in to the backend, but extensions that rely on the same link check for their own forwarding are affected too."
             },
             "de": {
-                "plainImpact": "Jemand kann einen präparierten Link bauen, der wie ein Link auf die eigene Seite aussieht, Nutzer aber auf eine fremde Seite weiterleitet. So lassen sich zum Beispiel gefälschte Anmeldeseiten unterschieben, um Zugangsdaten abzugreifen.",
-                "urgency": "Zeitnah einplanen, da eine frühere Korrektur dieses Problem nicht vollständig behoben hat. Im Kern betrifft es nur Weiterleitungen im Backend bei angemeldeten Redakteuren, eigene Erweiterungen mit Weiterleitungen über die betroffene Prüfung können aber auch Besucher betreffen."
+                "plainImpact": "Ein Angreifer kann einen Link bauen, der wie ein Link auf die eigene Seite aussieht, Nutzer aber auf eine fremde Seite weiterleitet. Dort können zum Beispiel gefälschte Anmeldeseiten Zugangsdaten abfragen.",
+                "urgency": "Im Kern betrifft das nur Weiterleitungen im Backend, und das Opfer muss dort angemeldet sein. Zeitnah einplanen, besonders wenn eigene Erweiterungen diese Prüfung von Adressen für Weiterleitungen nutzen."
             }
         }
     },
@@ -252,16 +252,16 @@
         }
     },
     "PKSA-745m-816f-bzfy|core|typo3/cms-backend": {
-        "contentHash": "7813d3e0ef7966dc5ec2ededa06958df4d27a3fcb21fd00d89c20acef6d0f0ec",
+        "contentHash": "81ee09b754743c14f1b15b057b83b445627cb44c4af6b3ca276c745528f022e2",
         "promptVersion": 4,
         "langs": {
             "en": {
-                "plainImpact": "A logged-in backend user with limited rights can use the tool for translating pages to see information about records and content elements they are not allowed to access. This only reveals information; the description does not say anything can be changed.",
-                "urgency": "Schedule this with your next regular update if the site has backend users with restricted rights. It requires a backend login, so sites where only fully trusted administrators log in are barely affected."
+                "plainImpact": "A backend user with limited rights can use the translation helper in the backend to see information about records and content elements they are not allowed to access.",
+                "urgency": "Schedule this in a normal update cycle if the site has backend users with restricted rights. If only fully trusted administrators can log in, the exposure is small."
             },
             "de": {
-                "plainImpact": "Ein angemeldeter Backend-Benutzer mit wenigen Rechten kann über den Übersetzungs-Assistenten im Backend Angaben zu Datensätzen und Inhaltselementen sehen, für die er keine Berechtigung hat. Das System prüft dort nicht, ob er diese Daten sehen darf.",
-                "urgency": "Betrifft nur Seiten mit Backend-Benutzern, deren Rechte eingeschränkt sind; ein Angriff ohne Backend-Zugang ist nicht möglich. Bei vielen solchen Benutzern oder vertraulichen Inhalten das Update zeitnah einplanen, sonst im nächsten regulären Wartungsfenster."
+                "plainImpact": "Ein angemeldeter Backend-Benutzer mit wenigen Rechten kann über die Übersetzungshilfe im Backend Angaben zu Datensätzen und Inhaltselementen sehen, auf die er eigentlich keinen Zugriff hat. Inhalte ändern kann er dadurch nicht.",
+                "urgency": "Zeitnah einplanen, wenn es Backend-Benutzer mit eingeschränkten Rechten gibt, die bestimmte Inhalte nicht sehen sollen. Ohne solche Benutzer ist das Risiko gering."
             }
         }
     },
@@ -294,16 +294,16 @@
         }
     },
     "PKSA-7z6t-ctq9-9wk4|core|typo3/cms-core": {
-        "contentHash": "710da0ce80f15bea1a22807fade63cf7ccda8db1be6a65ad1d77fcfe33c05d1e",
+        "contentHash": "653964a299c815430c3f40eef114a46832abf04420b5372629640c63a5fecefc",
         "promptVersion": 4,
         "langs": {
             "en": {
-                "plainImpact": "A visitor who is not logged in can reuse a valid download link for one file to fetch a different file that shares the same number. This can expose files that were never meant to be shared, including files from storage areas that are not public.",
-                "urgency": "Schedule this soon if the site delivers files through protected download links or keeps files in non-public storage. Without such links, the exposure is limited."
+                "plainImpact": "The feature that hands out protected files checks a download link only against a file's number, not against what kind of item is being asked for. Anyone, without logging in, can reuse a valid download link to fetch a different file with the same number, including files from storage that is not meant to be public.",
+                "urgency": "Schedule this soon if the site keeps files in non-public storage or hands out protected download links. Sites that only serve public files have little exposure."
             },
             "de": {
-                "plainImpact": "Ein gültiger Download-Link für eine Datei lässt sich so umbauen, dass er eine andere Datei mit derselben Nummer liefert. Dadurch können auch nicht angemeldete Besucher Dateien herunterladen, die nie freigegeben wurden, zum Beispiel aus nicht öffentlichen Speicherorten.",
-                "urgency": "Bald einplanen, besonders wenn die Seite geschützte Dateien über solche Download-Links ausliefert oder nicht öffentliche Speicherorte nutzt. Ohne nicht öffentliche Dateien ist das Risiko geringer."
+                "plainImpact": "Ein gültiger Download-Link für eine Datei lässt sich so abändern, dass er eine andere Datei mit derselben Nummer liefert. Dadurch können Besucher ohne Anmeldung Dateien herunterladen, die nicht für sie freigegeben sind, auch aus nicht öffentlichen Speicherorten.",
+                "urgency": "Zeitnah einplanen, wenn die Seite geschützte Dateien über solche Download-Links ausliefert oder nicht öffentliche Speicherorte nutzt. Ohne vertrauliche Dateien ist das Risiko geringer."
             }
         }
     },
@@ -406,16 +406,16 @@
         }
     },
     "PKSA-bs5s-5x8g-skvh|core|typo3/cms-core": {
-        "contentHash": "325b4e0913505d30967fee677b786dbaae442907f3cfd42e867994b0851e7538",
+        "contentHash": "2f830c54bb1c38c29f10050af40590b522052d50b7655023b0445dbc26387bed",
         "promptVersion": 4,
         "langs": {
             "en": {
-                "plainImpact": "Someone can upload a disguised file that, when the site resizes or converts it as a picture, copies the contents of files on the server into a publicly visible image. This can expose configuration files that contain passwords.",
-                "urgency": "Act quickly if visitors or users can upload files without a file-type check, for example public forms with upload fields that do not restrict allowed file types, and the server uses ImageMagick with its default settings. Without such an upload path, or without ImageMagick, the exposure is much lower."
+                "plainImpact": "Someone can upload a disguised file posing as an image that makes the image tool copy any file the web server can read into a resized image. That image is then publicly visible, which can reveal secrets such as database passwords from configuration files.",
+                "urgency": "Act soon if visitors or editors can upload files without a file-type check, for example a public upload form with no allowed file types set, and ImageMagick handles images with its default settings. Without such an upload path, or with GraphicsMagick or ImageMagick blocking this file format, the exposure is limited."
             },
             "de": {
-                "plainImpact": "Jemand kann eine Datei hochladen, die wie ein Bild aussieht, aber Anweisungen enthält, beliebige Dateien vom Server in das erzeugte Bild zu kopieren. So werden etwa Konfigurationsdateien mit Zugangsdaten über ein öffentlich abrufbares Bild lesbar.",
-                "urgency": "Bald einplanen, wenn Besucher ohne Prüfung des Dateityps Dateien hochladen können, etwa über öffentliche Formulare mit Upload-Feld ohne erlaubte Dateitypen. Zusätzlich muss ImageMagick die Bilder bearbeiten und dessen Standardeinstellung diese Anweisungen zulassen."
+                "plainImpact": "Jemand kann eine präparierte Datei als Bild hochladen, die beim Verkleinern oder Umrechnen Dateien vom Server in das fertige Bild einbaut. So lassen sich zum Beispiel Konfigurationsdateien mit Zugangsdaten über ein öffentlich abrufbares Bild auslesen.",
+                "urgency": "Bald einplanen, wenn Besucher Dateien ohne Prüfung des Dateityps hochladen können, etwa über ein öffentliches Formular mit Datei-Upload ohne festgelegte erlaubte Dateitypen. Zusätzlich muss die Bildbearbeitung mit ImageMagick laufen und dessen Standardeinstellung dieses Vektorgrafik-Format zulassen."
             }
         }
     },
@@ -434,16 +434,16 @@
         }
     },
     "PKSA-c8kp-f3wr-5vmd|optional|typo3/cms-impexp": {
-        "contentHash": "6aee79cda94de7d3dc2c7ee9d37549ff3923f5c3a44f2cf0aa91d63b93dc4540",
+        "contentHash": "cd093af30f2b1faf770e4c50ce1104833c0f10eb42228747cca6bc1f126f1044",
         "promptVersion": 4,
         "langs": {
             "en": {
-                "plainImpact": "A specially prepared import file can write files with any content to any folder the web server can write to. This includes placing a program file in the public website folder, which lets the attacker run their own code on the server.",
-                "urgency": "Plan this update promptly if anyone uses the import feature. Only administrators can do this, or regular editors who have explicitly been allowed to import."
+                "plainImpact": "A specially prepared import file can save files with any content anywhere the web server is allowed to write, including a program file in the public website folder. That lets the attacker run their own code on the server.",
+                "urgency": "Schedule this soon; it requires a backend administrator account, or a regular editor who has been explicitly allowed to import. If only trusted administrators can import, the risk is lower but still worth fixing."
             },
             "de": {
-                "plainImpact": "Mit einer präparierten Importdatei im Import/Export-Modul kann jemand beliebige Dateien an jeden Ort schreiben, auf den der Webserver schreiben darf. So lässt sich zum Beispiel eigener Programmcode im öffentlichen Webverzeichnis ablegen und auf dem Server ausführen.",
-                "urgency": "Zeitnah einplanen, wenn das Import/Export-Modul genutzt wird. Ausnutzen kann es nur ein Administrator oder ein Backend-Benutzer, dem der Import ausdrücklich freigeschaltet wurde."
+                "plainImpact": "Mit einer präparierten Importdatei im Import/Export-Modul kann jemand Dateien mit beliebigem Inhalt an jede Stelle schreiben, auf die der Webserver schreiben darf. So lässt sich eigener Programmcode auf dem Server ablegen und ausführen.",
+                "urgency": "Bald einplanen, wenn Administratoren das Import/Export-Modul nutzen oder der Import für normale Redakteure freigeschaltet ist. Ein Angriff braucht ein Backend-Konto mit Importrecht."
             }
         }
     },
@@ -462,16 +462,16 @@
         }
     },
     "PKSA-cq99-bswg-h27z|core|typo3/cms-backend": {
-        "contentHash": "8ab15b7660de27e1945055178c4def6bf5bfc2b9564df852efdaa19525b20018",
+        "contentHash": "874497dfe654f7f4584dd51a7735c9eaf7c65ed7adcd4bba0bfd055a4a1388a0",
         "promptVersion": 4,
         "langs": {
             "en": {
-                "plainImpact": "Any logged-in backend user, even one with no file access at all, can create video link files with a partly chosen name directly in the public web folder of the site. Combined with a second advisory, this can switch the installer back on, letting them create a new administrator account and run their own code on the server.",
-                "urgency": "Update soon if anyone other than fully trusted administrators has a backend login. Patch this together with the related advisory, since the two combined lead to full control of the server."
+                "plainImpact": "Any logged-in backend user, even one with no file or module access, can create video link files with a partly chosen name in the site's public main folder. Combined with a second related flaw, this can switch the installer back on, letting them create a new full administrator and run their own code on the server.",
+                "urgency": "Update soon on any site that has backend users you do not fully trust. Logging in to the backend is the only requirement, so every backend account counts."
             },
             "de": {
-                "plainImpact": "Jeder angemeldete Backend-Benutzer, auch ohne Dateirechte oder Modulzugriff, kann Video-Dateien mit teilweise frei wählbarem Namen direkt im öffentlichen Hauptordner der Website anlegen. Zusammen mit einer zweiten gemeldeten Lücke lässt sich so der Installationsassistent wieder einschalten, ein neues Administratorkonto anlegen und am Ende eigener Programmcode auf dem Server ausführen.",
-                "urgency": "Zeitnah einplanen, besonders wenn es Backend-Benutzer gibt, denen nicht voll vertraut wird. Die Gefahr ist am größten, wenn auch die zweite Lücke noch offen ist."
+                "plainImpact": "Jeder angemeldete Backend-Benutzer, auch mit sehr wenigen Rechten, kann Dateien für Online-Videos direkt im öffentlichen Hauptordner der Website anlegen und dabei den Dateinamen teilweise selbst bestimmen. Zusammen mit einer zweiten Lücke (TYPO3-CORE-SA-2026-027) lässt sich so das Installationswerkzeug wieder einschalten, ein neues Administratorkonto anlegen und am Ende beliebiger Code auf dem Server ausführen.",
+                "urgency": "Zeitnah einplanen, wenn es Backend-Benutzer gibt, denen nicht voll vertraut wird. Am dringendsten ist es, wenn auch die zweite genannte Lücke noch offen ist."
             }
         }
     },
@@ -504,30 +504,30 @@
         }
     },
     "PKSA-d6n7-kcg3-2nsp|core|typo3/cms-frontend": {
-        "contentHash": "6a53e81d8f501fcca701667f9eed6e6788e3bdc97b1a6d2052bd01d35530ff1d",
+        "contentHash": "8fe0ef885e87c6ee6f097cc55c30c279e6fed43516fc49abd6bb6133adb5ebbe",
         "promptVersion": 4,
         "langs": {
             "en": {
-                "plainImpact": "Anyone, without logging in, can add made-up values to any page address so that each request creates a new stored copy of the page and forces the server to build it from scratch. This can use up server capacity and fill the storage for saved pages.",
-                "urgency": "Only matters if the site does not strictly check the security checksum in page addresses; that check is on by default for newer installations but is often still off on sites that were upgraded. Check that setting and schedule the update soon if it is off."
+                "plainImpact": "Anyone, without logging in, can add a specially shaped check value to any page address and make the site store a new cached copy of the page every time. This can fill up the cache storage and overload the server, because each request forces the page to be built from scratch.",
+                "urgency": "Act soon if the site does not strictly check that page addresses were created by TYPO3; this strict check is on by default for new installations but often off on sites upgraded from older versions. If the strict check is already on, the site is not affected."
             },
             "de": {
-                "plainImpact": "Jeder Besucher kann ohne Anmeldung durch angehängte Werte in der Adresse beliebig viele neue Einträge im Seitenzwischenspeicher anlegen und Seiten jedes Mal neu erzeugen lassen. Das kann den Server stark auslasten und den Speicherplatz für zwischengespeicherte Seiten füllen.",
-                "urgency": "Betrifft nur Installationen, in denen die strenge Prüfung der Prüfsumme in Seitenadressen ausgeschaltet ist, was bei von älteren Versionen aktualisierten Seiten oft der Fall ist. Prüfen Sie diese Einstellung zeitnah und planen Sie das Update bald ein, wenn sie ausgeschaltet ist."
+                "plainImpact": "Jeder Besucher kann ohne Anmeldung durch einen veränderten Link beliebig viele neue Einträge im Seitenzwischenspeicher anlegen und die Seite jedes Mal neu erzeugen lassen. Das kann den Server stark auslasten und den Speicher für zwischengespeicherte Seiten volllaufen lassen.",
+                "urgency": "Zeitnah einplanen, aber nur wenn die Prüfung der Sicherheitsprüfsumme in Links nicht verpflichtend eingeschaltet ist. Bei Neuinstallationen ist sie meist aktiv, bei Seiten, die von älteren Versionen aktualisiert wurden, oft noch aus, deshalb die Einstellung prüfen."
             }
         }
     },
     "PKSA-fykt-pmbg-txnv|optional|typo3/cms-form": {
-        "contentHash": "56365490f90e71ca7b05f88e09a81cc10cea8cf9054ca52d5281c4e8a121e01d",
+        "contentHash": "fd434e43ed215706d4ab79075fa642eb201e1d5b1fa8dc26b2fec0b7533fada9",
         "promptVersion": 4,
         "langs": {
             "en": {
-                "plainImpact": "Files that visitors upload through a form can land in the public upload folder instead of the protected folder the form was set up to use. Anyone who knows or finds the file address can then download those files without any access check.",
-                "urgency": "Only matters if a form with file or image uploads is set to store them in a custom, non-public folder; forms using the default folder are not affected. If you have such forms, update soon and check the public upload folder for files that should not be there."
+                "plainImpact": "Files uploaded through a form can land in the default public upload folder instead of the protected folder the form was set up to use. Anyone who finds such a file can then open it directly, without the access checks the protected folder would apply.",
+                "urgency": "Act soon if any form with file or image uploads is set to store them in a custom, non-public folder. Forms that keep the default upload folder are not affected."
             },
             "de": {
-                "plainImpact": "Dateien, die über ein Formular hochgeladen werden, landen im öffentlichen Standardordner statt im eingestellten geschützten Speicherort. Dort kann sie jeder ohne Zugriffsprüfung direkt abrufen, wenn er den Pfad kennt.",
-                "urgency": "Nur relevant, wenn ein Formular hochgeladene Dateien in einem eigens eingestellten Speicherort ablegen soll; Formulare mit der Standardeinstellung sind nicht betroffen. In diesem Fall bald einplanen und prüfen, welche Dateien schon im öffentlichen Ordner liegen."
+                "plainImpact": "Dateien, die über ein Formular hochgeladen werden, landen im allgemeinen Upload-Ordner statt im eingestellten geschützten Ordner. Dort kann sie jeder direkt abrufen, ohne dass geprüft wird, ob er sie sehen darf.",
+                "urgency": "Betrifft nur Formulare mit Datei- oder Bild-Upload, bei denen ein eigener Speicherort eingestellt ist; Formulare mit dem Standard-Speicherort sind nicht betroffen. Wenn solche Formulare vertrauliche Dateien annehmen, bald einplanen und prüfen, welche Dateien bereits im öffentlichen Ordner liegen."
             }
         }
     },
@@ -756,16 +756,16 @@
         }
     },
     "PKSA-p95h-d713-w1tb|optional|typo3/cms-form": {
-        "contentHash": "3dc8965b16cc66acdc0ca7c0618b1ea67b35a0541a746958154bf30ac404c035",
+        "contentHash": "70f68806b754afce3949945383276d04fffdb960827b2871df3645d18ebbf562",
         "promptVersion": 4,
         "langs": {
             "en": {
-                "plainImpact": "On forms whose upload fields have no list of allowed file types, anyone can upload files such as web pages or vector images that a browser runs as code, usually into a public folder. If an attacker learns the file's address, that code can run in the browser of anyone who opens it.",
-                "urgency": "This only matters if a form has an upload field with no allowed file types set, for example a hand-written form or one where all types were unticked in the form editor. Act soon if that applies and the server does not apply TYPO3's recommended browser security rules to the upload folder."
+                "plainImpact": "Anyone visiting the site can upload files such as web pages or images that contain code, through a form upload field that has no allowed file types set. If someone then opens that file's address, the code runs in their browser on your site's domain.",
+                "urgency": "Schedule this soon if the site has forms with upload fields where no allowed file types are set, for example forms written by hand or with every type unticked in the form editor. The risk is smaller if the upload folder already has the browser security rules TYPO3 recommends."
             },
             "de": {
-                "plainImpact": "Bei Formularen mit einem Upload-Feld, für das keine erlaubten Dateiarten eingestellt sind, kann jeder ohne Anmeldung fast beliebige Dateien hochladen, etwa Webseiten- oder Bilddateien mit eingebautem Code. Kennt der Angreifer die Adresse der Datei, kann dieser Code im Browser von Leuten laufen, die sie öffnen.",
-                "urgency": "Betrifft nur Formulare mit Upload-Feld ohne festgelegte Dateiarten und Server, die für den Upload-Ordner nicht die von TYPO3 empfohlenen Sicherheitsregeln für den Browser setzen. Trifft das zu, das Update bald einplanen, sonst im normalen Wartungsrhythmus."
+                "plainImpact": "Besucher ohne Anmeldung können über ein Formular-Upload-Feld ohne festgelegte erlaubte Dateiarten beliebige Dateien hochladen, etwa Webseiten- oder Bilddateien mit eingebettetem Code. Kennt der Angreifer die Adresse der Datei, kann dieser Code im Browser von Personen laufen, die die Datei öffnen.",
+                "urgency": "Betrifft nur Formulare mit Upload-Feldern, bei denen keine erlaubten Dateiarten eingestellt sind, und nur Server, die für den Upload-Ordner nicht die von TYPO3 empfohlenen Sicherheitsregeln für Browser setzen. Trifft das zu, das Update zeitnah einplanen."
             }
         }
     },
